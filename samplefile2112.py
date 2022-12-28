@@ -16,6 +16,12 @@ import csv
 n=100
 
 with open('C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Daten/Meteorologie/jamtalhütte_20200401/GS.csv', 'r') as datei:
-    for line in datei:
-     #   print(line[0:10]), # 0-1 bzw. 0-10 Ziffer JE ZEILE werden gedruckt
-     print(line)
+   for i in range(n):
+        line = next(datei).strip()
+        print(line)
+   
+   
+   
+    # for line in datei:
+    #  #   print(line[0:10]), # 0-1 bzw. 0-10 Ziffer JE ZEILE werden gedruckt
+    #  print(line)
