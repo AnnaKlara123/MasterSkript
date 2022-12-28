@@ -1,5 +1,7 @@
 #Prepair
 import numpy as np
+import csv
+
 
 #Read data
 
