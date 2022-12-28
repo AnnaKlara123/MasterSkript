@@ -1,14 +1,14 @@
 #Prepair
 import numpy as np
+import csv
 
 #Read data
 
-datei= open('C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Daten/Meteorologie/jamtalhütte_20200401/GS.txt', 'r')
-
-print(type(datei))
-# for zeile in datei:
-# 	print(zeile(1, 7))
+datei= open('C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Daten/Meteorologie/jamtalhütte_20200401/GS.csv', 'r')
+csv_reader = csv.reader(datei, delimiter=",")
+print(datei.readlines())
 
 
-
-datei.close()
+# for row in csv_reader:
+#    print(row)
+# datei.close()
