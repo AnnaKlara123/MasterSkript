@@ -1,4 +1,5 @@
-# importing csv module
+# importing csv module 
+# Vorlage: https://www.geeksforgeeks.org/working-csv-files-python/
 import csv
  
 # csv file name
@@ -11,25 +12,25 @@ rows = []
 # reading csv file
 with open(filename, 'r') as csvfile:
     # creating a csv reader object
-    csvreader = csv.reader(csvfile)
+    csvreader = csv.reader(csvfile, delimiter = " ")
      
-    # extracting field names through first row
+    # extracting field names/Headers through first row 
     fields = next(csvreader)
  
-    # # extracting each data row one by one
-    # for row in csvreader:
-    #     rows.append(row)
+    # extracting each data row one by one
+    for row in csvreader:
+        rows.append(row) # Raws werden der vorher erstellten Liste rows = [ ] nacheinander hinzugefügt
  
-#     # get total number of rows
-#     print("Total no. of rows: %d"%(csvreader.line_num))
+    # get total number of rows
+    print("Total no. of rows: %d"%(csvreader.line_num))
  
-# # printing the field names
+# printing the field names
 # print('Field names are:' + ', '.join(field for field in fields))
  
-# # printing first 5 rows
-# print('\nFirst 5 rows are:\n')
-# for row in rows[:5]:
-#     # parsing each column of a row
-#     for col in row:
-#         print("%10s"%col,end=" "),
-#     print('\n')
+# printing first 5 rows
+print('\nFirst 100 rows are:\n') # \n benutzt man, um zur nächsten Zeile wechseln
+for row in rows[:100]:
+    # parsing each column of a row
+    for col in row:
+        print("%10s"%col,end=" "),
+    print('\n')
