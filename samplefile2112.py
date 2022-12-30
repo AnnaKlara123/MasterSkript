@@ -6,17 +6,18 @@ import pandas as pd
 
 #Read data
 
-#datei= open('C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Daten/Meteorologie/jamtalhütte_20200401/GS_test.csv', 'r')
-# csv_reader = csv.reader(datei, delimiter=",")
-# print(datei.readlines())
-
-n=100
-
-with open('C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Daten/Meteorologie/jamtalhütte_20200401/GS_test.csv', 'r') as datei:
-   for i in range(n):
-        line = next(datei).strip()
+datei= open('C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Daten/Meteorologie/jamtalhütte_20200401/GS_test.csv', 'r')
+csv_reader = csv.reader(datei, delimiter=",")
+for line in csv_reader:     # Hier wird CSV Datei als Liste aufgelistet: 
+#Each line is a list of values. To access each value, you use the square bracket notation []. The first value has an index of 0. The second value has an index of 1, and so on.
         print(line)
+  
+# n=100
 
+# with open('C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Daten/Meteorologie/jamtalhütte_20200401/GS_test.csv', 'r') as datei:
+#    for i in range(n):
+#         line = next(datei).strip()
+#         print(line)
 
 
 ####### Jetzt Datum in Jahr, Monat, Tag & Zeit unterteilen! ''#############
