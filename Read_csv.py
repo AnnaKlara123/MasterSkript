@@ -23,14 +23,20 @@ with open(filename, 'r') as csvfile:
  
     # get total number of rows
     print("Total no. of rows: %d"%(csvreader.line_num))
+
  
 # printing the field names
 # print('Field names are:' + ', '.join(field for field in fields))
  
-# printing first 5 rows
-print('\nFirst 100 rows are:\n') # \n benutzt man, um zur nächsten Zeile wechseln
-for row in rows[:100]:
-    # parsing each column of a row
-    for col in row:
-        print("%10s"%col,end=" "),
-    print('\n')
+# # printing first 5 rows
+# print('\nFirst 100 rows are:\n') # \n benutzt man, um zur nächsten Zeile wechseln
+# for row in rows[:100]:
+#     # parsing each column of a row
+#     for col in row:
+#         print("%10s"%col,end=" "),
+#     print('\n')
+
+
+
+
+    
