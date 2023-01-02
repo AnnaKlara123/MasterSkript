@@ -79,17 +79,14 @@ with open(csvOut, 'w') as csvfile:
     csvwriter.writerow(fieldsout) 
      
     # writing the data rows
-    csvwriter.writerows(rowsout)
+    csvwriter.writerows(list(zip(*[yy, mm, dd, hh, Stat1]))) # Setzt die Liste in richtiges Tabellenformat um
 
 
-df = pd.DataFrame(list(zip(*[yy, mm, dd, hh, Stat1]))).add_prefix('Col')
 
-df.to_csv('file.csv', index=False)
-
-print(df)
+#print(df)
 
 #csvwriter.to_csv(r'"C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Daten/Meteorologie/jamtalhütte_20200401/export_GS_test.csv', index=False, header=True)
-#print(csvwriter)
+print(csvwriter)
 
 
 
