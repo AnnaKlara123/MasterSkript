@@ -82,11 +82,17 @@ with open(csvOut, 'w') as csvfile:
     csvwriter.writerows(list(zip(*[yy, mm, dd, hh, Stat1]))) # Setzt die Liste in richtiges Tabellenformat um "*" WICHTIG!
 
 
+########## converting csv file to data frame ################
 
-#print(df)
 
-#csvwriter.to_csv(r'"C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Daten/Meteorologie/jamtalhütte_20200401/export_GS_test.csv', index=False, header=True)
-print(csvwriter)
+df  = pd.DataFrame(list(zip(yy,mm,dd,hh, Stat1)), columns = ['YY',	'MM',	'DD',	'HH',	'Stat1'])
+
+#lst = [list(zip(*[yy, mm, dd, hh, Stat1]))]
+#df = pd.DataFrame(lst, columns = ['Name'])
+
+print(df)
+
+#print(csvwriter)
 
 
 
