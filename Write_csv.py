@@ -37,6 +37,8 @@ with open(filename, 'r') as csvfile:
 
 ######## get Date & Time ###########
 
+col = []
+
 for row in rows[:100]: 
     # parsing each column of a row
     for col in row:
@@ -44,42 +46,42 @@ for row in rows[:100]:
                         # print(row)
                         #print("%10s"%col)  #Gibt die Liste ohne ' ' und [] aus
                         #print('\n') # Sorgt nur für Leerzeile 
-        yy= (col[:4])
-        mm = (col[4:6])
-        dd = (col[6:8])
-        hh = (col[8:12]) # WICHTIG: Hier nochmal genau schauen, wie ich das in Min umrechne!
-        
-        # print('yy=', yy,'mm=',mm,'dd=',dd, 'hh=',hh)
+        #yy= (col[:4]) ist nur für erste Zeile durch .append liste erzeugen
+        yy.append(col[:4])
+        mm.append(col[4:6])
+        dd.append(col[6:8])
+        hh.append(col[8:12]) # WICHTIG: Hier nochmal genau schauen, wie ich das in Min umrechne!
+        #print('yy=', yy,'mm=',mm,'dd=',dd, 'hh=',hh)
 
 
 
-# ########### CSV WRITE ################
+########### CSV WRITE ################
 
-#     # field names
-# fieldsout = ['YY',	'MM',	'DD',	'HH',	'Stat1']
+    # field names
+fieldsout = ['YY',	'MM',	'DD',	'HH',	'Stat1']
  
-# # data rows of csv file
-# rowsout = [rows]
+# data rows of csv file
+rowsout = [yy,mm,dd,hh]
 
-# # name of csv file
-# csvOut = "csvOutputGS.csv"
+# name of csv file
+csvOut = "csvOutputGS.csv"
  
  
-# # writing to csv file
-# with open(csvOut, 'w') as csvfile:
-#     # creating a csv writer object
-#     csvwriter = csv.writer(csvfile, delimiter = " ") # Tab angepasst 
+# writing to csv file
+with open(csvOut, 'w') as csvfile:
+    # creating a csv writer object
+    csvwriter = csv.writer(csvfile, delimiter = " ") # Tab angepasst 
      
-#     # writing the fields
-#     csvwriter.writerow(fieldsout) 
+    # writing the fields
+    csvwriter.writerow(fieldsout) 
      
-#     # writing the data rows
-#     csvwriter.writerows(rowsout)
+    # writing the data rows
+    csvwriter.writerows(rowsout)
 
 
-# #csvwriter.to_csv(r'"C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Daten/Meteorologie/jamtalhütte_20200401/export_GS_test.csv', index=False, header=True)
+#csvwriter.to_csv(r'"C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Daten/Meteorologie/jamtalhütte_20200401/export_GS_test.csv', index=False, header=True)
 
-# print(csvwriter)
+print(csvwriter)
 
 
 
