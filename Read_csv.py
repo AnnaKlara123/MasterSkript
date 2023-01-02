@@ -12,6 +12,8 @@ yy = []
 mm = []
 dd = []
 hh= []
+Stat1 = []
+ 
  
 # reading csv file
 with open(filename, 'r') as csvfile:
@@ -49,6 +51,7 @@ for row in rows[:100]:
         mm.append(col[4:6])
         dd.append(col[6:8])
         hh.append(col[8:12]) # WICHTIG: Hier nochmal genau schauen, wie ich das in Min umrechne!
+        Stat1.append(col[14:])
         print('yy=', yy,'mm=',mm,'dd=',dd, 'hh=',hh)
 
     
