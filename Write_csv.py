@@ -76,10 +76,10 @@ with open(csvOut, 'w') as csvfile:
     csvwriter = csv.writer(csvfile, delimiter = " ") # Tab angepasst 
      
     # writing the fields
-    csvwriter.writerow(fieldsout) 
+    csvwriter.writerow(fieldsout)
      
     # writing the data rows
-    csvwriter.writerows(list(zip(*[yy, mm, dd, hh, Stat1]))) # Setzt die Liste in richtiges Tabellenformat um
+    csvwriter.writerows(list(zip(*[yy, mm, dd, hh, Stat1]))) # Setzt die Liste in richtiges Tabellenformat um "*" WICHTIG!
 
 
 
