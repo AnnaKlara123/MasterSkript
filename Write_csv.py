@@ -52,7 +52,7 @@ for row in rows[:100]:
         mm.append(col[4:6])
         dd.append(col[6:8])
         hh.append(col[8:12]) # WICHTIG: Hier nochmal genau schauen, wie ich das in Min umrechne!
-        Stat1.append(col[14:]) # Wie bekomme ich ";" weg?
+        Stat1.append(col[15:-1]) # Wie bekomme ich ";" weg?
         #print('stat1=',Stat1)
 
 
@@ -63,7 +63,7 @@ for row in rows[:100]:
 fieldsout = ['YY',	'MM',	'DD',	'HH',	'Stat1']
  
 # data rows of csv file
-rowsout = [yy, mm, dd,hh]
+rowsout = [yy, mm, dd,hh, Stat1]
 
 # name of csv file
 csvOut = "csvOutputGS.csv"
@@ -82,7 +82,7 @@ with open(csvOut, 'w') as csvfile:
 
 
 #csvwriter.to_csv(r'"C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Daten/Meteorologie/jamtalhütte_20200401/export_GS_test.csv', index=False, header=True)
-
+print(Stat1)
 print(csvwriter)
 
 
