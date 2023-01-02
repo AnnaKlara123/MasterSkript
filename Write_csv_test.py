@@ -18,7 +18,7 @@ filename = "university_records.csv"
 # writing to csv file
 with open(filename, 'w') as csvfile:
     # creating a csv writer object
-    csvwriter = csv.writer(csvfile)
+    csvwriter = csv.writer(csvfile, delimiter = " ")
      
     # writing the fields
     csvwriter.writerow(fields)
