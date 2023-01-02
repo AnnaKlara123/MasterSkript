@@ -1,9 +1,10 @@
 # importing csv module 
 # Vorlage: https://www.geeksforgeeks.org/working-csv-files-python/
 import csv
+import pandas as pd
 
 # csv file name
-filename = "C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Daten/Meteorologie/jamtalhütte_20200401/GS_test.csv"
+filename = "C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Daten/Meteorologie/jamtalhütte_20200401/GS_test2.csv"
 
 # initializing the titles and rows list
 fields = []
@@ -52,7 +53,7 @@ for row in rows[:100]:
         mm.append(col[4:6])
         dd.append(col[6:8])
         hh.append(col[8:12]) # WICHTIG: Hier nochmal genau schauen, wie ich das in Min umrechne!
-        Stat1.append(col[15:-1]) # Wie bekomme ich ";" weg?
+        Stat1.append(col[15:]) # Wie bekomme ich ";" weg?
         #print('stat1=',Stat1)
 
 
@@ -81,9 +82,14 @@ with open(csvOut, 'w') as csvfile:
     csvwriter.writerows(rowsout)
 
 
+df = pd.DataFrame(list(zip(*[yy, mm, dd, hh, Stat1]))).add_prefix('Col')
+
+df.to_csv('file.csv', index=False)
+
+print(df)
+
 #csvwriter.to_csv(r'"C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Daten/Meteorologie/jamtalhütte_20200401/export_GS_test.csv', index=False, header=True)
-print(Stat1)
-print(csvwriter)
+#print(csvwriter)
 
 
 
