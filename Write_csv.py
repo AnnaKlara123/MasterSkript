@@ -1,7 +1,7 @@
 # importing csv module 
 # Vorlage: https://www.geeksforgeeks.org/working-csv-files-python/
 import csv
- 
+
 # csv file name
 filename = "C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Daten/Meteorologie/jamtalhütte_20200401/GS_test.csv"
 
@@ -22,15 +22,15 @@ with open(filename, 'r') as csvfile:
         rows.append(row) # Raws werden der vorher erstellten Liste rows = [ ] nacheinander hinzugefügt
  
     # get total number of rows
-    print("Total no. of rows: %d"%(csvreader.line_num))
+    # print("Total no. of rows: %d"%(csvreader.line_num))
 
  
 # printing the field names
 # print('Field names are:' + ', '.join(field for field in fields))
  
 # printing first 5 rows
-print('\nFirst 100 rows are:\n') # \n benutzt man, um zur nächsten Zeile wechseln
-# print(rows[:100]) # gibt die die Werte ohne Zeilenabsatz aus!
+# print('\nFirst 100 rows are:\n') # \n benutzt man, um zur nächsten Zeile wechseln
+# # print(rows[:100]) # gibt die die Werte ohne Zeilenabsatz aus!
 for row in rows[:100]: 
     # parsing each column of a row
     for col in row:
@@ -38,6 +38,31 @@ for row in rows[:100]:
         #print("row are:", row)
         # print("%10s"%col), Gibt die Liste ohne ' ' und [] aus
     #print('\n') # Sorgt nur für Leerzeile 
+
+# ########### CSV WRITE ################
+
+#     # field names
+# fieldsout = ['YY',	'MM',	'DD',	'HH',	'Stat1']
+ 
+# # data rows of csv file
+# rowsout = [ rows]
+ 
+ 
+# # writing to csv file
+# with open(filename, 'w') as csvfile:
+#     # creating a csv writer object
+#     csvwriter = csv.writer(csvfile)
+     
+#     # writing the fields
+#     csvwriter.writerow(fieldsout)
+     
+#     # writing the data rows
+#     csvwriter.writerows(rowsout)
+
+
+# #csvwriter.to_csv(r'"C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Daten/Meteorologie/jamtalhütte_20200401/export_GS_test.csv', index=False, header=True)
+
+# print(csvwriter)
 
 
 
