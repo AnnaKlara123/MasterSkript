@@ -28,14 +28,16 @@ with open(filename, 'r') as csvfile:
 # printing the field names
 # print('Field names are:' + ', '.join(field for field in fields))
  
-# # printing first 5 rows
-# print('\nFirst 100 rows are:\n') # \n benutzt man, um zur nächsten Zeile wechseln
-# for row in rows[:100]:
-#     # parsing each column of a row
-#     for col in row:
-#         print("%10s"%col,end=" "),
-#     print('\n')
-
+# printing first 5 rows
+print('\nFirst 100 rows are:\n') # \n benutzt man, um zur nächsten Zeile wechseln
+# print(rows[:100]) # gibt die die Werte ohne Zeilenabsatz aus!
+for row in rows[:100]: 
+    # parsing each column of a row
+    for col in row:
+        print("col are:",col)  # Hier wäre col und row das Selbe nur anders "verpackt"? WHY? 
+        #print("row are:", row)
+        # print("%10s"%col), Gibt die Liste ohne ' ' und [] aus
+    #print('\n') # Sorgt nur für Leerzeile 
 
 
 
