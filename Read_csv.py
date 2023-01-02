@@ -21,14 +21,14 @@ with open(filename, 'r') as csvfile:
     for row in csvreader:
         rows.append(row) # Raws werden der vorher erstellten Liste rows = [ ] nacheinander hinzugefügt
  
-    # get total number of rows
-    print("Total no. of rows: %d"%(csvreader.line_num))
+    ### get total number of rows
+    ## print("Total no. of rows: %d"%(csvreader.line_num))
 
  
-# printing the field names
-# print('Field names are:' + ', '.join(field for field in fields))
+## printing the field names
+## print('Field names are:' + ', '.join(field for field in fields))
  
-# printing first 5 rows
+## printing first 5 rows
 print('\nFirst 100 rows are:\n') # \n benutzt man, um zur nächsten Zeile wechseln
 # print(rows[:100]) # gibt die die Werte ohne Zeilenabsatz aus!
 for row in rows[:100]: 
