@@ -79,21 +79,23 @@ with open(csvOut, 'w') as csvfile:
     csvwriter.writerow(fieldsout)
      
     # writing the data rows
-    csvwriter.writerows(list(zip(*[yy, mm, dd, hh, Stat1]))) # Setzt die Liste in richtiges Tabellenformat um "*" WICHTIG!
-
+    csvwriter.writerows(list(zip(*[yy, mm, dd, hh, Stat1]))) # Setzt die Liste in richtiges Tabellenformat um "*" WICHTIG! 
 
 ########## converting csv file to data frame ################
 
 
 df  = pd.DataFrame(list(zip(yy,mm,dd,hh, Stat1)), columns = ['YY',	'MM',	'DD',	'HH',	'Stat1'])
 
-#lst = [list(zip(*[yy, mm, dd, hh, Stat1]))]
-#df = pd.DataFrame(lst, columns = ['Name'])
 
+
+# lst = [list(zip(*[yy, mm, dd, hh, Stat1]))]
+# columns = ['YY',	'MM',	'DD',	'HH',	'Stat1']
+# df  = pd.DataFrame(lst,columns )
 print(df)
 
 #print(csvwriter)
 
+##### NEXT: die Headerzeilen mit Koordinate & Höhe etc. hinzufügen! ######
 
 
     
