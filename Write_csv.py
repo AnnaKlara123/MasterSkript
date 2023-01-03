@@ -11,7 +11,7 @@ fields = []
 rows = []
 yy = []
 mm = []
-dd = []
+dd = []                
 hh= []
 Stat1 = []
  
@@ -21,7 +21,7 @@ with open(filename, 'r') as csvfile:
     csvreader = csv.reader(csvfile, delimiter = " ")
      
     # extracting field names/Headers through first row 
-    fields = next(csvreader)
+    ###fields = next(csvreader)
  
     # extracting each data row one by one
     for row in csvreader:
@@ -41,7 +41,7 @@ with open(filename, 'r') as csvfile:
 
 col = []
 
-for row in rows[:100]: 
+for row in rows[:300]: 
     # parsing each column of a row
     for col in row:
                         #print(col)  # Hier wäre col und row das Selbe nur anders "verpackt"? WHY? 
@@ -49,13 +49,13 @@ for row in rows[:100]:
                         #print("%10s"%col)  #Gibt die Liste ohne ' ' und [] aus
                         #print('\n') # Sorgt nur für Leerzeile 
         #yy= (col[:4]) ist nur für erste Zeile durch .append liste erzeugen
+        col = col.replace(",", ".")  # replace comma with points
         yy.append(col[:4])
         mm.append(col[4:6])
         dd.append(col[6:8])
         hh.append(col[8:12]) # WICHTIG: Hier nochmal genau schauen, wie ich das in Min umrechne!
-        Stat1.append(col[15:]) # Wie bekomme ich ";" weg?
-        #print('stat1=',Stat1)
-
+        Stat1.append(col[15:]) 
+        print('stat1=',Stat1)
 
 
 ########### CSV WRITE ################
@@ -80,6 +80,7 @@ with open(csvOut, 'w') as csvfile:
      
     # writing the data rows
     csvwriter.writerows(list(zip(*[yy, mm, dd, hh, Stat1]))) # Setzt die Liste in richtiges Tabellenformat um "*" WICHTIG! 
+
 
 ########## converting csv file to data frame ################
 

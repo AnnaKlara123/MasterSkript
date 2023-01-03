@@ -20,8 +20,8 @@ with open(filename, 'r') as csvfile:
     # creating a csv reader object
     csvreader = csv.reader(csvfile, delimiter = " ")
      
-    # extracting field names/Headers through first row 
-    fields = next(csvreader)
+    ## extracting field names/Headers through first row 
+    ##fields = next(csvreader)
  
     # extracting each data row one by one
     for row in csvreader:
@@ -41,7 +41,7 @@ with open(filename, 'r') as csvfile:
 
 col = []
 
-for row in rows[:100]: 
+for row in rows[:300]: 
     # parsing each column of a row
     for col in row:
                         #print(col)  # Hier wäre col und row das Selbe nur anders "verpackt"? WHY? 
@@ -49,6 +49,7 @@ for row in rows[:100]:
                         #print("%10s"%col)  #Gibt die Liste ohne ' ' und [] aus
                         #print('\n') # Sorgt nur für Leerzeile 
         #yy= (col[:4]) ist nur für erste Zeile durch .append liste erzeugen
+        col = col.replace(",", ".")  # replace comma with points
         yy.append(col[:4])
         mm.append(col[4:6])
         dd.append(col[6:8])
@@ -71,7 +72,7 @@ data_dict = {'YY': yy,
 data = pd.DataFrame(data_dict)
  
 # Write to CSV file
-data.to_csv("dpCSVfile.csv", sep=' ')
+data.to_csv("dpCSVfile.csv", sep=' ', index=False)
  
 # Print the output.
 print(data)
