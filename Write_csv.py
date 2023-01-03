@@ -49,13 +49,13 @@ for row in rows[:300]:
                         #print("%10s"%col)  #Gibt die Liste ohne ' ' und [] aus
                         #print('\n') # Sorgt nur für Leerzeile 
         #yy= (col[:4]) ist nur für erste Zeile durch .append liste erzeugen
-        col = col.replace(",", ".")  # replace comma with points
+        col = col.replace(",", ".")                         # replace comma with points
+        col=col.strip()                                     # Whitespaces am Anfang und Ende einer Zeile entfernen
         yy.append(col[:4])
         mm.append(col[4:6])
         dd.append(col[6:8])
-        hh.append(col[8:12]) # WICHTIG: Hier nochmal genau schauen, wie ich das in Min umrechne!
+        hh.append(col[8:12])                                 # WICHTIG: Hier nochmal genau schauen, wie ich das in Min umrechne!
         Stat1.append(col[15:]) 
-        print('stat1=',Stat1)
 
 
 ########### CSV WRITE ################
@@ -66,6 +66,8 @@ fieldsout = ['YY',	'MM',	'DD',	'HH',	'Stat1']
 # data rows of csv file
 rowsout = [yy, mm, dd,hh, Stat1]
 
+# print(rowsout)
+
 # name of csv file
 csvOut = "csvOutputGS.csv"
  
@@ -73,26 +75,26 @@ csvOut = "csvOutputGS.csv"
 # writing to csv file
 with open(csvOut, 'w') as csvfile:
     # creating a csv writer object
-    csvwriter = csv.writer(csvfile, delimiter = " ") # Tab angepasst 
-     
+    csvwriter = csv.writer(csvfile, delimiter = " ")            # Tab angepasst 
+
+    
     # writing the fields
     csvwriter.writerow(fieldsout)
      
     # writing the data rows
-    csvwriter.writerows(list(zip(*[yy, mm, dd, hh, Stat1]))) # Setzt die Liste in richtiges Tabellenformat um "*" WICHTIG! 
+    csvwriter.writerows(list(zip(*[yy, mm, dd, hh, Stat1])))    # Setzt die Liste in richtiges Tabellenformat um "*" WICHTIG! 
 
 
 ########## converting csv file to data frame ################
 
+# df  = pd.DataFrame(list(zip(yy,mm,dd,hh, Stat1)), columns = ['YY',	'MM',	'DD',	'HH',	'Stat1'])
 
-df  = pd.DataFrame(list(zip(yy,mm,dd,hh, Stat1)), columns = ['YY',	'MM',	'DD',	'HH',	'Stat1'])
-
-
+#print (df)
 
 # lst = [list(zip(*[yy, mm, dd, hh, Stat1]))]
 # columns = ['YY',	'MM',	'DD',	'HH',	'Stat1']
 # df  = pd.DataFrame(lst,columns )
-print(df)
+#print(df)
 
 #print(csvwriter)
 

@@ -45,12 +45,8 @@ for row in rows[:300]:
 
 
 ############## Mehrere Überschirften Test #########################
-df = pd.DataFrame(columns = ["id0", "id1", "id2"])
-df.loc[2012]= [24, 25, 26]
-df.loc[2013]= [28, 28, 29]
-df.loc[2014]= [30, 31, 32]
 
-df.columns = pd.MultiIndex.from_arrays([df.columns, [66,67,68], [110,111,112]],
-                                       names=['id','lat','lon'])
+
+df  = pd.DataFrame(list(zip(yy,mm,dd,hh, Stat1)), columns = ['YY',	'MM',	'DD',	'HH',	'Stat1'])
 
 print(df)

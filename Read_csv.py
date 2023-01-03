@@ -47,6 +47,8 @@ for row in rows[:100]:
                         #print("%10s"%col)  #Gibt die Liste ohne ' ' und [] aus
                         #print('\n') # Sorgt nur für Leerzeile 
         #yy= (col[:4]) ist nur für erste Zeile durch .append liste erzeugen
+        col = col.replace(",", ".")                         # replace comma with points
+        col=col.strip()                                     # Whitespaces am Anfang und Ende einer Zeile entfernen
         yy.append(col[:4])
         mm.append(col[4:6])
         dd.append(col[6:8])
