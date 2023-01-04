@@ -60,8 +60,11 @@ for row in rows[:300]:
 
 ########### CSV WRITE ################
 
+hight = [1, 2, 3]
+
     # field names
 fieldsout = ['YY',	'MM',	'DD',	'HH',	'Stat1']
+fieldsout_hight = ['YY',	'MM',	'DD',	'HH', hight[:1]	]   # Höhe muss aus Statonswert noch eingelesen werden, dann via Variable eingefügt
  
 # data rows of csv file
 rowsout = [yy, mm, dd,hh, Stat1]
@@ -76,10 +79,10 @@ csvOut = "csvOutputGS.csv"
 with open(csvOut, 'w') as csvfile:
     # creating a csv writer object
     csvwriter = csv.writer(csvfile, delimiter = " ")            # Tab angepasst 
-
     
     # writing the fields
     csvwriter.writerow(fieldsout)
+    csvwriter.writerow(fieldsout_hight)
      
     # writing the data rows
     csvwriter.writerows(list(zip(*[yy, mm, dd, hh, Stat1])))    # Setzt die Liste in richtiges Tabellenformat um "*" WICHTIG! 
