@@ -95,7 +95,7 @@ csvOut = "csvOutputGS.csv"
  
  
 # writing to csv file
-with open(csvOut, 'w') as csvfile:
+with open(csvOut, 'w', newline='') as csvfile:
     # creating a csv writer object
     csvwriter = csv.writer(csvfile, delimiter = " ")            # Tab angepasst 
     
