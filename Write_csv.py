@@ -70,16 +70,16 @@ for row in rows[:300]:
             ## or integer) separated by at least one space or tab stop.
 
 
-hight = [1, 2, 3]       # Höhe einfügen
-Xcoord=  [1, 2, 3]	    # Koordinaten einfügen! 
-Ycoord=  [1, 2, 3]	 
-StatIdentefier = [1,2,3] # Identefier vergeben
+hight = ['hight', 2, 3]       # Höhe einfügen
+Xcoord=  ['xcoord', 2, 3]	    # Koordinaten einfügen! 
+Ycoord=  ['ycoord', 2, 3]	 
+StatIdentefier = ['stationidentefyer',2,3] # Identefier vergeben
 Stat = [Stat1, 'Stat2', 'Stat3' ]
 
 
 # field headers 
 
-# fieldsout_info = ['give some Information']
+fieldsout_info = ['give some Information']
 fieldsout_hight = ['YY',	'MM',	'DD',	'HH', hight[:1]	]   # Höhe muss aus Statonswert noch eingelesen werden, dann via Variable eingefügt
 fieldsout_Xcoordinate = ['YY',	'MM',	'DD',	'HH', Xcoord[:1]	]  
 fieldsout_Ycoordinate = ['YY',	'MM',	'DD',	'HH', Ycoord[:1]	]
@@ -100,7 +100,7 @@ with open(csvOut, 'w', newline='') as csvfile:
     csvwriter = csv.writer(csvfile, delimiter = " ")            # Tab angepasst 
     
     # writing the fields
-    #csvwriter.writerow(fieldsout_info )
+    csvwriter.writerow(fieldsout_info )
     csvwriter.writerow(fieldsout_hight)
     csvwriter.writerow(fieldsout_Xcoordinate)
     csvwriter.writerow(fieldsout_Ycoordinate)
