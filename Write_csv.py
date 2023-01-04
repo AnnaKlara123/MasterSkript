@@ -60,12 +60,31 @@ for row in rows[:300]:
 
 ########### CSV WRITE ################
 
-hight = [1, 2, 3]
+###### Infos zur Struktur:  ##########
+            ## Row 1: comment
+            ## Row 2: after „yy mm dd hh“: altitudes for each station (int or float ), basin area for hydrologic data
+            ## Row 3: after „yy mm dd hh“: x-coordinates of the stations (integer or floating point values)
+            ## Row 4: after „yy mm dd hh“: y-coordinates of the stations (integer or floating point values)
+            ## Row 5: after „yy mm dd hh“: short identifier for each station e.g. 6-chars
+            ## beginning with Row 6: actual date (e.g. 1984 01 01 24), then for each station one value (real
+            ## or integer) separated by at least one space or tab stop.
 
-    # field names
-fieldsout = ['YY',	'MM',	'DD',	'HH',	'Stat1']
+
+hight = [1, 2, 3]       # Höhe einfügen
+Xcoord=  [1, 2, 3]	    # Koordinaten einfügen! 
+Ycoord=  [1, 2, 3]	 
+StatIdentefier = [1,2,3] # Identefier vergeben
+Stat = [Stat1, 'Stat2', 'Stat3' ]
+
+
+# field headers 
+
+# fieldsout_info = ['give some Information']
 fieldsout_hight = ['YY',	'MM',	'DD',	'HH', hight[:1]	]   # Höhe muss aus Statonswert noch eingelesen werden, dann via Variable eingefügt
- 
+fieldsout_Xcoordinate = ['YY',	'MM',	'DD',	'HH', Xcoord[:1]	]  
+fieldsout_Ycoordinate = ['YY',	'MM',	'DD',	'HH', Ycoord[:1]	]
+fieldsout_StatIdentefier = ['YY',	'MM',	'DD',	'HH', StatIdentefier[:1]	]
+fieldsout_header = ['YY',	'MM',	'DD',	'HH',	'Stat1']
 # data rows of csv file
 rowsout = [yy, mm, dd,hh, Stat1]
 
@@ -81,8 +100,12 @@ with open(csvOut, 'w') as csvfile:
     csvwriter = csv.writer(csvfile, delimiter = " ")            # Tab angepasst 
     
     # writing the fields
-    csvwriter.writerow(fieldsout)
+    #csvwriter.writerow(fieldsout_info )
     csvwriter.writerow(fieldsout_hight)
+    csvwriter.writerow(fieldsout_Xcoordinate)
+    csvwriter.writerow(fieldsout_Ycoordinate)
+    csvwriter.writerow(fieldsout_StatIdentefier)
+    csvwriter.writerow(fieldsout_header)
      
     # writing the data rows
     csvwriter.writerows(list(zip(*[yy, mm, dd, hh, Stat1])))    # Setzt die Liste in richtiges Tabellenformat um "*" WICHTIG! 
