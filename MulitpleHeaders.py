@@ -46,7 +46,10 @@ for row in rows[:300]:
 
 ############## Mehrere Überschirften Test #########################
 
+headerList = ['YY',	'MM',	'DD',	'HH',	'Stat1' ]
 
-df  = pd.DataFrame(list(zip(yy,mm,dd,hh, Stat1)), columns = ['YY',	'MM',	'DD',	'HH',	'Stat1'])
+df  = pd.DataFrame(list(zip(yy,mm,dd,hh, Stat1)))
+
+df.columns = headerList 
 
 print(df)
