@@ -75,7 +75,7 @@ df["YY"] = df['YY'].astype(int)
 df["MM"] = df['MM'].astype(int)
 df["DD"] = df['DD'].astype(int)
 df["HH"] = df['HH'].astype(int)
-# df["Stat1"] = df['Stat1'].astype(int)
+##df["Stat1"] = df['Stat1'].astype(int)
 
 #### ALternativ:  df  = pd.DataFrame(list(zip(yy,mm,dd,hh, Stat1)), columns = ['YY',	'MM',	'DD',	'HH',	'Stat1'])  ###
 df.to_csv("dfCSVfile.csv", sep=' ', index=False, header= None)
