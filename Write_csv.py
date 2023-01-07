@@ -5,6 +5,9 @@ import pandas as pd
 
 # csv file name
 filename = "C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Daten/Meteorologie/jamtalhütte_20200401/GS_test2.csv"
+###### Hier später über alle Files in einem Ordner iterieren lassen! ####### --> Siehe Python Kurs 
+
+
 
 # initializing the titles and rows list
 fields = []
@@ -109,7 +112,6 @@ with open(csvOut, 'w', newline='') as csvfile:
      
     # writing the data rows
     csvwriter.writerows(list(zip(*[yy, mm, dd, hh, Stat1])))    # Setzt die Liste in richtiges Tabellenformat um "*" WICHTIG! 
-
 
 ########## converting csv file to data frame ################
 
