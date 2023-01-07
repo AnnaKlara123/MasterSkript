@@ -1,5 +1,4 @@
 # my_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
-from functions import *
 import csv
 import pandas as pd
 import numpy as np
@@ -36,15 +35,20 @@ for row in rows[:300]:
         mm.append(col[4:6])
         dd.append(col[6:8])
         hh.append(col[8:12]) # WICHTIG: Hier nochmal genau schauen, wie ich das in Min umrechne!
-        Stat1.append(col[15:]) # Wie bekomme ich ";" weg?
+        Stat1.append(col[15:])
 
 
+def Average(lst):
+    return sum(lst) / len(lst)
+
+# Driver Code
+lst = input(Stat1)
+#print("Liste ist:",lst)
+average = Average(lst) 
+#print("average ist:", average)   
 
 step = 10
 for i, _ in enumerate(Stat1[::step]):               # Sagt es soll von 0-9 über den Code laufen
     sub_list = Stat1[i*10:] if (i+1)*10 > len(Stat1) else Stat1[i*10:(i+1)*10]  # Condition if the len(my_list) % step != 0
-    print(sub_list)
-#     Stat1_av = [sub_list/10]
-#     Stat1_av.append(sub_list)
-
-# print(Stat1_av)
+    
+    #print(sub_list)
