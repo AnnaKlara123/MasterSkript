@@ -43,8 +43,6 @@ for row in rows[:300]:
 step = 10
 for i, _ in enumerate(Stat1[::step]):               # Sagt es soll von 0-9 über den Code laufen
     sub_list = Stat1[i*10:] if (i+1)*10 > len(Stat1) else Stat1[i*10:(i+1)*10]  # Condition if the len(my_list) % step != 0
-    # print (sum(sub_list)/float(len(sub_list)))
-    #sub_list =  np.array(sub_list)
     print(sub_list)
 #     Stat1_av = [sub_list/10]
 #     Stat1_av.append(sub_list)
