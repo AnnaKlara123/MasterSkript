@@ -5,6 +5,7 @@ import pandas as pd
 
 # csv file name
 filename = "C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Daten/Meteorologie/jamtalhütte_20200401/GS_test2.csv"
+###### Hier später über alle Files in einem Ordner iterieren lassen! ####### --> Siehe Python Kurs 
 
 # initializing the titles and rows list
 fields = []
@@ -67,12 +68,15 @@ data_dict = {'YY': yy,
              'HH': hh,
               
              'Stat1': Stat1}
+
+# adding header
+headerList = ['YY',	'MM',	'DD',	'HH',	'Stat1' ]
  
 # Create DataFrame
 data = pd.DataFrame(data_dict)
  
 # Write to CSV file
-data.to_csv("dpCSVfile.csv", sep=' ', index=False)
+data.to_csv("dpCSVfile.csv", sep=' ', header=headerList, index=False)
  
 # Print the output.
 print(data)
