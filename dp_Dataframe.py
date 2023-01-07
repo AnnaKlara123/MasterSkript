@@ -42,15 +42,33 @@ for row in rows[:300]:
         hh.append(col[8:12]) # WICHTIG: Hier nochmal genau schauen, wie ich das in Min umrechne!
         Stat1.append(col[15:]) 
 
+########### CSV WRITE ################
+
+###### Infos zur Struktur:  ##########
+            ## Row 1: comment
+            ## Row 2: after „yy mm dd hh“: altitudes for each station (int or float ), basin area for hydrologic data
+            ## Row 3: after „yy mm dd hh“: x-coordinates of the stations (integer or floating point values)
+            ## Row 4: after „yy mm dd hh“: y-coordinates of the stations (integer or floating point values)
+            ## Row 5: after „yy mm dd hh“: short identifier for each station e.g. 6-chars
+            ## beginning with Row 6: actual date (e.g. 1984 01 01 24), then for each station one value (real
+            ## or integer) separated by at least one space or tab stop.
+
+
+hight = ('hight', 2, 3)      # Höhe einfügen
+Xcoord= ('xcoord', 2, 3)    # Koordinaten einfügen! 
+Ycoord=  ['ycoord', 2, 3]	 
+StatIdentefier = ['stationidentefyer',2,3] # Identefier vergeben
+Stat = [Stat1, 'Stat2', 'Stat3' ]
+
 
 
 ############## Dataframe erstellen #########################
 
-headerList = ['YY',	'MM',	'DD',	'HH',	'Stat1' ]       # Überschriften festlegen
+headerList = [['YY',	'MM',	'DD',	'HH',	'Stat1' ], ['YY',	'MM',	'DD',	'HH',  hight[:1]], ['YY',	'MM',	'DD',	'HH', Xcoord[:1]], ['YY',	'MM',	'DD',	'HH', 'xCord'] ,['YY',	'MM',	'DD',	'HH', 'StationID'] ]       # Überschriften festlegen
 df  = pd.DataFrame(list(zip(yy,mm,dd,hh, Stat1)))           # Dataframe erstellen. 
 df.columns = headerList                                     # Header df hinzufügen
 
 #### ALternativ:  df  = pd.DataFrame(list(zip(yy,mm,dd,hh, Stat1)), columns = ['YY',	'MM',	'DD',	'HH',	'Stat1'])  ###
-df.to_csv("dfCSVfile.csv", sep=' ', header=headerList, index=False)
+df.to_csv("dfCSVfile.csv", sep=' ', index=False)
  
 print(df)
