@@ -56,15 +56,18 @@ for row in rows[:300]:
 
 hight = ('hight', 2, 3)      # Höhe einfügen
 Xcoord= ('xcoord', 2, 3)    # Koordinaten einfügen! 
-Ycoord=  ['ycoord', 2, 3]	 
-StatIdentefier = ['stationidentefyer',2,3] # Identefier vergeben
+Ycoord=  ('ycoord', 2, 3) 
+StatIdentefier = ('stationidentefyer',2,3) # Identefier vergeben
 Stat = [Stat1, 'Stat2', 'Stat3' ]
 
 
 
 ############## Dataframe erstellen #########################
 
-headerList = [['YY',	'MM',	'DD',	'HH',	'Stat1' ], ['YY',	'MM',	'DD',	'HH',  hight[:1]], ['YY',	'MM',	'DD',	'HH', Xcoord[:1]], ['YY',	'MM',	'DD',	'HH', 'xCord'] ,['YY',	'MM',	'DD',	'HH', 'StationID'] ]       # Überschriften festlegen
+### Headerliste erstellen ####  -----> \ Als Zeilenumbruch im Code genutzt
+headerList = [['YY',	'MM',	'DD',	'HH',	'Stat1' ], ['YY',	'MM',	'DD',	'HH',  hight[0]], \
+['YY',	'MM',	'DD',	'HH', Xcoord[0]], ['YY',	'MM',	'DD',	'HH',Ycoord[0] ] ,['YY',	'MM',	'DD',	'HH',  StatIdentefier[0]],\
+['YY',	'MM',	'DD',	'HH',	'Stat1' ] ]       # Überschriften festlegen
 df  = pd.DataFrame(list(zip(yy,mm,dd,hh, Stat1)))           # Dataframe erstellen. 
 df.columns = headerList                                     # Header df hinzufügen
 
