@@ -68,8 +68,14 @@ for row in rows[:300]:
 # headerList = [['YY',	'MM',	'DD',	'HH',	'Stat1' ], ['YY',	'MM',	'DD',	'HH',  hight[0]], \
 # ['YY',	'MM',	'DD',	'HH', Xcoord[0]], ['YY',	'MM',	'DD',	'HH',Ycoord[0] ] ,['YY',	'MM',	'DD',	'HH',  StatIdentefier[0]],\
 # ['YY',	'MM',	'DD',	'HH',	'Stat1' ] ]       # Überschriften festlegen
-df  = pd.DataFrame(list(zip(yy,mm,dd,hh, Stat1)))           # Dataframe erstellen. 
-#df.columns = headerList                                     # Header df hinzufügen
+df  = pd.DataFrame(list(zip(yy,mm,dd,hh, Stat1)), columns = ['YY',	'MM',	'DD',	'HH',	'Stat1'])          # Dataframe erstellen. 
+#df.columns = headerList                                     # Header df hinzufügen#
+
+df["YY"] = df['YY'].astype(int)
+df["MM"] = df['MM'].astype(int)
+df["DD"] = df['DD'].astype(int)
+df["HH"] = df['HH'].astype(int)
+df["Stat1"] = df['Stat1'].astype(int)
 
 #### ALternativ:  df  = pd.DataFrame(list(zip(yy,mm,dd,hh, Stat1)), columns = ['YY',	'MM',	'DD',	'HH',	'Stat1'])  ###
 df.to_csv("dfCSVfile.csv", sep=' ', index=False, header= None)
