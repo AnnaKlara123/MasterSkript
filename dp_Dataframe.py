@@ -2,6 +2,7 @@
 # Vorlage: https://www.geeksforgeeks.org/working-csv-files-python/
 import csv
 import pandas as pd
+import numpy as np
 
 # csv file name
 filename = "C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Daten/Meteorologie/jamtalhütte_20200401/GS_test2.csv"
@@ -9,6 +10,7 @@ filename = "C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Daten/Meteorol
 # initializing the titles and rows list
 fields = []
 rows = []
+date = []
 yy = []
 mm = []
 dd = []
@@ -36,12 +38,15 @@ for row in rows[:300]:
     for col in row:
         #yy= (col[:4]) ist nur für erste Zeile durch .append liste erzeugen
         col = col.replace(",", ".")  # replace comma with points
-        yy.append(col[:4])
-        mm.append(col[4:6])
-        dd.append(col[6:8])
+        date.append(col[:8])
+        # yy.append(col[:4])
+        # mm.append(col[4:6])
+        # dd.append(col[6:8])
         hh.append(col[8:12]) # WICHTIG: Hier nochmal genau schauen, wie ich das in Min umrechne!
         Stat1.append(col[15:]) 
-
+            ########### Ist es Sinnvoll die Listen in Arrays zu ändern? ############
+            ## yy = np.array((yy))    
+            ## Stat1 = np.array((Stat1))
 ########### CSV WRITE ################
 
 ###### Infos zur Struktur:  ##########
@@ -68,17 +73,18 @@ for row in rows[:300]:
 # headerList = [['YY',	'MM',	'DD',	'HH',	'Stat1' ], ['YY',	'MM',	'DD',	'HH',  hight[0]], \
 # ['YY',	'MM',	'DD',	'HH', Xcoord[0]], ['YY',	'MM',	'DD',	'HH',Ycoord[0] ] ,['YY',	'MM',	'DD',	'HH',  StatIdentefier[0]],\
 # ['YY',	'MM',	'DD',	'HH',	'Stat1' ] ]       # Überschriften festlegen
-df  = pd.DataFrame(list(zip(yy,mm,dd,hh, Stat1)), columns = ['YY',	'MM',	'DD',	'HH',	'Stat1'])          # Dataframe erstellen. 
+df  = pd.DataFrame(list(zip(date,hh, Stat1)), columns = ['Date',	'HH',	'Stat1'])          # Dataframe erstellen. 
 #df.columns = headerList                                     # Header df hinzufügen#
+df['date'] = pd.to_datetime(df['Date'])
 
-df["YY"] = df['YY'].astype(int)
-df["MM"] = df['MM'].astype(int)
-df["DD"] = df['DD'].astype(int)
-df["HH"] = df['HH'].astype(int)
-##df["Stat1"] = df['Stat1'].astype(int)
+# df["YY"] = df['YY'].astype(int)
+# df["MM"] = df['MM'].astype(int)
+# df["DD"] = df['DD'].astype(int)
+# df["HH"] = df['HH'].astype(int)
+# df["Stat1"] = df['Stat1'].astype(float) ##### --> WaSiM nimmt nur Integers. Wie mache ich das dann hier?
 
 #### ALternativ:  df  = pd.DataFrame(list(zip(yy,mm,dd,hh, Stat1)), columns = ['YY',	'MM',	'DD',	'HH',	'Stat1'])  ###
-df.to_csv("dfCSVfile.csv", sep=' ', index=False, header= None)
+df.to_csv("dfCSVfile.csv", sep=' ', index=False)
 
 print(df.dtypes)
 # print(df)
