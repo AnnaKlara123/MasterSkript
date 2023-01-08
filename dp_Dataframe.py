@@ -10,7 +10,7 @@ filename = "C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Daten/Meteorol
 # initializing the titles and rows list
 fields = []
 rows = []
-date = []
+date = []                                                     # Datetime 
 yy = []
 mm = []
 dd = []
@@ -38,11 +38,11 @@ for row in rows[:300]:
     for col in row:
         #yy= (col[:4]) ist nur für erste Zeile durch .append liste erzeugen
         col = col.replace(",", ".")  # replace comma with points
-        date.append(col[:8])
+        date.append(col[:8])                               # Datetime vorbereiten 
         # yy.append(col[:4])
         # mm.append(col[4:6])
         # dd.append(col[6:8])
-        hh.append(col[8:12]) # WICHTIG: Hier nochmal genau schauen, wie ich das in Min umrechne!
+        hh.append(col[8:12])                              # WICHTIG: Hier nochmal genau schauen, wie ich das in Min umrechne!
         Stat1.append(col[15:]) 
             ########### Ist es Sinnvoll die Listen in Arrays zu ändern? ############
             ## yy = np.array((yy))    
@@ -73,9 +73,9 @@ for row in rows[:300]:
 # headerList = [['YY',	'MM',	'DD',	'HH',	'Stat1' ], ['YY',	'MM',	'DD',	'HH',  hight[0]], \
 # ['YY',	'MM',	'DD',	'HH', Xcoord[0]], ['YY',	'MM',	'DD',	'HH',Ycoord[0] ] ,['YY',	'MM',	'DD',	'HH',  StatIdentefier[0]],\
 # ['YY',	'MM',	'DD',	'HH',	'Stat1' ] ]       # Überschriften festlegen
-df  = pd.DataFrame(list(zip(date,hh, Stat1)), columns = ['Date',	'HH',	'Stat1'])          # Dataframe erstellen. 
-#df.columns = headerList                                     # Header df hinzufügen#
-df['date'] = pd.to_datetime(df['Date'])
+df  = pd.DataFrame(list(zip(date,hh, Stat1)), columns = ['Date',	'HH',	'Stat1'])          # Dataframe erstellen. (date durch: 'YY',	'MM',	'DD' ersetzen )
+#df.columns = headerList                                                                       # Header df hinzufügen#
+df['date'] = pd.to_datetime(df['Date'])                                                        # Date time hinzufügen
 
 # df["YY"] = df['YY'].astype(int)
 # df["MM"] = df['MM'].astype(int)
