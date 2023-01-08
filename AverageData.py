@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 
 ####### csv file name  #####
-filename = "C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Daten/Meteorologie/jamtalhütte_20200401/GS_test2.csv"
+filename = "C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Daten/Meteorologie/jamtalhütte_20200401/N1m_test.csv"
 ###### Hier später über alle Files in einem Ordner iterieren lassen! ####### --> Siehe Python Kurs 
 
 ###### initializing the titles and rows list #####
@@ -73,10 +73,11 @@ for i, _ in enumerate(Stat1[::step]):               # Sagt es soll von 0-9 über
     print("average ist:", average)
     averages.append(average)  
 print("the average of GS per hour is:", averages)
-#  sub_listsarray= np.array(sub_lists, dtype=float)
 
 
-
-
-
-#print('Sublists = ', sub_lists)
+####### ----> Next Step: csv file schreiben, welches nur den Durchschnittswert pro Stunde enthält. Liste wird hierdurch kürzer.
+####### Falsche Messwerte durch NoData Werte ersetzen
+####### Herausfinden wie WaSiM kürzere zeitabstände berechnet (S.282 im Skript). Schauen wieviel davon WaSim Selbst rechnen kann.
+####### über mehrere Datensätze in Ordner iterieren (alle .csv  oder .ex. daten) mithife von If - loop
+####### Niederschläge müssen summiert werden, daher formel für Sum erstellen
+#######
