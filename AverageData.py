@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 
 ####### csv file name  #####
-filename = "C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Daten/Meteorologie/jamtalhütte_20200401/N1m_test.csv"
+filename = "C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Daten/Meteorologie/jamtalhütte_20200401/GS_test2.csv"
 ###### Hier später über alle Files in einem Ordner iterieren lassen! ####### --> Siehe Python Kurs 
 
 ###### initializing the titles and rows list #####
