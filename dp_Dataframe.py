@@ -47,6 +47,32 @@ for row in rows[:300]:
             ########### Ist es Sinnvoll die Listen in Arrays zu ändern? ############
             ## yy = np.array((yy))    
             ## Stat1 = np.array((Stat1))
+
+
+
+####### Aus Str. Int machen #######
+yy = [int(x) for x in yy]
+mm = [int(x) for x in mm]
+dd = [int(x) for x in dd]
+hh= [int(x) for x in hh]
+Stat1 = [float(x) for x in Stat1]
+
+
+# Replace Values in a List using For Loop
+  
+# define list
+l = Stat1
+  
+for i in range(len(l)):
+  
+    # replace hardik with shardul
+    if l[i] == -8.81057:
+        l[i] = -9999
+print("Liste Stat1 = ", l)  
+
+Stat1 = l
+
+             
 ########### CSV WRITE ################
 
 ###### Infos zur Struktur:  ##########
@@ -74,8 +100,10 @@ for row in rows[:300]:
 # ['YY',	'MM',	'DD',	'HH', Xcoord[0]], ['YY',	'MM',	'DD',	'HH',Ycoord[0] ] ,['YY',	'MM',	'DD',	'HH',  StatIdentefier[0]],\
 # ['YY',	'MM',	'DD',	'HH',	'Stat1' ] ]       # Überschriften festlegen
 df  = pd.DataFrame(list(zip(date,hh, Stat1)), columns = ['Date',	'HH',	'Stat1'])          # Dataframe erstellen. (date durch: 'YY',	'MM',	'DD' ersetzen )
+# df.replace(to_replace= -8.81057 ,value= -9999 )    
 #df.columns = headerList                                                                       # Header df hinzufügen#
 df['date'] = pd.to_datetime(df['Date'])                                                        # Date time hinzufügen
+                                            # False Werte durch -9999 NoData ersetzt                                                   
 
 # df["YY"] = df['YY'].astype(int)
 # df["MM"] = df['MM'].astype(int)
