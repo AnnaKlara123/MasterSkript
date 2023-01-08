@@ -37,7 +37,13 @@ for row in rows[:300]:
         hh.append(col[8:12]) # WICHTIG: Hier nochmal genau schauen, wie ich das in Min umrechne!
         Stat1.append(col[15:])
 
-
+yy = [int(x) for x in yy]
+mm = [int(x) for x in mm]
+dd = [int(x) for x in dd]
+hh= [int(x) for x in hh]
+Stat1 = [float(x) for x in Stat1]
+ 
+# print("type of dd element is:", type(Stat1[1])) ---> Elemente werden als String eingelesen
 # yyArray = np.array(yy, dtype=int)
 # Stat1Array = np.array(Stat1, dtype=float)
 
@@ -46,15 +52,22 @@ def Average(lst):
 
 step = 10
 sub_lists = []
+averages = []
 
 for i, _ in enumerate(Stat1[::step]):               # Sagt es soll von 0-9 über den Code laufen
     sub_list = Stat1[i*10:] if (i+1)*10 > len(Stat1) else Stat1[i*10:(i+1)*10]  # Condition if the len(my_list) % step != 0
     sub_lists.append(sub_list)
-# Driver Code
-#lst = input(sub_list)
-#print("Liste ist:",lst)
-# average = Average(lst) 
-# print("average ist:", average)  
+    #### Driver Code
+    lst = sub_list
+    print("Liste ist:",lst)
+    average = Average(lst) 
+    print("average ist:", average)
+    averages.append(average)  
+print("the average of GS per hour is:", averages)
+#  sub_listsarray= np.array(sub_lists, dtype=float)
 
 
-print('Sublists = ', sub_lists)
+
+
+
+#print('Sublists = ', sub_lists)
