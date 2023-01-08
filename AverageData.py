@@ -38,17 +38,23 @@ for row in rows[:300]:
         Stat1.append(col[15:])
 
 
-def Average(lst):
-    return sum(lst) / len(lst)
+# yyArray = np.array(yy, dtype=int)
+# Stat1Array = np.array(Stat1, dtype=float)
 
-# Driver Code
-lst = input(Stat1)
-#print("Liste ist:",lst)
-average = Average(lst) 
-#print("average ist:", average)   
+def Average(lst):
+    return sum(lst) / len(lst) 
 
 step = 10
+sub_lists = []
+
 for i, _ in enumerate(Stat1[::step]):               # Sagt es soll von 0-9 über den Code laufen
     sub_list = Stat1[i*10:] if (i+1)*10 > len(Stat1) else Stat1[i*10:(i+1)*10]  # Condition if the len(my_list) % step != 0
-    
-    #print(sub_list)
+    sub_lists.append(sub_list)
+# Driver Code
+#lst = input(sub_list)
+#print("Liste ist:",lst)
+# average = Average(lst) 
+# print("average ist:", average)  
+
+
+print('Sublists = ', sub_lists)
