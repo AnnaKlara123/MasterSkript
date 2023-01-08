@@ -103,7 +103,7 @@ df  = pd.DataFrame(list(zip(date,hh, Stat1)), columns = ['Date',	'HH',	'Stat1'])
 # df.replace(to_replace= -8.81057 ,value= -9999 )    
 #df.columns = headerList                                                                       # Header df hinzufügen#
 df['date'] = pd.to_datetime(df['Date'])                                                        # Date time hinzufügen
-                                            # False Werte durch -9999 NoData ersetzt                                                   
+                                                                                                # False Werte durch -9999 NoData ersetzt                                                   
 
 # df["YY"] = df['YY'].astype(int)
 # df["MM"] = df['MM'].astype(int)
@@ -111,8 +111,17 @@ df['date'] = pd.to_datetime(df['Date'])                                         
 # df["HH"] = df['HH'].astype(int)
 # df["Stat1"] = df['Stat1'].astype(float) ##### --> WaSiM nimmt nur Integers. Wie mache ich das dann hier?
 
+
+
+
+
+
+
 #### ALternativ:  df  = pd.DataFrame(list(zip(yy,mm,dd,hh, Stat1)), columns = ['YY',	'MM',	'DD',	'HH',	'Stat1'])  ###
 df.to_csv("dfCSVfile.csv", sep=' ', index=False)
 
 print(df.dtypes)
 # print(df)
+
+
+######   df.round(1) ----> Hier auf 1 Nachkommastelle Runden! ############
