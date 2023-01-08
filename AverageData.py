@@ -23,7 +23,7 @@ with open(filename, 'r') as csvfile:                            # file name vorh
     # creating a csv reader object
     csvreader = csv.reader(csvfile, delimiter = " ")
     for row in csvreader:
-        rows.append(row) # Raws werden der vorher erstellten Liste rows = [ ] nacheinander hinzugefügt
+        rows.append(row)                                        # Raws werden der vorher erstellten Liste rows = [ ] nacheinander hinzugefügt
 
 ######## get Date & Time ###########
 
@@ -32,11 +32,11 @@ col = []
 for row in rows[:300]: 
     # parsing each column of a row
     for col in row:
-        col = col.replace(",", ".")  # replace comma with points
+        col = col.replace(",", ".")                             # replace comma with points
         yy.append(col[:4])
         mm.append(col[4:6])
         dd.append(col[6:8])
-        hh.append(col[8:12]) # WICHTIG: Hier nochmal genau schauen, wie ich das in Min umrechne!
+        hh.append(col[8:12])                                    # WICHTIG: Hier nochmal genau schauen, wie ich das in Min umrechne!
         Stat1.append(col[15:])
 
 
@@ -63,8 +63,9 @@ sub_lists = []
 averages = []
 
 ##### Unterlisten für 10er Steps erstellen ########
-for i, _ in enumerate(Stat1[::step]):               # Sagt es soll von 0-9 über den Code laufen
+for i, _ in enumerate(Stat1[::step]):                                           # Sagt es soll von 0-9 über den Code laufen
     sub_list = Stat1[i*10:] if (i+1)*10 > len(Stat1) else Stat1[i*10:(i+1)*10]  # Condition if the len(my_list) % step != 0
+    #### quelle: https://stackoverflow.com/questions/39814034/how-do-i-get-the-average-of-every-10-numbers-in-list-in-python ###
     sub_lists.append(sub_list)
     #### Driver Code
     lst = sub_list
@@ -74,10 +75,10 @@ for i, _ in enumerate(Stat1[::step]):               # Sagt es soll von 0-9 über
     averages.append(average)  
 print("the average of GS per hour is:", averages)
 
-
+################# TO Dos #############################
 ####### ----> Next Step: csv file schreiben, welches nur den Durchschnittswert pro Stunde enthält. Liste wird hierdurch kürzer.
 ####### Falsche Messwerte durch NoData Werte ersetzen
 ####### Herausfinden wie WaSiM kürzere zeitabstände berechnet (S.282 im Skript). Schauen wieviel davon WaSim Selbst rechnen kann.
 ####### über mehrere Datensätze in Ordner iterieren (alle .csv  oder .ex. daten) mithife von If - loop
 ####### Niederschläge müssen summiert werden, daher formel für Sum erstellen
-#######
+########################################################
