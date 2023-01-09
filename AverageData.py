@@ -30,7 +30,7 @@ with open(filename, 'r') as csvfile:                            # file name vorh
 
 col = []
 
-for row in rows[:300]: 
+for row in rows: 
     # parsing each column of a row
     for col in row:
         col = col.replace(",", ".")                             # replace comma with points
@@ -66,8 +66,8 @@ for i in range(len(Stat1)):
   
     # replace hardik with shardul
     if Stat1[i] == -9999:
-        Stat1[i] = math.nan        
-print("Liste Stat1 = ", Stat1)  
+        Stat1[i] = np.nan        
+#print("Liste Stat1 = ", Stat1)  
 
 ######## Function for Average  #########
 def Average(lst):
@@ -75,22 +75,25 @@ def Average(lst):
 
             ####### Steps for calulation ######
 
-step = 10
+stepHour = 10
+stepDay = 287
 sub_lists = []
 averages = []
 
 ##### Unterlisten für 10er Steps erstellen ########
-for i, _ in enumerate(Stat1[::step]):                                           # Sagt es soll von 0-9 über den Code laufen
+for i, _ in enumerate(Stat1[::stepDay]):                                           # Sagt es soll von 0-9 über den Code laufen --> Anpassen
     sub_list = Stat1[i*10:] if (i+1)*10 > len(Stat1) else Stat1[i*10:(i+1)*10]  # Condition if the len(my_list) % step != 0
     #### quelle: https://stackoverflow.com/questions/39814034/how-do-i-get-the-average-of-every-10-numbers-in-list-in-python ###
     sub_lists.append(sub_list)
     #### Driver Code
     lst = sub_list
-    print("Liste ist:",lst)
+    #print("Liste ist:",lst)
     average = round(Average(lst), 1)
-    print("average ist:", average)
+    #print("average ist:", average)
     averages.append(average)  
 print("the average of GS per hour is:", averages)
+
+print("Average length ist:", len(averages))
 
 ################# TO Dos #############################
 ####### ----> Next Step: csv file schreiben, welches nur den Durchschnittswert pro Stunde enthält. Liste wird hierdurch kürzer.
