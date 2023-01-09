@@ -61,16 +61,16 @@ Stat1 = [float(x) for x in Stat1]
 # Replace Values in a List using For Loop
   
 # define list
-l = Stat1
+#l = Stat1
   
-for i in range(len(l)):
+for i in range(len(Stat1)):
   
     # replace hardik with shardul
-    if l[i] == -8.81057:
-        l[i] = -9999
-print("Liste Stat1 = ", l)  
-
-Stat1 = l
+    if Stat1[i] == -8.81057:
+        Stat1[i] = -9999
+    if Stat1[i] == 8.81057:
+        Stat1[i] = -9999
+print("Liste Stat1 = ", Stat1)  
 
              
 ########### CSV WRITE ################
