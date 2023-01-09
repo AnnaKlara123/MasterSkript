@@ -91,9 +91,27 @@ for i, _ in enumerate(Stat1[::stepDay]):                                        
     average = round(Average(lst), 1)
     #print("average ist:", average)
     averages.append(average)  
-print("the average of GS per hour is:", averages)
+# print("the average of GS per hour is:", averages)
 
-print("Average length ist:", len(averages))
+
+df  = pd.DataFrame(list(zip(yy,mm, dd,hh, Stat1)), columns = ['YY', 'MM', 'DD','HH','Stat1'])          # Dataframe erstellen. (date durch: 'YY',	'MM',	'DD' ersetzen )
+df2 = df[::287]  
+df2['averagesperDay'] = averages
+# dfAV = pd.DataFrame(averages, columns=['Average per Day'])
+# print("dfAV is:", dfAV)
+
+# to append dfAV at the end of df2 dataframe
+# df2 = df2.append(dfAV)
+
+                                                #dfAv  = pd.DataFrame(list(zip(yy,mm, dd,hh, Stat1, averages)), columns = ['YY', 'MM', 'DD','HH','Stat1','AveragesDay'])
+                                                # df.replace(to_replace= -8.81057 ,value= -9999 )    
+                                                #df.columns = headerList                                                                       # Header df hinzufügen#
+                                                # df['date'] = pd.to_datetime(df['Date'])  
+                                                    
+print(df2)
+print("Averagelist length is:", len(averages))
+
+df2.to_csv("dfAveragefile.csv", sep=' ', index=False)
 
 ################# TO Dos #############################
 ####### ----> Next Step: csv file schreiben, welches nur den Durchschnittswert pro Stunde enthält. Liste wird hierdurch kürzer.
