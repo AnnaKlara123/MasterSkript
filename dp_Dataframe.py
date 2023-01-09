@@ -60,9 +60,6 @@ Stat1 = [float(x) for x in Stat1]
 
 # Replace Values in a List using For Loop
   
-# define list
-#l = Stat1
-  
 for i in range(len(Stat1)):
   
     # replace hardik with shardul
@@ -110,9 +107,6 @@ df['date'] = pd.to_datetime(df['Date'])                                         
 # df["DD"] = df['DD'].astype(int)
 # df["HH"] = df['HH'].astype(int)
 # df["Stat1"] = df['Stat1'].astype(float) ##### --> WaSiM nimmt nur Integers. Wie mache ich das dann hier?
-
-
-
 
 
 
