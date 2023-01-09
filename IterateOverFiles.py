@@ -15,15 +15,32 @@ import os
 
 
 
-# Get CSV files list from a folder
-path = 'C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Daten/Meteorologie/jamtalhütte_20200401'
-csv_files = glob.glob(path + "/*.csv")
-print("csv Files are:'", csv_files)
+# # Get CSV files list from a folder
+# path = 'C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Daten/Meteorologie/jamtalhütte_20200401'
+# csv_files = glob.glob(path + "/*.csv")
+# print("csv Files are:'", csv_files)
 
-# Read each CSV file into DataFrame
-# This creates a list of dataframes
-df_list = (pd.read_csv(file) for file in csv_files)
-print("csvdfListe is:", df_list)
+# # Read each CSV file into DataFrame
+# # This creates a list of dataframes
+# df_list = (pd.read_csv(file) for file in csv_files)
+# print("csvdfListe is:", df_list)
 
-# # Concatenate all DataFrames
-# big_df   = pd.concat(df_list, ignore_index=True)
+# # # Concatenate all DataFrames
+# # big_df   = pd.concat(df_list, ignore_index=True)
+
+import os
+
+directory = os.fsencode('C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Daten/Meteorologie/jamtalhütte_20200401')
+    
+for file in os.listdir(directory):
+     filename = os.fsdecode(file)
+     if filename.endswith(".csv") or filename.endswith(".xlsx"): 
+         # print(os.path.join(directory, filename))
+         print(filename)
+         continue
+     else:
+         continue
+
+        ######### Wie mache ich von hier aus weiter, dass ich nacheinander die Datein abarbeite? ##################### 
+        
+
