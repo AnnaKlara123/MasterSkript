@@ -2,10 +2,11 @@ import os
 directory = 'C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Daten/Meteorologie/jamtalhütte_20200401'
 
 for filename in os.listdir(directory):
-    files = os.path.join(directory, filename)
+    if filename.endswith(".csv"):
+     filename = os.path.join(directory, filename)
 
-    if os.path.isfile (files):
-        print("files in path are:", files)
+    if os.path.isfile (filename):
+        print("files in path are:", filename)
         
 
 
