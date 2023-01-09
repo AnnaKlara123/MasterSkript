@@ -64,9 +64,9 @@ for i, _ in enumerate(Stat1[::step]):                                           
     sub_list = Stat1[i*10:] if (i+1)*10 > len(Stat1) else Stat1[i*10:(i+1)*10]  # Condition if the len(my_list) % step != 0
     sub_lists.append(sub_list)
     lst = sub_list
-    print("Liste ist:",lst)
+    #print("Liste ist:",lst)
     Sum = sum(lst)                                                              # Use Sum Funcition  (implementiert in python)
-    print("sum is:", Sum)
+    #print("sum is:", Sum)
     sums.append(Sum) 
      
 # print("the average of GS per hour is:", averages)

@@ -3,6 +3,7 @@
 import csv
 import pandas as pd
 import numpy as np
+import math
 
 ####### csv file name  #####
 filename = "C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Daten/Meteorologie/jamtalhütte_20200401/GS_test2.csv"
@@ -51,6 +52,22 @@ Stat1 = [float(x) for x in Stat1]
                 # yyArray = np.array(yy, dtype=int)
                 # Stat1Array = np.array(Stat1, dtype=float)
 
+# Replace Values in a List using For Loop
+  
+for i in range(len(Stat1)):
+  
+    # replace hardik with shardul
+    if Stat1[i] == -8.81057:
+        Stat1[i] = -9999
+    if Stat1[i] == 8.81057:
+        Stat1[i] = -9999
+
+for i in range(len(Stat1)):
+  
+    # replace hardik with shardul
+    if Stat1[i] == -9999:
+        Stat1[i] = math.nan        
+print("Liste Stat1 = ", Stat1)  
 
 ######## Function for Average  #########
 def Average(lst):
@@ -70,7 +87,7 @@ for i, _ in enumerate(Stat1[::step]):                                           
     #### Driver Code
     lst = sub_list
     print("Liste ist:",lst)
-    average = Average(lst) 
+    average = round(Average(lst), 1)
     print("average ist:", average)
     averages.append(average)  
 print("the average of GS per hour is:", averages)
