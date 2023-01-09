@@ -76,7 +76,7 @@ def Average(lst):
             ####### Steps for calulation ######
 
 stepHour = 10
-stepDay = 287
+stepDay = 288
 sub_lists = []
 averages = []
 
@@ -95,7 +95,7 @@ for i, _ in enumerate(Stat1[::stepDay]):                                        
 
 
 df  = pd.DataFrame(list(zip(yy,mm, dd,hh, Stat1)), columns = ['YY', 'MM', 'DD','HH','Stat1'])          # Dataframe erstellen. (date durch: 'YY',	'MM',	'DD' ersetzen )
-df2 = df[::287]  
+df2 = df[::288]  
 df2['averagesperDay'] = averages
 # dfAV = pd.DataFrame(averages, columns=['Average per Day'])
 # print("dfAV is:", dfAV)
