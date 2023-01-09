@@ -81,4 +81,5 @@ print("the average of GS per hour is:", averages)
 ####### Herausfinden wie WaSiM kürzere zeitabstände berechnet (S.282 im Skript). Schauen wieviel davon WaSim Selbst rechnen kann.
 ####### über mehrere Datensätze in Ordner iterieren (alle .csv  oder .ex. daten) mithife von If - loop
 ####### Niederschläge müssen summiert werden, daher formel für Sum erstellen
+####### Auf 1 Nachkommeastelle Runden
 ########################################################

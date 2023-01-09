@@ -43,6 +43,3 @@ def read_csv(filename):
         #df.columns = headerList  
         print(df)
         return df   
-        
-
-def hourAv(hhdef)        
