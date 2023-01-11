@@ -17,7 +17,7 @@ for file in os.listdir(directory):
          continue
      else:
          continue
-print(directory) 
+print("directory before rename:", directory) 
 
 
 ######## Datentyp gewünscht verändern, Iteration über ganzen Ordner ##################### 
@@ -30,7 +30,5 @@ for filename in os.listdir(folder):
     newname = infilename.replace('.zrx', '.csv')                    # WICHTIG: Wenn es .csv Datei schon in Ordner gibt läuft das Skript nicht!
     output = os.rename(infilename, newname)
 
-print("Output:",output)
-
-print(directory) 
+print("directory after rename:", directory) 
 print('done')    
