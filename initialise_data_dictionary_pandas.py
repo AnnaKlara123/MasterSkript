@@ -2,6 +2,7 @@
 # Vorlage: https://www.geeksforgeeks.org/working-csv-files-python/
 import csv
 import pandas as pd
+from matplotlib import pyplot as plt
 
 # csv file name
 filename = "C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Daten/Meteorologie/jamtalhütte_20200401/GS_test2.csv"
@@ -104,3 +105,10 @@ data.to_csv("dpCSVfile.csv", sep=' ', index=False)
  
 # Print the output.
 print(data)
+
+
+###################### Plot Data ######################
+
+plt.plot(hh, Stat1)
+
+plt.show()
