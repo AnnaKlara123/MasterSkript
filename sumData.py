@@ -54,7 +54,7 @@ Stat1 = [float(x) for x in Stat1]
 
 ######## Summe berechnen  #########
 
-step = 10
+step = 12
 sub_lists = []
 averages = []
 sums = []
