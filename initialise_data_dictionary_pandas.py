@@ -111,4 +111,8 @@ print(data)
 
 plt.plot(hh, Stat1)
 
+plt.title("Plot Stat1 data")
+plt.xlabel("Time")
+plt.ylabel("Value")
+
 plt.show()
