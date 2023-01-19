@@ -76,12 +76,12 @@ def Average(lst):
             ####### Steps for calulation ######
 
 stepHour = 10
-stepDay = 288
+#stepDay = 288
 sub_lists = []
 averages = []
 
 ##### Unterlisten für 10er Steps erstellen ########
-for i, _ in enumerate(Stat1[::stepDay]):                                           # Sagt es soll von 0-9 über den Code laufen --> Anpassen
+for i, _ in enumerate(Stat1[::stepHour]):                                           # Sagt es soll von 0-9 über den Code laufen --> Anpassen
     sub_list = Stat1[i*10:] if (i+1)*10 > len(Stat1) else Stat1[i*10:(i+1)*10]  # Condition if the len(my_list) % step != 0
     #### quelle: https://stackoverflow.com/questions/39814034/how-do-i-get-the-average-of-every-10-numbers-in-list-in-python ###
     sub_lists.append(sub_list)
