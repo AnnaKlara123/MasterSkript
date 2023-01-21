@@ -20,32 +20,41 @@ Stat1 = []
 # reading csv file
 with open(filename, 'r') as csvfile:
     # creating a csv reader object
-    csvreader = csv.reader(csvfile, delimiter = " ")
+    csvreader = csv.reader(csvfile, delimiter = " ")    # mit \t kann ich je Zeile die ersten 4 Zeichen einlesen, jedoch werden Datum & Sat.WErt nich getrennt eingelesen
  
     # extracting each data row one by one
     for row in csvreader:
         rows.append(row) 
 
-# print(rows)
 ####### get Date & Time ###########
+def datetime(rows):
+    return [item[0] for item in rows]
+
+def value(rows):
+    return [item[1] for item in rows]
 
 col = []
+datetimelist = []
 
 for row in rows[10:300]: 
+    datetimelist.append(datetime(rows))
+    #print(value(rows))
     # parsing each column of a row
     for col in row:
-        #yy= (col[:4]) ist nur für erste Zeile durch .append liste erzeugen
+        yy= (col[:4]) # ist nur für erste Zeile durch .append liste erzeugen
+        #print(yy)
         # date.append(col[:8])                               # Datetime vorbereiten 
-        yy.append(col[:4])
-        mm.append(col[4:6])
-        dd.append(col[6:8])
-        hh.append(col[8:12])                              # WICHTIG: Hier nochmal genau schauen, wie ich das in Min umrechne!
-        Stat1.append(col[15:]) 
+        # yy.append(col[:4])
+        # mm.append(col[4:6])
+        # dd.append(col[6:8])
+        # hh.append(col[8:12])                              # WICHTIG: Hier nochmal genau schauen, wie ich das in Min umrechne!
+        # Stat1.append(col[15:]) 
             ########### Ist es Sinnvoll die Listen in Arrays zu ändern? ############
             ## yy = np.array((yy))    
             ## Stat1 = np.array((Stat1))
 
-print("PrintY", yy)
+print('datetimelist', datetimelist)
+#print("row", rows)
 
 # ####### Aus Str. Int machen #######
 # yy = [int(x) for x in yy]
