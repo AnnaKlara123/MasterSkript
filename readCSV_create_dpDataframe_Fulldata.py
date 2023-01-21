@@ -113,12 +113,20 @@ df.columns = headerList                                                         
 # df["Stat1"] = df['Stat1'].astype(float) ##### --> WaSiM nimmt nur Integers. Wie mache ich das dann hier?
 
 
+############ sort after year ##############
 
+for year in yy:
+    if yy == 2013:
+       df.to_csv("dfCSVfilefullnew2013.csv", sep=' ', index=False)
+    elif yy == 2014:
+        df.to_csv("dfCSVfilefullnew2014.csv", sep=' ', index=False)
+    else:
+        print("wrong year")
 
 #### ALternativ:  df  = pd.DataFrame(list(zip(yy,mm,dd,hh, Stat1)), columns = ['YY',	'MM',	'DD',	'HH',	'Stat1'])  ###
-df.to_csv("dfCSVfilefullnew.csv", sep=' ', index=False)
+#df.to_csv("dfCSVfilefullnew.csv", sep=' ', index=False)
 
-print(df.dtypes)
+print(df)
 # print(df)
 
 
