@@ -37,7 +37,7 @@ with open(filename, 'r') as csvfile:
 
 col = []
 
-for row in rows: 
+for row in rows[815:100000]: 
     #print(datetime(rows))
     #print(value(rows))
     # parsing each column of a row
@@ -115,16 +115,15 @@ df.columns = headerList                                                         
 
 ############ sort after year ##############
 
-for year in yy:
-    if yy == 2013:
-       df.to_csv("dfCSVfilefullnew2013.csv", sep=' ', index=False)
-    elif yy == 2014:
-        df.to_csv("dfCSVfilefullnew2014.csv", sep=' ', index=False)
-    else:
-        print("wrong year")
+# for year in yy:
+#     if yy == 2013:
+#        df.to_csv("dfCSVfilefullnew2013.csv", sep=' ', index=False)
+#     elif yy == 2014:
+#         df.to_csv("dfCSVfilefullnew2014.csv", sep=' ', index=False)
+#     else:
 
 #### ALternativ:  df  = pd.DataFrame(list(zip(yy,mm,dd,hh, Stat1)), columns = ['YY',	'MM',	'DD',	'HH',	'Stat1'])  ###
-#df.to_csv("dfCSVfilefullnew.csv", sep=' ', index=False)
+df.to_csv("dfCSVfile2013cut.csv", sep=' ', index=False)
 
 print(df)
 # print(df)
