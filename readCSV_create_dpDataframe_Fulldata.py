@@ -15,6 +15,7 @@ yy = []
 mm = []
 dd = []
 hh= []
+minutes = []
 Stat1 = []
  
 # reading csv file
@@ -60,6 +61,9 @@ yy = [int(x) for x in yy]
 mm = [int(x) for x in mm]
 dd = [int(x) for x in dd]
 hh= [int(x) for x in hh]
+
+####### minuten aus hh berrechnen ############
+
 Stat1 = [float(x) for x in Stat1]
 
 
