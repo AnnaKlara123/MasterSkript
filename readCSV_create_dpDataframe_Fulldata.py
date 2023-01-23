@@ -100,12 +100,12 @@ Stat = [Stat1, 'Stat2', 'Stat3' ]
 ############## Dataframe erstellen #########################
 
 ### Headerliste erstellen ####  -----> \ Als Zeilenumbruch im Code genutzt
-headerList = [['YY',	'MM',	'DD',	'HH',	'Stat1' ], ['YY',	'MM',	'DD',	'HH',  hight[0]], \
-['YY',	'MM',	'DD',	'HH', Xcoord[0]], ['YY',	'MM',	'DD',	'HH',Ycoord[0] ] ,['YY',	'MM',	'DD',	'HH',  StatIdentefier[0]],\
-['YY',	'MM',	'DD',	'HH',	'Stat1' ] ]       # Überschriften festlegen
-df  = pd.DataFrame(list(zip(yy,mm,dd,hh, Stat1)), columns = ['YY',	'MM',	'DD',	'HH',	'Stat1'])          # Dataframe erstellen. (date durch: 'YY',	'MM',	'DD' ersetzen )    
+headerList = [['YY',	'MM',	'DD',	'HH',	'Stat1' , 'date'], ['YY',	'MM',	'DD',	'HH',  hight[0], 'date'], \
+['YY',	'MM',	'DD',	'HH', Xcoord[0],'date'], ['YY',	'MM',	'DD',	'HH',Ycoord[0],'date' ] ,['YY',	'MM',	'DD',	'HH',  StatIdentefier[0],'date'],\
+['YY',	'MM',	'DD',	'HH',	'Stat1', 'date' ] ]       # Überschriften festlegen
+df  = pd.DataFrame(list(zip(yy,mm,dd,hh, Stat1, date)), columns = ['YY',	'MM',	'DD',	'HH',	'Stat1', 'date'])          # Dataframe erstellen. (date durch: 'YY',	'MM',	'DD' ersetzen )    
 df.columns = headerList                                                                       # Header df hinzufügen#
-#df['date'] = pd.to_datetime(df['Date'])                                                        # Date time hinzufügen
+# df['date'] = pd.to_datetime(df['date'])                                                        # Date time hinzufügen
                                                                                                 # False Werte durch -9999 NoData ersetzt                                                   
 
 # df["YY"] = df['YY'].astype(int)
