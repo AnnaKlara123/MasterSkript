@@ -7,7 +7,7 @@ from matplotlib import pyplot as plt
 # csv file name
 filename = "C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/dfCSVfile2013cut.csv"
 data = pd.read_csv(filename, sep=' ', skiprows=5)
-
+print(data)
 
 ########## Listen aus Panda Dataframe auslesen ############## --> Gibts da ne klügere Lösung?
 
@@ -17,13 +17,13 @@ day = data["DD"].tolist()
 hour = data["HH"].tolist()
 value = data["Stat1"].tolist()
 
-print("value=",year[:100])
+print("value=",month[:100])
 
 
 
 ###### plot data Winter 2013/14 #######
 
-plt.plot(year, value)	
+plt.plot(month, value)	
 #plt.plot(hh, Stat1)
 
 

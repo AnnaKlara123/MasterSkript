@@ -13,11 +13,10 @@ filename = "C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSk
 
 data = pd.read_csv(filename, sep=' ', dtype= int)
 
-data[pd.to_datetime(data.index).year == 2013]
 
-# # iterating the columns
-# for col in data.columns:
-#     print(col)
+# iterating the columns
+for col in data.columns:
+    print(col)
 
 # data['YY'] = pd.to_datetime(data['YY'])
 
