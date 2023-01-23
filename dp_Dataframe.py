@@ -36,6 +36,7 @@ col = []
 for row in rows[:300]: 
     # parsing each column of a row
     for col in row:
+
         #yy= (col[:4]) ist nur für erste Zeile durch .append liste erzeugen
         col = col.replace(",", ".")  # replace comma with points
         date.append(col[:8])                               # Datetime vorbereiten 
@@ -47,8 +48,6 @@ for row in rows[:300]:
             ########### Ist es Sinnvoll die Listen in Arrays zu ändern? ############
             ## yy = np.array((yy))    
             ## Stat1 = np.array((Stat1))
-
-
 
 ####### Aus Str. Int machen #######
 yy = [int(x) for x in yy]
