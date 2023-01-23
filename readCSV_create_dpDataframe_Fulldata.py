@@ -37,7 +37,7 @@ with open(filename, 'r') as csvfile:
 
 col = []
 
-for row in rows[815:100000]: 
+for row in rows[815:200000]: 
     #print(datetime(rows))
     #print(value(rows))
     # parsing each column of a row
@@ -70,6 +70,8 @@ for i in range(len(Stat1)):
     # replace hardik with shardul
     if Stat1[i] == -8.81057:
         Stat1[i] = -9999
+    if Stat1[i] == -777:
+        Stat1[i] = -9999    
     if Stat1[i] == 8.81057:
         Stat1[i] = -9999
 #print("Liste Stat1 = ", Stat1)  
