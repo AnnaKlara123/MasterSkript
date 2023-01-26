@@ -2,3 +2,5 @@
 .idea
 *.txt
 *.zrx
+*.png
+!transform/doku/*.png

@@ -1,9 +1,9 @@
 import pandas as pd
 import os
 import glob
-from alive_progress import alive_bar
 from config_parser import get_config
 from prepare_files import get_directory
+from progress_bar import progress_bar
 
 
 def get_file_name(file):
@@ -18,7 +18,7 @@ def read_input_files(input_dir):
     return csv_files
 
 
-def transform_time_row(row, bar):
+def transform_time_row(row, task, progress):
     # indices that separate each value in the timestamp column
     indices = [0, 4, 6, 8, 10, 12]
     # separate the timestamp column into parts
@@ -32,7 +32,7 @@ def transform_time_row(row, bar):
     # create a pandas series
     series = pd.Series(timestamp)
     # progress the progress bar to the next step
-    bar()
+    progress.update(task, advance=1)
     return series
 
 
@@ -62,6 +62,7 @@ class File:
         self.path, self.file_name = os.path.split(csv)
         self.config = get_config(self.path, get_file_name(self.file_name))
         self.df = None
+        self.progress = None
 
     def get_header(self):
         header = [["YY", "MM", "DD", "HH", "MM", "Stat1"],
@@ -76,24 +77,29 @@ class File:
         self.df = pd.read_csv(self.csv, sep=' ', skiprows=self.config.get('skip_first_n'),
                               names=["timestamp", "Stat1"])
         # add a progress bar to view the current progress in the console
-        with alive_bar(self.df.shape[0], dual_line=True,
-                       title=f'Transforming file {self.index + 1}/{self.total_files}') as bar:
+        with progress_bar() as self.progress:
+            task_copy_file = self.progress.add_task(f'[red]Transforming file {self.file_name}',
+                                                    total=self.df.shape[0]+1)
             # transform the timestamp
-            self.transform_time(bar)
+            self.transform_time(task_copy_file)
             # modify the value
             self.modify()
+            # replace nan values
+            self.replace_nan()
             # save transformed file to output folder
             self.save()
+            # finish progress
+            self.progress.update(task_copy_file, advance=1)
 
     def save(self):
         # get the new header in the required format
         self.df.columns = self.get_header()
         # save the df as txt file to the output folder
-        self.df.to_csv(os.path.join(self.output_dir, get_file_name(self.file_name)+'.txt'), index=False, sep='\t')
+        self.df.to_csv(os.path.join(self.output_dir, get_file_name(self.file_name) + '.txt'), index=False, sep='\t')
 
-    def transform_time(self, bar):
+    def transform_time(self, task):
         # apply the transform_time_row function to every row in the dataset
-        time_cols = self.df.apply((lambda x: transform_time_row(x, bar)), axis=1)
+        time_cols = self.df.apply((lambda x: transform_time_row(x, task, self.progress)), axis=1)
         # add headers to the new columns
         time_cols.columns = ['datetime', 'YY', 'MM', 'DD', 'HH', 'MN']
         # join the dataset with the new columns
@@ -117,6 +123,17 @@ class File:
                                                                        "HH": 'first',
                                                                        "MN": 'first',
                                                                        "Stat1": f'{modifier}'})
+
+    def replace_nan(self):
+        if self.config.get('replace_nan_values') is False:
+            return
+        replacement = self.config.get('nan_value_replacement') if isinstance(self.config.get('nan_value_replacement'),
+                                                                             int) else float("NaN")
+        identifier = self.config.get('nan_value_identifier')
+        if identifier == '-':
+            self.df['Stat1'] = self.df['Stat1'].apply(lambda x: x if x > 0 else replacement)
+            return
+        self.df['Stat1'] = self.df['Stat1'].apply(lambda x: x if x != identifier else replacement)
 
 
 def main():

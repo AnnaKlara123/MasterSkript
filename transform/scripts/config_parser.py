@@ -9,6 +9,16 @@ def modifier_type_check(field, value, error):
         error(field, "Modifier must be of type \'sum\' or \'mean\'")
 
 
+def nan_value_identifier_check(field, value, error):
+    if value != '-' and not isinstance(value, int):
+        error(field, "NanValueIdentifier must be \'-\' or of type integer.")
+
+
+def nan_value_replacement_check(field, value, error):
+    if value != 'NaN' and not isinstance(value, int):
+        error(field, "NanValueReplacement must be \'NaN\' or of type integer.")
+
+
 # specify a valid config schema
 config_schema = {
     'name': {
@@ -36,7 +46,18 @@ config_schema = {
         'min': 1
     },
     'modifier': {
+        'type': 'string',
         'check_with': modifier_type_check
+    },
+    'replace_nan_values': {
+        'type': 'boolean'
+    },
+    'nan_value_identifier': {
+        'type': 'string',
+        'check_with': nan_value_identifier_check
+    },
+    'nan_value_replacement': {
+        'check_with': nan_value_replacement_check
     }
 }
 
@@ -49,7 +70,12 @@ def parse_config(config):
     config['elevation'] = int(config['elevation'])
     config['skip_first_n'] = int(config['skip_first_n'])
     config['modify_values'] = bool(config['modify_values'])
+    config['replace_nan_values'] = bool(config['replace_nan_values'])
     config['interval_minutes'] = int(config['interval_minutes'])
+    if config['nan_value_identifier'] != '-':
+        config['nan_value_identifier'] = int(config['nan_value_identifier'])
+    if config['nan_value_replacement'] != 'NaN':
+        config['nan_value_replacement'] = int(config['nan_value_replacement'])
     return config
 
 
@@ -88,7 +114,10 @@ def get_default_values():
         "skip_first_n": 10,
         "modify_values": False,
         "interval_minutes": 1,
-        "modifier": "sum"
+        "modifier": "sum",
+        "replace_nan_values": False,
+        "nan_value_identifier": "-",
+        "nan_value_replacement": 0
     }
 
 
@@ -110,4 +139,10 @@ def generate_default_config(file):
     f.write(f"interval_minutes={default['interval_minutes']}\t; set this to the number of minutes for one interval\n")
     f.write(f"modifier={default['modifier']}\t; Possible values: mean => get the mean of the interval, sum => get "
             f"the sum of the interval\n")
+    f.write(f"replace_nan_values={default['replace_nan_values']}\t; set this to True if you want to replace invalid "
+            f"values.\n")
+    f.write(f"nan_value_identifier={default['nan_value_identifier']}\t; set this to '-' to replace all negative "
+            f"values or set this to a specific value, that you want to replace.\n")
+    f.write(f"nan_value_replacement={default['nan_value_replacement']}\t; set this to the integer value that you "
+            f"want to replace invalid values with, or set it to 'NaN' to set the value to NaN.\n")
     f.close()
