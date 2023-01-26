@@ -82,10 +82,10 @@ class File:
                                                     total=self.df.shape[0]+1)
             # transform the timestamp
             self.transform_time(task_copy_file)
-            # modify the value
-            self.modify()
             # replace nan values
             self.replace_nan()
+            # modify the value
+            self.modify()
             # save transformed file to output folder
             self.save()
             # finish progress
