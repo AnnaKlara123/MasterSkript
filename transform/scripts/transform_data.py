@@ -133,7 +133,7 @@ class File:
         if identifier == '-':
             self.df['Stat1'] = self.df['Stat1'].apply(lambda x: x if x > 0 else replacement)
             return
-        self.df['Stat1'] = self.df['Stat1'].apply(lambda x: x if x != identifier else replacement)
+        self.df['Stat1'] = self.df['Stat1'].apply(lambda x: x if float(x) not in identifier else replacement)
 
 
 def main():

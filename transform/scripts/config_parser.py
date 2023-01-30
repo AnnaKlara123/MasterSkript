@@ -10,7 +10,7 @@ def modifier_type_check(field, value, error):
 
 
 def nan_value_identifier_check(field, value, error):
-    if value != '-' and not isinstance(value, int):
+    if value != '-' and not type(value) == list:
         error(field, "NanValueIdentifier must be \'-\' or of type integer.")
 
 
@@ -25,8 +25,8 @@ config_schema = {
         'type': 'string'
     },
     'elevation': {
-        'type': 'integer',
-        'min': 0
+        'type': 'float',
+        'min': 0.0
     },
     'latitude': {
         'type': 'string'
@@ -53,7 +53,6 @@ config_schema = {
         'type': 'boolean'
     },
     'nan_value_identifier': {
-        'type': 'string',
         'check_with': nan_value_identifier_check
     },
     'nan_value_replacement': {
@@ -72,8 +71,10 @@ def parse_config(config):
     config['modify_values'] = bool(config['modify_values'])
     config['replace_nan_values'] = bool(config['replace_nan_values'])
     config['interval_minutes'] = int(config['interval_minutes'])
-    if config['nan_value_identifier'] != '-':
-        config['nan_value_identifier'] = int(config['nan_value_identifier'])
+    ident = config['nan_value_identifier']
+    if ident != '-':
+        ident_arr = ident.split(',')
+        config['nan_value_identifier'] = [float(x) for x in ident_arr]
     if config['nan_value_replacement'] != 'NaN':
         config['nan_value_replacement'] = int(config['nan_value_replacement'])
     return config
@@ -108,7 +109,7 @@ def get_default_values():
     # define default values for config
     return {
         "name": "unknown",
-        "elevation": 0,
+        "elevation": 0.0,
         "latitude": 0,
         "longitude": 0,
         "skip_first_n": 10,
@@ -142,7 +143,7 @@ def generate_default_config(file):
     f.write(f"replace_nan_values={default['replace_nan_values']}\t; set this to True if you want to replace invalid "
             f"values.\n")
     f.write(f"nan_value_identifier={default['nan_value_identifier']}\t; set this to '-' to replace all negative "
-            f"values or set this to a specific value, that you want to replace.\n")
+            f"values or set this to a specific value or a comma seperated list of values, that you want to replace.\n")
     f.write(f"nan_value_replacement={default['nan_value_replacement']}\t; set this to the integer value that you "
             f"want to replace invalid values with, or set it to 'NaN' to set the value to NaN.\n")
     f.close()

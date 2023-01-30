@@ -39,7 +39,7 @@ The default config looks like this:
 ````
 [station]
 name=unknown  ==> (string) specify the name of the station where the data was collected
-elevation=0  ==> (integer) specify the elevation of the station
+elevation=0  ==> (float) specify the elevation of the station
 latitude=0  ==> (string) specify the latitude of the station
 longitude=0  ==> (string) specify the longitude of the station
 
@@ -49,7 +49,7 @@ modify_values=False	==> (boolean, True | False) specify if a modifier should be 
 interval_minutes=1	==> (integer, min=1) specify the interval in minutes for the modifier
 modifier=sum ==> (string, sum | mean) mean => get the average of the interval, sum => get the sum of the interval
 replace_nan_values=False  ==> (boolean, True | False) specify if values should be replaced
-nan_value_identifier=-	==> (integer | -) which value should be replaced? '-' replaces all negative values
+nan_value_identifier=-	==> (list | -) which value should be replaced? '-' replaces all negative values or a comma seperated list of floats (e.g. 7.3, -7.3)
 nan_value_replacement=0	==> (integer | NaN) integer value to replace NaN values with or 'NaN' to replace with NaN
 ````
 ### Transform files
