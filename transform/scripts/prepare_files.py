@@ -141,8 +141,6 @@ def main():
     input_dir = get_directory("input")
     get_directory("output")
     # require a source folder
-    if args.raw_dir is None:
-        raise ValueError("No input folder specified.")
     copy_raw_files(args.raw_dir, input_dir)
     convert_to_csv(input_dir)
     convert_to_utf8(input_dir)
