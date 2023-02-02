@@ -1,6 +1,6 @@
 from rich.progress import (
     BarColumn,
-    MofNCompleteColumn,
+    #MofNCompleteColumn,
     Progress,
     TextColumn,
     TimeElapsedColumn,
@@ -13,7 +13,7 @@ def progress_bar():
         TextColumn("[progress.description]{task.description}"),
         TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
         BarColumn(),
-        MofNCompleteColumn(),
+        #MofNCompleteColumn(),
         TextColumn("•"),
         TimeElapsedColumn(),
         TextColumn("•"),
