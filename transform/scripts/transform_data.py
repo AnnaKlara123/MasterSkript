@@ -123,6 +123,9 @@ class File:
                                                                        "HH": 'first',
                                                                        "MN": 'first',
                                                                        "Stat1": f'{modifier}'})
+        def round_2_decimals(x):
+            return round(x, 2)
+        self.df['Stat1'] = self.df['Stat1'].apply(round_2_decimals)                                                            
 
     def replace_nan(self):
         if self.config.get('replace_nan_values') is False:
