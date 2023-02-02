@@ -110,8 +110,8 @@ def get_default_values():
     return {
         "name": "unknown",
         "elevation": 0.0,
-        "latitude": 0,
-        "longitude": 0,
+        "latitude": 0.0,
+        "longitude": 0.0,
         "skip_first_n": 10,
         "modify_values": False,
         "interval_minutes": 1,
