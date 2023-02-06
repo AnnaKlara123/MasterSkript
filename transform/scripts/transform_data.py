@@ -65,11 +65,11 @@ class File:
         self.progress = None
 
     def get_header(self):
-        header = [["YY", "MM", "DD", "HH", "MM", "Stat1"],
-                  ["YY", "MM", "DD", "HH", "MM", self.config.get('elevation')],
-                  ["YY", "MM", "DD", "HH", "MM", self.config.get('latitude')],
-                  ["YY", "MM", "DD", "HH", "MM", self.config.get('longitude')],
-                  ["YY", "MM", "DD", "HH", "MM", "Stat1"]]
+        header = [["YY", "MM", "DD", "HH", "MN", "Stat1"],
+                  ["YY", "MM", "DD", "HH", "MN", self.config.get('elevation')],
+                  ["YY", "MM", "DD", "HH", "MN", self.config.get('latitude')],
+                  ["YY", "MM", "DD", "HH", "MN", self.config.get('longitude')],
+                  ["YY", "MM", "DD", "HH", "MN", "Stat1"]]
         return header
 
     def transform(self):
@@ -122,10 +122,7 @@ class File:
                                                                        "DD": 'first',
                                                                        "HH": 'first',
                                                                        "MN": 'first',
-                                                                       "Stat1": f'{modifier}'})
-        def round_2_decimals(x):
-            return round(x, 2)
-        self.df['Stat1'] = self.df['Stat1'].apply(round_2_decimals)                                                            
+                                                                       "Stat1": f'{modifier}'})                                                         
 
     def replace_nan(self):
         if self.config.get('replace_nan_values') is False:
@@ -137,6 +134,8 @@ class File:
             self.df['Stat1'] = self.df['Stat1'].apply(lambda x: x if x > 0 else replacement)
             return
         self.df['Stat1'] = self.df['Stat1'].apply(lambda x: x if float(x) not in identifier else replacement)
+        # # For Temperature datasets use following code as well to exclude Data Values higher than 45
+        # self.df['Stat1'] = self.df['Stat1'].apply(lambda x: x if x <= 45 else float("NaN"))
 
 
 def main():
