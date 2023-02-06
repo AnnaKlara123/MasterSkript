@@ -5,11 +5,11 @@ import os
 import glob
 
 # Load data into a DataFrame
-df = pd.read_csv('C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/scripts/Historgram/Precipitation.csv',sep= "\t", engine='python', skiprows=4)
+df = pd.read_csv('C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/scripts/Historgram/Airtemp.csv',sep= "\t", engine='python', skiprows=4)
 
 ## Daten korrigieren vor Histogramm ###
-df["Stat1"] = df["Stat1"].where(df["Stat1"] <= 1, other=np.nan)
-file_path = "C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/scripts/Historgram/Precipitation.csv"
+df["Stat1"] = df["Stat1"].where(df["Stat1"] >= -45, other=np.nan)
+file_path = "C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/scripts/Historgram/Airtemp.csv"
 file_name = os.path.basename(file_path).split('.')[0]
 
 # Get the column of interest
@@ -18,9 +18,12 @@ data = df.loc[:,"Stat1"]
 
 
 ## Datenuntersuchung
+                           
 max_value = df["Stat1"].max()
-top_100 = df["Stat1"].nlargest(100)
-print("Max Value in Stat1=", max_value, "topten=",top_100)
+top_100max = df["Stat1"].nlargest(100)
+min_value = df["Stat1"].min()       
+top_100min = df["Stat1"].nsmallest(100)
+print("Max Value in Stat1=", max_value, "toptenmin=",top_100min, "toptenmax=", top_100max)
 
                     #print(df)
                     # print(header,"Header")
