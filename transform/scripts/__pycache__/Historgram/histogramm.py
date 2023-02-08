@@ -5,11 +5,11 @@ import os
 import glob
 
 # Load data into a DataFrame
-df = pd.read_csv('C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/scripts/Historgram/Airtemp.csv',sep= "\t", engine='python', skiprows=4)
+df = pd.read_csv('C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/scripts/Historgram/Soiltemp.csv',sep= "\t", engine='python', skiprows=4)
 
 ## Daten korrigieren vor Histogramm ###
-df["Stat1"] = df["Stat1"].where(df["Stat1"] >= -45, other=np.nan)
-file_path = "C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/scripts/Historgram/Airtemp.csv"
+df["Stat1"] = df["Stat1"].where((df["Stat1"] >= -45) & (df["Stat1"] <= 45), other=np.nan)
+file_path = "C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/scripts/Historgram/Soiltemp.csv"
 file_name = os.path.basename(file_path).split('.')[0]
 
 # Get the column of interest
