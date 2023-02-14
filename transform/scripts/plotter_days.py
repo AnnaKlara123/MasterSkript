@@ -53,20 +53,23 @@ def get_plot_folder(plot_base_folder, name):
 
 
 class Plotter:
-    def __init__(self, files, months, is_plot_years):
+    def __init__(self, files, months, days, is_plot_years):
         self.files = files
         self.months = months
+        self.days = days
         self.is_plot_years = is_plot_years
         self.plot_folder = get_directory('plots')
         self.current_df = None
         self.current_file_name = None
         self.current_plot_folder = None
-        self.progress, self.task_transform_file, self.task_plot_all, self.task_plot_months, self.task_plot_year\
-            = [None] * 5
+        self.progress, self.task_transform_file, self.task_plot_all, self.task_plot_days, self.task_plot_months, self.task_plot_year\
+            = [None] * 6
 
     def reset_progress_bars(self):
         self.progress.remove_task(self.task_transform_file)
         self.progress.remove_task(self.task_plot_all)
+        if self.task_plot_days is not None:
+            self.progress.remove_task(self.task_plot_days)
         if self.task_plot_months is not None:
             self.progress.remove_task(self.task_plot_months)
         if self.task_plot_year is not None:
@@ -83,6 +86,7 @@ class Plotter:
                 self.transform_time()
                 self.current_plot_folder = get_plot_folder(self.plot_folder, self.current_file_name)
                 self.plot_all()
+                self.plot_days()
                 self.plot_months()
                 self.plot_years()
                 self.progress.update(task_progress_file, advance=1)
@@ -102,9 +106,10 @@ class Plotter:
 
     def transform_time_row(self, row):
         # generate a pandas timestamp
+        day = row["DD"]
         month = row['MM']
-        minute = row['MN.1']
-        timestamp = [pd.Timestamp(f'{row.YY}{month.zfill(2)}{row.DD.zfill(2)} {row.HH.zfill(2)}:{minute.zfill(2)}:00')]
+        minute = row['MM.1']
+        timestamp = [pd.Timestamp(f'{row.YY}{month.zfill(2)}{day.zfill(2)} {row.HH.zfill(2)}:{minute.zfill(2)}:00')]
         # create a pandas series
         series = pd.Series(timestamp)
         # progress the progress bar to the next step
@@ -124,6 +129,22 @@ class Plotter:
         plt.savefig(os.path.join(self.current_plot_folder, file_name))
         self.progress.update(self.task_plot_all, advance=1)
 
+    def plot_days(self):
+        if self.plot_days is None:
+            return
+        self.task_plot_days = self.progress.add_task(f"[green]Plotting day graph...", total=len(self.days))
+        for day in self.days:
+            file_name = self.current_file_name + '_day_' + calendar.day_name[day]
+            days_df = self.current_df[self.current_df.index.day == day]
+            piv = pd.pivot_table(days_df, index=['HH'], columns=['MM'], values=['Stat1'], sort=False)
+            piv.plot(figsize=(15, 7))
+            plt.title(f'{self.current_file_name} Daily in Month {calendar.month_name[day]}')
+            plt.xlabel("Hours of the Day")
+            plt.ylabel("Value")
+            plt.savefig(os.path.join(self.current_plot_folder, file_name))
+            self.progress.update(self.task_plot_days, advance=1)
+    
+    
     def plot_months(self):
         if self.months is None:
             return
@@ -161,12 +182,13 @@ def main():
                                                                        "all files in output folder.",
                         metavar="FILE", action=ValidateFile, required=True)
     parser.add_argument("-y", "--years", dest="years", help="Plot each year in a graph.", action='store_true')
+    parser.add_argument("-d", "--days", dest="days", help="Plot each day in a graph.", action='store_true')
     parser.add_argument("-m", "--months", dest="months", help="Plot the specified month of each year in a "
                                                               "graph. Use numbers from 1-12 to specify the month or "
                                                               "'all' for all months.",
                         metavar="MONTH", action=ValidateMonth)
     args = parser.parse_args()
-    Plotter(files=args.files, months=args.months, is_plot_years=args.years).run()
+    Plotter(files=args.files, days=args.days, months=args.months, is_plot_years=args.years).run()
 
 
 if __name__ == "__main__":
