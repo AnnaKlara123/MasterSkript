@@ -103,7 +103,7 @@ class Plotter:
     def transform_time_row(self, row):
         # generate a pandas timestamp
         month = row['MM']
-        minute = row['MM.1']
+        minute = row['MN.1']
         timestamp = [pd.Timestamp(f'{row.YY}{month.zfill(2)}{row.DD.zfill(2)} {row.HH.zfill(2)}:{minute.zfill(2)}:00')]
         # create a pandas series
         series = pd.Series(timestamp)
