@@ -68,8 +68,8 @@ config_validator = Validator(config_schema, require_all=True)
 def parse_config(config):
     config['elevation'] = int(config['elevation'])
     config['skip_first_n'] = int(config['skip_first_n'])
-    config['modify_values'] = bool(config['modify_values'])
-    config['replace_nan_values'] = bool(config['replace_nan_values'])
+    config['modify_values'] = config['modify_values'] == 'True'
+    config['replace_nan_values'] = config['replace_nan_values'] == 'True'
     config['interval_minutes'] = int(config['interval_minutes'])
     ident = config['nan_value_identifier']
     if ident != '-':
