@@ -135,6 +135,7 @@ class File:
     #         return 
     #     self.df['Stat1'] = self.df['Stat1'].apply(lambda x: x if float(x) not in identifier else replacement)
 
+###### Works fine with '-' and list of Int.  ##########
     def replace_nan(self):
         if self.config.get('replace_nan_values') is False:
             return
