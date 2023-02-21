@@ -8,10 +8,16 @@ def modifier_type_check(field, value, error):
     if value not in ['sum', 'mean']:
         error(field, "Modifier must be of type \'sum\' or \'mean\'")
 
-
+# Original ##
 def nan_value_identifier_check(field, value, error):
     if value != '-' and not type(value) == list:
         error(field, "NanValueIdentifier must be \'-\' or of type integer.")
+
+## Alternative ##
+# def nan_value_identifier_check(field, value, error):
+#     if not (value == '-' or (isinstance(value, list) and all(isinstance(x, int) for x in value))):
+#         error(field, "NanValueIdentifier must be \'-\', an integer, or a list of integers.") 
+
 
 
 def nan_value_replacement_check(field, value, error):
@@ -63,8 +69,22 @@ config_schema = {
 # define a validator
 config_validator = Validator(config_schema, require_all=True)
 
+## Orginal 
+## parse values in config files to required types
+# def parse_config(config):
+#     config['elevation'] = int(config['elevation'])
+#     config['skip_first_n'] = int(config['skip_first_n'])
+#     config['modify_values'] = config['modify_values'] == 'True'
+#     config['replace_nan_values'] = config['replace_nan_values'] == 'True'
+#     config['interval_minutes'] = int(config['interval_minutes'])
+#     ident = config['nan_value_identifier']
+#     if ident != '-':                
+#         ident_arr = ident.split(',')
+#         config['nan_value_identifier'] = [float(x) for x in ident_arr]
+#     if config['nan_value_replacement'] != 'NaN':
+#         config['nan_value_replacement'] = int(config['nan_value_replacement'])
+#     return config
 
-# parse values in config files to required types
 def parse_config(config):
     config['elevation'] = int(config['elevation'])
     config['skip_first_n'] = int(config['skip_first_n'])
@@ -72,13 +92,19 @@ def parse_config(config):
     config['replace_nan_values'] = config['replace_nan_values'] == 'True'
     config['interval_minutes'] = int(config['interval_minutes'])
     ident = config['nan_value_identifier']
-    if ident != '-':
+    if ident == '-':
+        config['nan_value_identifier'] = '-'
+    else:
         ident_arr = ident.split(',')
-        config['nan_value_identifier'] = [float(x) for x in ident_arr]
+        if '-' in ident_arr:
+            ident_arr.remove('-')
+            config['nan_value_identifier'] = [float(x) for x in ident_arr]
+            config['nan_value_identifier'].append('-')
+        else:
+            config['nan_value_identifier'] = [float(x) for x in ident_arr]
     if config['nan_value_replacement'] != 'NaN':
         config['nan_value_replacement'] = int(config['nan_value_replacement'])
-    return config
-
+        return config
 
 def get_config(path, name):
     parser = ConfigParser(inline_comment_prefixes=";")
