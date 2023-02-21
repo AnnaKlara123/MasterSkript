@@ -61,6 +61,9 @@ config_schema = {
     'nan_value_identifier': {
         'check_with': nan_value_identifier_check
     },
+    'nan_value_threshold': {
+        'type': 'float'
+    },
     'nan_value_replacement': {
         'check_with': nan_value_replacement_check
     }
@@ -69,7 +72,7 @@ config_schema = {
 # define a validator
 config_validator = Validator(config_schema, require_all=True)
 
-## Orginal 
+## Orginal parser
 ## parse values in config files to required types
 # def parse_config(config):
 #     config['elevation'] = int(config['elevation'])
@@ -85,6 +88,7 @@ config_validator = Validator(config_schema, require_all=True)
 #         config['nan_value_replacement'] = int(config['nan_value_replacement'])
 #     return config
 
+###### Works fine with '-' and list of Int.  ##########
 def parse_config(config):
     config['elevation'] = int(config['elevation'])
     config['skip_first_n'] = int(config['skip_first_n'])
@@ -105,6 +109,32 @@ def parse_config(config):
     if config['nan_value_replacement'] != 'NaN':
         config['nan_value_replacement'] = int(config['nan_value_replacement'])
         return config
+###################################################################################
+
+## Now try to impelment threshold###:
+# def parse_config(config):
+#     config['elevation'] = int(config['elevation'])
+#     config['skip_first_n'] = int(config['skip_first_n'])
+#     config['modify_values'] = config['modify_values'] == 'True'
+#     config['replace_nan_values'] = config['replace_nan_values'] == 'True'
+#     config['interval_minutes'] = int(config['interval_minutes'])
+#     ident = config['nan_value_identifier']
+#     if ident == '-':
+#         config['nan_value_identifier'] = '-'
+#     else:
+#         ident_arr = ident.split(',')
+#         if '-' in ident_arr:
+#             ident_arr.remove('-')
+#             config['nan_value_identifier'] = [float(x) for x in ident_arr]
+#             config['nan_value_identifier'].append('-')
+#         else:
+#             config['nan_value_identifier'] = [float(x) for x in ident_arr]
+#     if config['nan_value_replacement'] != 'NaN':
+#         config['nan_value_replacement'] = int(config['nan_value_replacement'])
+#     config['nan_value_threshold'] = float(config.get('nan_value_threshold', "inf"))
+#     return config
+
+#####################################################
 
 def get_config(path, name):
     parser = ConfigParser(inline_comment_prefixes=";")
@@ -144,6 +174,7 @@ def get_default_values():
         "modifier": "sum",
         "replace_nan_values": False,
         "nan_value_identifier": "-",
+        "nan_value_threshold": False,
         "nan_value_replacement": 0
     }
 
@@ -170,6 +201,7 @@ def generate_default_config(file):
             f"values.\n")
     f.write(f"nan_value_identifier={default['nan_value_identifier']}\t; set this to '-' to replace all negative "
             f"values or set this to a specific value or a comma seperated list of values, that you want to replace.\n")
+    f.write(f"nan_value_threshold={default['nan_value_threshold']}\t; set this to a thresholdvalue to replace all values above or below.\n")
     f.write(f"nan_value_replacement={default['nan_value_replacement']}\t; set this to the integer value that you "
             f"want to replace invalid values with, or set it to 'NaN' to set the value to NaN.\n")
     f.close()
