@@ -123,17 +123,42 @@ class File:
                                                                        "HH": 'first',
                                                                        "MN": 'first',
                                                                        "Stat1": f'{modifier}'})
+### Original ####
+    # def replace_nan(self):
+    #     if self.config.get('replace_nan_values') is False:
+    #         return
+    #     replacement = self.config.get('nan_value_replacement') if isinstance(self.config.get('nan_value_replacement'),
+    #                                                                          int) else float("NaN")
+    #     identifier = self.config.get('nan_value_identifier')
+    #     if identifier == '-':
+    #         self.df['Stat1'] = self.df['Stat1'].apply(lambda x: x if x > 0 else replacement)
+    #         return 
+    #     self.df['Stat1'] = self.df['Stat1'].apply(lambda x: x if float(x) not in identifier else replacement)
 
     def replace_nan(self):
         if self.config.get('replace_nan_values') is False:
             return
-        replacement = self.config.get('nan_value_replacement') if isinstance(self.config.get('nan_value_replacement'),
-                                                                             int) else float("NaN")
+        replacement = self.config.get('nan_value_replacement') if isinstance(self.config.get('nan_value_replacement'), int) else float("NaN")
         identifier = self.config.get('nan_value_identifier')
         if identifier == '-':
-            self.df['Stat1'] = self.df['Stat1'].apply(lambda x: x if x > 0 else replacement)
-            return
-        self.df['Stat1'] = self.df['Stat1'].apply(lambda x: x if float(x) not in identifier else replacement)
+            self.df['Stat1'] = self.df['Stat1'].apply(lambda x: replacement if (isinstance(x, (int, float)) and x <= 0) or x == '-' else x)
+        else:
+            ident_int = [i for i in identifier if isinstance(i, int) or (isinstance(i, str) and i.lstrip('-').isdigit())]
+            ident_str = [i for i in identifier if isinstance(i, str) and not i.lstrip('-').isdigit()]
+            self.df['Stat1'] = self.df['Stat1'].apply(lambda x: replacement if (isinstance(x, (int, float)) and x <= 0 and '-' in identifier) or (x in ident_int) or (str(x) in ident_str) else x)
+
+
+    # def replace_nan(self):
+    #     if self.config.get('replace_nan_values') is False:
+    #         return
+    #     replacement = self.config.get('nan_value_replacement') if isinstance(self.config.get('nan_value_replacement'), int) else float("NaN")
+    #     identifier = self.config.get('nan_value_identifier')
+    #     if identifier == '-':
+    #         self.df['Stat1'] = self.df['Stat1'].apply(lambda x: replacement if x in ["-", " -"] else x)
+    #     else:
+    #         ident_int = [i for i in identifier if isinstance(i, int) or (isinstance(i, str) and i.lstrip('-').isdigit())]
+    #         ident_str = [i for i in identifier if isinstance(i, str) and not i.lstrip('-').isdigit()]
+    #         self.df['Stat1'] = self.df['Stat1'].apply(lambda x: replacement if (x in ident_int) or (str(x) in ident_str) else x)
 
 
 def main():
