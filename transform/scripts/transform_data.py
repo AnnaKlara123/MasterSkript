@@ -147,7 +147,6 @@ class File:
             ident_int = [i for i in identifier if isinstance(i, int) or (isinstance(i, str) and i.lstrip('-').isdigit())]
             ident_str = [i for i in identifier if isinstance(i, str) and not i.lstrip('-').isdigit()]
             self.df['Stat1'] = self.df['Stat1'].apply(lambda x: replacement if (isinstance(x, (int, float)) and x < 0 and '-' in identifier) or (x in ident_int) or (str(x) in ident_str) else x)
-            #self.df['Stat1'] = self.df['Stat1'].apply(lambda x: replacement if (isinstance(x, (int, float)) and x < 0) or x == '-' else x)
 
 
     # def replace_nan(self):
