@@ -53,10 +53,9 @@ def get_plot_folder(plot_base_folder, name):
 
 
 class Plotter:
-    def __init__(self, files, months, is_plot_years, year=None):
+    def __init__(self, files, months, is_plot_years):
         self.files = files
         self.months = months
-        self.year = year
         self.is_plot_years = is_plot_years
         self.plot_folder = get_directory('plots')
         self.current_df = None
@@ -126,23 +125,7 @@ class Plotter:
         plt.savefig(os.path.join(self.current_plot_folder, file_name))
         self.progress.update(self.task_plot_all, advance=1)
 
-    # def plot_months(self):
-    #     if self.months is None:
-    #         return
-    #     self.task_plot_months = self.progress.add_task(f"[green]Plotting months graph...", total=len(self.months))
-    #     for month in self.months:
-    #         file_name = self.current_file_name + '_month_' + calendar.month_name[month]
-    #         month_df = self.current_df[self.current_df.index.month == month]
-    #         piv = pd.pivot_table(month_df, index=['DD'], columns=['YY'], values=['Stat1'], sort=False)
-    #         piv.plot(figsize=(15, 7))
-    #         plt.title(f'{self.current_file_name} Yearly in Month {calendar.month_name[month]}')
-    #         plt.xlabel("Day of the Month")
-    #         plt.ylabel("Value")
-    #         plt.savefig(os.path.join(self.current_plot_folder, file_name))
-    #         self.progress.update(self.task_plot_months, advance=1)
-    
-    
-    ######### NEW ##############
+    ############### Original#######################
     def plot_months(self):
         if self.months is None:
             return
@@ -150,18 +133,35 @@ class Plotter:
         for month in self.months:
             file_name = self.current_file_name + '_month_' + calendar.month_name[month]
             month_df = self.current_df[self.current_df.index.month == month]
-            if self.year is not None:
-                month_df = month_df[month_df.index.year == self.year]
             piv = pd.pivot_table(month_df, index=['DD'], columns=['YY'], values=['Stat1'], sort=False)
             piv.plot(figsize=(15, 7))
-            if self.year is not None:
-                plt.title(f'{self.current_file_name} in {calendar.month_name[month]} {self.year}')
-            else:
-                plt.title(f'{self.current_file_name} Yearly in Month {calendar.month_name[month]}')
+            plt.title(f'{self.current_file_name} Yearly in Month {calendar.month_name[month]}')
             plt.xlabel("Day of the Month")
             plt.ylabel("Value")
             plt.savefig(os.path.join(self.current_plot_folder, file_name))
-            self.progress.update(self.task_plot_months, advance=1)    
+            self.progress.update(self.task_plot_months, advance=1)
+    ####################################################
+    
+    # ######### NEW ##############
+    # def plot_months(self):
+    #     if self.months is None:
+    #         return
+    #     self.task_plot_months = self.progress.add_task(f"[green]Plotting months graph...", total=len(self.months))
+    #     for month in self.months:
+    #         file_name = self.current_file_name + '_month_' + calendar.month_name[month]
+    #         month_df = self.current_df[self.current_df.index.month == month]
+    #         if self.year is not None:
+    #             month_df = month_df[month_df.index.year == self.year]
+    #         piv = pd.pivot_table(month_df, index=['DD'], columns=['YY'], values=['Stat1'], sort=False)
+    #         piv.plot(figsize=(15, 7))
+    #         if self.year is not None:
+    #             plt.title(f'{self.current_file_name} in {calendar.month_name[month]} {self.year}')
+    #         else:
+    #             plt.title(f'{self.current_file_name} Yearly in Month {calendar.month_name[month]}')
+    #         plt.xlabel("Day of the Month")
+    #         plt.ylabel("Value")
+    #         plt.savefig(os.path.join(self.current_plot_folder, file_name))
+    #         self.progress.update(self.task_plot_months, advance=1)    
             
 
     def plot_years(self):
@@ -180,19 +180,19 @@ class Plotter:
 
 
 ###### Additional Plotts!'#############
-    def plot_additional(self):
-        if self.year is not None and self.month is not None:
-            file_name = self.current_file_name + '_' + str(self.year) + '_' + calendar.month_name[self.month]
-            month_df = self.current_df[(self.current_df.index.year == self.year) & (self.current_df.index.month == self.month)]
-            fig, ax = plt.subplots(figsize=(15, 7))
-            ax.plot(month_df.datetime, month_df.Stat1)
-            plt.title(f'{self.current_file_name} {calendar.month_name[self.month]} {self.year}')
-            plt.xlabel("Timeframe")
-            plt.ylabel("Value")
-            locator = mdates.AutoDateLocator()
-            ax.xaxis.set_major_formatter(mdates.ConciseDateFormatter(locator))
-            plt.savefig(os.path.join(self.current_plot_folder, file_name))
-            self.progress.update(self.task_plot_all, advance=1)    
+    # def plot_additional(self):
+    #     if self.year is not None and self.month is not None:
+    #         file_name = self.current_file_name + '_' + str(self.year) + '_' + calendar.month_name[self.month]
+    #         month_df = self.current_df[(self.current_df.index.year == self.year) & (self.current_df.index.month == self.month)]
+    #         fig, ax = plt.subplots(figsize=(15, 7))
+    #         ax.plot(month_df.datetime, month_df.Stat1)
+    #         plt.title(f'{self.current_file_name} {calendar.month_name[self.month]} {self.year}')
+    #         plt.xlabel("Timeframe")
+    #         plt.ylabel("Value")
+    #         locator = mdates.AutoDateLocator()
+    #         ax.xaxis.set_major_formatter(mdates.ConciseDateFormatter(locator))
+    #         plt.savefig(os.path.join(self.current_plot_folder, file_name))
+    #         self.progress.update(self.task_plot_all, advance=1)    
 ################################################################################################            
 
 
@@ -209,8 +209,8 @@ def main():
                         metavar="MONTH", action=ValidateMonth)
     parser.add_argument("-yr", "--year", dest="year", help="Specify the year you want to plot. The year should be between 2013-2022.", type=int)
     args = parser.parse_args()
-    # Plotter(files=args.files, months=args.months, is_plot_years=args.years).run()
-    Plotter(files=args.files, months=args.months, is_plot_years=args.years, year=args.year).run()
+    Plotter(files=args.files, months=args.months, is_plot_years=args.years).run()  # Original # 
+    # Plotter(files=args.files, months=args.months, is_plot_years=args.years, year=args.year).run()
 
 
 if __name__ == "__main__":
