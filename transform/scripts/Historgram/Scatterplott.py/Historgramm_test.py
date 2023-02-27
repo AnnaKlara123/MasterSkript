@@ -6,27 +6,34 @@ import datetime
 # Read the header row separately to get the column names
 #header = pd.read_csv('C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/AirtempTest.csv', nrows=1).columns
 
-# Load data into a DataFrame while skipping the first 5 lines
+import pandas as pd
+
+# Read in the CSV file
 df = pd.read_csv('C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/AirtempTest.csv', sep='\t')
 
-print(df)
-# Get the columns of interest
+# Extract the values from the Stat1 column
 x = df['Stat1'].values
-print(x)
 
 # Combine the datetime columns into a single datetime object
-dates = [datetime.datetime(int(row['YY']), int(row['MM']), int(row['DD']), int(row['HH']), int(row['MM'])) for i, row in df.iterrows()]
+dates = [pd.Timestamp(int(row['YY']), int(row['MM']), int(row['DD']), int(row['HH']), int(row['MM.1'])) for i, row in df.iterrows()]
 
-# Convert datetime objects to numbers that can be plotted on the y-axis
-y = date2num(dates)
+# Set the datetime index for the dataframe
+df.index = dates
 
-# Plot scatter plot
-plt.scatter(x, y, color='red')
+# Remove the YY, MM, DD, HH, and MM.1 columns from the dataframe
+df = df.drop(columns=['YY', 'MM', 'DD', 'HH', 'MM.1'])
 
-# Add labels and title
-plt.xlabel('X Values')
-plt.ylabel('Datetime')
-plt.title('Scatter Plot Example')
+# Print the resulting dataframe
+print(df)
 
-# Show plot
+# Create a boolean mask of NaN values
+mask = df['Stat1'].isna()
+
+# Convert the boolean mask to 0 and 1 values
+plot_data = mask.astype(int)
+
+# Plot the data
+fig, ax = plt.subplots()
+ax.plot(df.index, plot_data)
 plt.show()
+
