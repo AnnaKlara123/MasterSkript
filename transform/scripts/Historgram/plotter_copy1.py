@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import calendar
 
+
 class ValidateMonth(Action):
     def __call__(self, parser, namespace, values, option_string=None):
         if values == 'all':
@@ -52,52 +53,49 @@ def get_plot_folder(plot_base_folder, name):
 
 
 class Plotter:
-    def __init__(self, files, months, years,  is_plot_month, is_plot_years):           # An dieser Stelle years,  is_plot_month, einfügen
+    def __init__(self, files, months, is_plot_years):
         self.files = files
-        self.months = months            
-        self.years = years                      # NEW
-        self.is_plot_month = is_plot_month      # NEW
+        self.months = months
         self.is_plot_years = is_plot_years
         self.plot_folder = get_directory('plots')
         self.current_df = None
         self.current_file_name = None
         self.current_plot_folder = None
-        self.progress, self.task_transform_file, self.task_plot_all, self.task_plot_months, self.task_plot_year, self.task_plot_month\
-            = [None] * 6                        #  self.task_plot_month NEW + 6 instead 5
+        self.progress, self.task_transform_file, self.task_plot_all, self.task_plot_months, self.task_plot_year, self.task_plot_single_month = [None] * 6
+        self.month = None
+        self.year = None
         #### Hier müssen dann noch die neuen tasks als self.task_plot_singlmonth, etc. hinzu!!    
 
 
     def reset_progress_bars(self):
-        self.progress.remove_task(self.task_transform_file)
-        self.progress.remove_task(self.task_plot_all)
-        if self.task_plot_months is not None:
-            self.progress.remove_task(self.task_plot_months)
-        if self.task_plot_month is not None:     # NEW TO Update Month for Progressbar       
-            self.progress.remove_task(self.task_plot_month)     #
-        if self.task_plot_year is not None:
-            self.progress.remove_task(self.task_plot_year)
+            self.progress.remove_task(self.task_transform_file)
+            self.progress.remove_task(self.task_plot_all)
+            if self.task_plot_months is not None:
+                self.progress.remove_task(self.task_plot_months)
+            if self.task_plot_year is not None:
+                self.progress.remove_task(self.task_plot_year)
+            if self.task_plot_single_month is not None:
+                self.progress.remove_task(self.task_plot_single_month)
 
     def run(self):
-        with progress_bar() as self.progress:
-            task_progress_file = self.progress.add_task("[red]Plotting files...", total=len(self.files))
-            for index, file in enumerate(self.files):
-                self.current_file_name, file_extension = os.path.splitext(os.path.basename(file))
-                self.current_df = pd.read_csv(str(file), sep="\t", skiprows=4,
-                                              dtype={'YY': str, 'MM': str, 'DD': str, 'HH': str})
+            with progress_bar() as self.progress:
+                task_progress_file = self.progress.add_task("[red]Plotting files...", total=len(self.files))
+                for index, file in enumerate(self.files):
+                    self.current_file_name, file_extension = os.path.splitext(os.path.basename(file))
+                    self.current_df = pd.read_csv(str(file), sep="\t", skiprows=4, dtype={'YY': str, 'MM': str, 'DD': str, 'HH': str})
 
-                self.transform_time()
-                self.current_plot_folder = get_plot_folder(self.plot_folder, self.current_file_name)
-                self.plot_all()
-                self.plot_month         # NEW
-                self.plot_months()
-                self.plot_years()
-                self.progress.update(task_progress_file, advance=1)
-                self.reset_progress_bars()
+                    self.transform_time()
+                    self.current_plot_folder = get_plot_folder(self.plot_folder, self.current_file_name)
+                    self.plot_all()
+                    self.plot_months()
+                    self.plot_years()
+                    self.plot_single_month()
+                    self.progress.update(task_progress_file, advance=1)
+                    self.reset_progress_bars()
 
     def transform_time(self):
         # create a new task for transforming the time column
-        self.task_transform_file = self.progress.add_task(f"[green]Preparing file {self.current_file_name}...",
-                                                          total=self.current_df.shape[0] + 1)
+        self.task_transform_file = self.progress.add_task(f"[green]Preparing file {self.current_file_name}...", total=self.current_df.shape[0] + 1)
         time_cols = self.current_df.apply(self.transform_time_row, axis=1)
         time_cols.columns = ['datetime']
         self.current_df = time_cols.join(self.current_df)
@@ -166,7 +164,24 @@ class Plotter:
     #         plt.xlabel("Day of the Month")
     #         plt.ylabel("Value")
     #         plt.savefig(os.path.join(self.current_plot_folder, file_name))
-    #         self.progress.update(self.task_plot_months, advance=1)    
+    #         self.progress.update(self.task_plot_months, advance=1)   
+
+
+    # def plot_single_month(self):
+    #     if self.month is None or self.year is None:
+    #         return
+    #     self.task_plot_single_month = self.progress.add_task(f"[green]Plotting single month graph...", total=1)
+    #     file_name = self.current_file_name + '_' + str(self.year) + '_' + calendar.month_name[self.month]
+    #     month_df = self.current_df[(self.current_df.index.year == self.year) & (self.current_df.index.month == self.month)]
+    #     fig, ax = plt.subplots(figsize=(15, 7))
+    #     ax.plot(month_df.datetime, month_df.Stat1)
+    #     plt.title(f'{self.current_file_name} {calendar.month_name[self.month]} {self.year}')
+    #     plt.xlabel("Timeframe")
+    #     plt.ylabel("Value")
+    #     locator = mdates.AutoDateLocator()
+    #     ax.xaxis.set_major_formatter(mdates.ConciseDateFormatter(locator))
+    #     plt.savefig(os.path.join(self.current_plot_folder, file_name))
+    #     self.progress.update(self.task_plot_single_month, advance=1) 
             
 
     def plot_years(self):
@@ -183,21 +198,6 @@ class Plotter:
         plt.savefig(os.path.join(self.current_plot_folder, file_name))
         self.progress.update(self.task_plot_year, advance=1)
 
-############## Try 1741 ######################
-    def plot_month(self):
-        if self.is_plot_month is False:
-            return
-        self.task_plot_month = self.progress.add_task(f"[green]Plotting month graph...", total=1)
-        self.current_df['DD'] = self.current_df.index.day
-        file_name = self.current_file_name + '_month'
-        piv = pd.pivot_table(self.current_df, index=['DD'], columns=['MM'], values=['Stat1'])
-        piv.plot(figsize=(15, 7))
-        plt.title(f'{self.current_file_name} Each Month')
-        plt.xlabel("Day of the Month")
-        plt.ylabel("Value")
-        plt.savefig(os.path.join(self.current_plot_folder, file_name))
-        self.progress.update(self.task_plot_month, advance=1)
-#################################        
 
 ###### Additional Plotts!'#############
     # def plot_additional(self):
@@ -227,8 +227,15 @@ def main():
                                                               "graph. Use numbers from 1-12 to specify the month or "
                                                               "'all' for all months.",
                         metavar="MONTH", action=ValidateMonth)
+    parser.add_argument("-ym", "--yearmonth", nargs=2, dest="yearmonth", help="Specify the year and month you want to plot in the format 'YYYY MM'. The year should be between 2013-2022.", metavar=("YEAR", "MONTH"), type=int)
     args = parser.parse_args()
-    Plotter(files=args.files, months=args.months, years=args.years, is_plot_years=args.years, is_plot_month=args.months).run()  # Original # is_plot_month=args.months added
+
+    if args.yearmonth:
+        year, month = args.yearmonth
+        Plotter(files=args.files, months=args.months, is_plot_years=args.years).plot_single_month(year, month)
+    else:
+        Plotter(files=args.files, months=args.months, is_plot_years=args.years, years=args.years).run()
+    #Plotter(files=args.files, months=args.months, is_plot_years=args.years).run()  # Original # 
     # Plotter(files=args.files, months=args.months, is_plot_years=args.years, year=args.year).run()
 
 
