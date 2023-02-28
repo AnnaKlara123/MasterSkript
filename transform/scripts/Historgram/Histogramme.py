@@ -13,15 +13,15 @@ parser.add_argument('--year', type=int, help='The year to plot')
 args = parser.parse_args()
 
 # Read the header row separately to get the column names
-#header = pd.read_csv('C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/AirtempTest2102.csv', nrows=1).columns
+#header = pd.read_csv('C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/Airtemp_NaN.csv', nrows=1).columns
 
 import pandas as pd
 
 # Read in the CSV file ----> CHANGE NAME!
-df = pd.read_csv('C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/AirtempTest2102.csv', sep='\t')
+df = pd.read_csv('C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/Airtemp_NaN.csv', sep='\t')
 # Get file_name ---> NEEDS to be CHANGED
-file_name = os.path.basename('C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/AirtempTest2102.csv')
-
+file_name = os.path.basename('C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/Airtemp_NaN.csv')
+plot_dir = 'C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/scripts/Historgram/plots_hardcoded'
 # Extract the values from the Stat1 column
 x = df['Stat1'].values
 
@@ -38,10 +38,14 @@ df.index = df['date']
 # Remove the YY, MM, DD, HH, MM.1 and date columns from the dataframe
 #df = df.drop(columns=['YY', 'MM', 'DD', 'HH', 'MM.1', 'date'])
 
+# If --year is specified, filter the dataframe to only include rows with the specified year
+if args.year:
+    df = df[df['date'].dt.year == args.year]
+
 # Group the data by year
 groups = df.groupby(df['date'].dt.year)
 
-# # Loop through each group and plot a histogram
+# Loop through each group and plot a histogram
 # for year, group in groups:
 #     plt.hist(group['Stat1'], bins=100)
 #     plt.title(f'Histogram for {year}')
@@ -49,14 +53,7 @@ groups = df.groupby(df['date'].dt.year)
 #     plt.ylabel('Count')
 #     plt.show()
 
-num_nan_values = df['Stat1'].isna().sum()
-print(f'Number of NaN values: {num_nan_values}')
-
-test_array = np.array([1, 2, np.nan, 3, 4])
-finite_array = test_array[np.isfinite(test_array)]
-print(finite_array)
-
-
+# # Loop through each group and plot a histogram and show No Data Value NaN
 for year, group in groups:
     data = group['Stat1'].replace(-9999, np.nan).values
     finite_data = data[np.isfinite(data)]
@@ -68,19 +65,19 @@ for year, group in groups:
     if num_nan_values > 0:
         nan_bin_center = bin_centers.max() + bar_width
         plt.bar(nan_bin_center, num_nan_values, width=bar_width, align='center', color='gray')
+        plt.text(nan_bin_center, num_nan_values, f'{num_nan_values}', ha='center', va='bottom')
     plt.title(f'Histogram for {year}')
     plt.xlabel('Stat1')
     plt.ylabel('Count')
-    plt.show()
+   
+    # Create a folder for the current file if it doesn't exist
+    file_folder = os.path.join(plot_dir, f'Histogramm_{file_name[:-4]}')
+    if not os.path.exists(file_folder):
+        os.makedirs(file_folder)
 
-# # Loop through each group and plot a histogram
-# for year, group in groups:
-#     data = group['Stat1'].replace(-9999, np.nan).values
-#     finite_data = data[np.isfinite(data)]
-#     hist, bins = np.histogram(finite_data, bins=100)
-#     bin_centers = (bins[1:] + bins[:-1]) / 2
-#     plt.bar(bin_centers, hist, width=(bins[1] - bins[0]), align='center')
-#     plt.title(f'Histogram for {year}')
-#     plt.xlabel('Stat1')
-#     plt.ylabel('Count')
-#     plt.show()
+    # Save the plot in the folder for the current file
+    plot_name = f'Histogram_{file_name}{year}.png'
+    plot_path = os.path.join(file_folder, plot_name)
+    plt.savefig(plot_path)
+
+    plt.show()
