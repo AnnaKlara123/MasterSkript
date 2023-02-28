@@ -18,9 +18,9 @@ args = parser.parse_args()
 import pandas as pd
 
 # Read in the CSV file ----> CHANGE NAME!
-df = pd.read_csv('C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/Airtemp_NaN.csv', sep='\t')
+df = pd.read_csv('C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/Windspeed_NaN.csv', sep='\t')
 # Get file_name ---> NEEDS to be CHANGED
-file_name = os.path.basename('C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/Airtemp_NaN.csv')
+file_name = os.path.basename('C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/Windspeed_NaN.csv')
 plot_dir = 'C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/scripts/Historgram/plots_hardcoded'
 # Extract the values from the Stat1 column
 x = df['Stat1'].values
@@ -69,6 +69,16 @@ for year, group in groups:
     plt.title(f'Histogram for {year}')
     plt.xlabel('Stat1')
     plt.ylabel('Count')
+
+    # Find the highest values in the finite_data array
+    highest_values = sorted(finite_data)[-5:]  # Change the number in brackets to show the desired number of highest values
+    
+    # Create a string with the highest values
+    highest_values_str = ', '.join([f'{value:.2f}' for value in highest_values])
+    
+    # Add a text box with the highest values
+    plt.text(0.02, 0.95, f'Highest values: {highest_values_str}', transform=plt.gca().transAxes, fontsize=10, verticalalignment='top')
+    
    
     # Create a folder for the current file if it doesn't exist
     file_folder = os.path.join(plot_dir, f'Histogramm_{file_name[:-4]}')
