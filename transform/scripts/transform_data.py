@@ -94,8 +94,17 @@ class File:
     def save(self):
         # get the new header in the required format
         self.df.columns = self.get_header()
-        # save the df as txt file to the output folder
-        self.df.to_csv(os.path.join(self.output_dir, get_file_name(self.file_name) + '.txt'), index=False, sep='\t')
+        # generate the new filename based on the original file name and optionally the modifier, interval minutes, nan value identifier and replacement
+        new_file_name = get_file_name(self.file_name)
+        if self.config.get('modify_values') is True:
+            new_file_name += f"_{self.config.get('modifier')}_{self.config.get('interval_minutes')}min"
+        if self.config.get('replace_nan_values') is True:
+            new_file_name += f"_nan-identifier-{self.config.get('nan_value_identifier')}_nan-replacement-{self.config.get('nan_value_replacement')}"
+        new_file_name += ".txt"
+        # save the df as txt file to the output folder with the new filename
+        self.df.to_csv(os.path.join(self.output_dir, new_file_name), index=False, sep='\t')
+
+
 
     def transform_time(self, task):
         # apply the transform_time_row function to every row in the dataset
