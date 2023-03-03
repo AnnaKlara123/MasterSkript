@@ -27,7 +27,7 @@ file_path = os.path.join(args.dir, args.filename)
 plot_dir = os.path.join(args.dir, 'plots')
 if not os.path.exists(plot_dir):
     os.makedirs(plot_dir)
-    print(colored(f'Created directory: {plot_dir}', 'red'))
+    print(colored(f'Created directory:',f'{plot_dir}', 'red'))
 
 # Create a folder for the current file if it doesn't exist
 file_folder = os.path.join(plot_dir, f'Histogramm_{file_name[:-4]}')
@@ -63,13 +63,6 @@ if args.year:
 # Group the data by year
 groups = df.groupby(df['date'].dt.year)
 
-# Loop through each group and plot a histogram
-# for year, group in groups:
-#     plt.hist(group['Stat1'], bins=100)
-#     plt.title(f'Histogram for {year}')
-#     plt.xlabel('Stat1')
-#     plt.ylabel('Count')
-#     plt.show()
 def high_low_values(df):
     # Find the indices of the highest and lowest values in the dataframe
     highest_indices = sorted(range(len(df)), key=lambda i: df.iloc[i]['Stat1'])[-5:]
@@ -79,21 +72,25 @@ def high_low_values(df):
     highest_dates = [df.iloc[i]['date'] for i in highest_indices]
     lowest_dates = [df.iloc[i]['date'] for i in lowest_indices]
 
+    # Get the highest and lowest values
+    highest_values = sorted(df['Stat1'])[-5:]
+    lowest_values = sorted(df['Stat1'])[:5]
+
     # Create a string with the highest and lowest values and their corresponding dates
     highest_values_str = ', '.join([f'{value:.2f} ({date})' for value, date in zip(sorted(df['Stat1'])[-5:], highest_dates)])
     lowest_values_str = ', '.join([f'{value:.2f} ({date})' for value, date in zip(sorted(df['Stat1'])[:5], lowest_dates)])
     # Return the strings for the highest and lowest values
-    return highest_values_str, lowest_values_str
+    return highest_values_str, lowest_values_str, highest_values, lowest_values
 
-# # Loop through each group and plot a histogram and show No Data Value NaN
-for year, group in groups:
-    data = group['Stat1'].replace(-9999, np.nan).values
-    finite_data = data[np.isfinite(data)]                   # used for selecting NaN values and exclude them
+
+def histogram_plotter(df, plot_dir, file_name, year):
+    data = df['Stat1'].replace(-9999, np.nan).values
+    finite_data = data[np.isfinite(data)]
     hist, bins = np.histogram(finite_data, bins=100)
     bin_centers = (bins[1:] + bins[:-1]) / 2
     bar_width = bins[1] - bins[0]
     plt.bar(bin_centers, hist, width=bar_width, align='center')
-    num_nan_values = group['Stat1'].isna().sum()            # sums up all NaN, counts them and than make a bar 
+    num_nan_values = df['Stat1'].isna().sum()
     if num_nan_values > 0:
         nan_bin_center = bin_centers.max() + bar_width
         plt.bar(nan_bin_center, num_nan_values, width=bar_width, align='center', color='gray')
@@ -101,39 +98,27 @@ for year, group in groups:
     plt.title(f'Histogram for {year}')
     plt.xlabel('Stat1')
     plt.ylabel('Count')
-  
 
+    ### This could be smarter somewhere else! #####
+    highest_values_str, lowest_values_str, highest_values, lowest_values = high_low_values(df)
+    print(colored(f'Highest values of Stat1 are {highest_values}', 'red'))
+    print(colored(f'Lowest values of Stat1 are {lowest_values}', 'blue'))
     
+    plt.text(0.02, 0.85, f'Highest values: {highest_values}', transform=plt.gca().transAxes, fontsize=10, verticalalignment='top')
+    plt.text(0.02, 0.75, f'Lowest values: {lowest_values}', transform=plt.gca().transAxes, fontsize=10, verticalalignment='top')
 
-    # # Find the indices of the highest and lowest values in the dataframe
-    # highest_indices = sorted(range(len(finite_data)), key=lambda i: finite_data[i])[-5:]
-    # lowest_indices = sorted(range(len(finite_data)), key=lambda i: finite_data[i])[:5]
+    file_folder = os.path.join(plot_dir, f'Histogramm_{file_name[:-4]}')
+    if not os.path.exists(file_folder):
+        os.makedirs(file_folder)
 
-    # # Get the corresponding dates for the highest and lowest values
-    # highest_dates = [group.iloc[i]['date'] for i in highest_indices]
-    # lowest_dates = [group.iloc[i]['date'] for i in lowest_indices]
-
-    # # Create a string with the highest and lowest values and their corresponding dates
-    # highest_values_str = ', '.join([f'{value:.2f} ({date})' for value, date in zip(sorted(finite_data)[-5:], highest_dates)])
-    # lowest_values_str = ', '.join([f'{value:.2f} ({date})' for value, date in zip(sorted(finite_data)[:5], lowest_dates)])
-    # print(colored(f'Highest values of {file_name} are {highest_values_str}', 'red'))
-    # print(colored(f'Lowest values of {file_name} are {lowest_values_str}', 'blue'))
-
-    # Get the strings for the highest and lowest values with their corresponding dates
-    highest_values_str, lowest_values_str = high_low_values(group)
-    print(colored(f'Highest values of Stat1 are {highest_values_str}', 'red'))
-    print(colored(f'Lowest values of Stat1 are {lowest_values_str}', 'blue'))
-
-    # Add a text box with the highest & lowest values
-    plt.text(0.02, 0.85, f'Highest values: {highest_values_str}', transform=plt.gca().transAxes, fontsize=10, verticalalignment='top')
-    plt.text(0.02, 0.75, f'Lowest values: {lowest_values_str}', transform=plt.gca().transAxes, fontsize=10, verticalalignment='top')
-
-   # Save the plot in the folder for the current file
-    plot_name = f'Histogram_{file_name}_{args.year}.png'
+    plot_name = f'Histogram_{file_name}{year}.png'
     plot_path = os.path.join(file_folder, plot_name)
+
     with tqdm(desc=f'Saving {plot_name}', total=1) as pbar:
         plt.savefig(plot_path)
         pbar.update()
-       # plt.savefig(plot_path)     
-
+    
     plt.show()
+
+# Call the histogram_plotter function
+histogram_plotter(df, plot_dir, file_name, args.year)
