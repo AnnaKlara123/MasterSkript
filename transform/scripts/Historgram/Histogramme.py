@@ -38,8 +38,6 @@ if not os.path.exists(file_folder):
 # Read in the CSV file
 df = pd.read_csv(file_path, sep='\t')
 
-# Get the base filename
-file_name = os.path.basename(args.filename)
 # Extract the values from the Stat1 column
 x = df['Stat1'].values
 
