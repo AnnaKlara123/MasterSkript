@@ -1,29 +1,49 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 from matplotlib.dates import date2num
-from matplotlib.dates import YearLocator, MonthLocator, DateFormatter
-import matplotlib.dates as mdates
 import datetime
 import argparse
 import os
 import numpy as np
 import seaborn as sns
+from tqdm import tqdm
+from termcolor import colored
 
+
+# Create the parser
 parser = argparse.ArgumentParser()
-parser = argparse.ArgumentParser()
+parser.add_argument('--dir', type=str, help='The directory where the file is located')
+parser.add_argument('--filename', type=str, help='The filename to read')
 parser.add_argument('--year', type=int, help='The year to plot')
 args = parser.parse_args()
 
 # Read the header row separately to get the column names
 #header = pd.read_csv('C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/Airtemp_NaN.csv', nrows=1).columns
 
-# Read in the CSV file ----> CHANGE NAME!
-df = pd.read_csv('C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/Precipitation_NaN_test.csv', sep='\t')
-# Get file_name ---> NEEDS to be CHANGED
-file_name = os.path.basename('C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/Precipitation_NaN_test.csv')
-plot_dir = 'C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/scripts/Historgram/plots_hardcoded'
+# Get the base filename
+file_name = os.path.basename(args.filename)
+print(file_name)
+
+# Build the full filepath from the directory and filename arguments
+file_path = os.path.join(args.dir, args.filename)
+
+# Create a subdirectory called 'plots' within the directory specified by --dir
+plot_dir = os.path.join(args.dir, 'plots')
+if not os.path.exists(plot_dir):
+    os.makedirs(plot_dir)
+    print(f'Created directory: {colored(plot_dir, "green")}')
+
+# Create a folder for the current file if it doesn't exist
+file_folder = os.path.join(plot_dir, f'Scatterplot{file_name[:-4]}')
+if not os.path.exists(file_folder):
+    os.makedirs(file_folder)
+    print(f'Created directory: {colored(file_folder, "green")}')
+    
+# Read in the CSV file
+df = pd.read_csv(file_path, sep='\t')
+
 # Extract the values from the Stat1 column
-x = df['Stat1'].values
+x = df['Stat1'].values# Extract the values from the Stat1 column
 
 # Combine the datetime columns into a single datetime object
 dates = [pd.Timestamp(int(row['YY']), int(row['MM']), int(row['DD']), int(row['HH']), int(row['MM.1'])) for i, row in df.iterrows()]
