@@ -6,22 +6,40 @@ import argparse
 import os
 import numpy as np
 import seaborn as sns
+from tqdm import tqdm
+from termcolor import colored
 
+
+# Create the parser
 parser = argparse.ArgumentParser()
-parser = argparse.ArgumentParser()
+parser.add_argument('--dir', type=str, help='The directory where the file is located')
+parser.add_argument('--filename', type=str, help='The filename to read')
 parser.add_argument('--year', type=int, help='The year to plot')
 args = parser.parse_args()
 
-# Read the header row separately to get the column names
-#header = pd.read_csv('C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/Airtemp_NaN.csv', nrows=1).columns
+# Get the base filename
+file_name = os.path.basename(args.filename)
 
-import pandas as pd
+# Build the full filepath from the directory and filename arguments
+file_path = os.path.join(args.dir, args.filename)
 
-# Read in the CSV file ----> CHANGE NAME!
-df = pd.read_csv('C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/Windspeed_NaN.csv', sep='\t')
-# Get file_name ---> NEEDS to be CHANGED
-file_name = os.path.basename('C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/Windspeed_NaN.csv')
-plot_dir = 'C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/scripts/Historgram/plots_hardcoded'
+# Create a subdirectory called 'plots' within the directory specified by --dir
+plot_dir = os.path.join(args.dir, 'plots')
+if not os.path.exists(plot_dir):
+    os.makedirs(plot_dir)
+    print(colored(f'Created directory: {plot_dir}', 'red'))
+
+# Create a folder for the current file if it doesn't exist
+file_folder = os.path.join(plot_dir, f'Histogramm_{file_name[:-4]}')
+if not os.path.exists(file_folder):
+    os.makedirs(file_folder)
+    print(colored(f'Created directory: {file_folder}', 'green'))
+
+# Read in the CSV file
+df = pd.read_csv(file_path, sep='\t')
+
+# Get the base filename
+file_name = os.path.basename(args.filename)
 # Extract the values from the Stat1 column
 x = df['Stat1'].values
 
@@ -52,16 +70,30 @@ groups = df.groupby(df['date'].dt.year)
 #     plt.xlabel('Stat1')
 #     plt.ylabel('Count')
 #     plt.show()
+def high_low_values(df):
+    # Find the indices of the highest and lowest values in the dataframe
+    highest_indices = sorted(range(len(df)), key=lambda i: df.iloc[i]['Stat1'])[-5:]
+    lowest_indices = sorted(range(len(df)), key=lambda i: df.iloc[i]['Stat1'])[:5]
+
+    # Get the corresponding dates for the highest and lowest values
+    highest_dates = [df.iloc[i]['date'] for i in highest_indices]
+    lowest_dates = [df.iloc[i]['date'] for i in lowest_indices]
+
+    # Create a string with the highest and lowest values and their corresponding dates
+    highest_values_str = ', '.join([f'{value:.2f} ({date})' for value, date in zip(sorted(df['Stat1'])[-5:], highest_dates)])
+    lowest_values_str = ', '.join([f'{value:.2f} ({date})' for value, date in zip(sorted(df['Stat1'])[:5], lowest_dates)])
+    # Return the strings for the highest and lowest values
+    return highest_values_str, lowest_values_str
 
 # # Loop through each group and plot a histogram and show No Data Value NaN
 for year, group in groups:
     data = group['Stat1'].replace(-9999, np.nan).values
-    finite_data = data[np.isfinite(data)]
+    finite_data = data[np.isfinite(data)]                   # used for selecting NaN values and exclude them
     hist, bins = np.histogram(finite_data, bins=100)
     bin_centers = (bins[1:] + bins[:-1]) / 2
     bar_width = bins[1] - bins[0]
     plt.bar(bin_centers, hist, width=bar_width, align='center')
-    num_nan_values = group['Stat1'].isna().sum()
+    num_nan_values = group['Stat1'].isna().sum()            # sums up all NaN, counts them and than make a bar 
     if num_nan_values > 0:
         nan_bin_center = bin_centers.max() + bar_width
         plt.bar(nan_bin_center, num_nan_values, width=bar_width, align='center', color='gray')
@@ -69,25 +101,39 @@ for year, group in groups:
     plt.title(f'Histogram for {year}')
     plt.xlabel('Stat1')
     plt.ylabel('Count')
+  
 
-    # Find the highest values in the finite_data array
-    highest_values = sorted(finite_data)[-5:]  # Change the number in brackets to show the desired number of highest values
     
-    # Create a string with the highest values
-    highest_values_str = ', '.join([f'{value:.2f}' for value in highest_values])
-    
-    # Add a text box with the highest values
-    plt.text(0.02, 0.95, f'Highest values: {highest_values_str}', transform=plt.gca().transAxes, fontsize=10, verticalalignment='top')
-    
-   
-    # Create a folder for the current file if it doesn't exist
-    file_folder = os.path.join(plot_dir, f'Histogramm_{file_name[:-4]}')
-    if not os.path.exists(file_folder):
-        os.makedirs(file_folder)
 
-    # Save the plot in the folder for the current file
-    plot_name = f'Histogram_{file_name}{year}.png'
+    # # Find the indices of the highest and lowest values in the dataframe
+    # highest_indices = sorted(range(len(finite_data)), key=lambda i: finite_data[i])[-5:]
+    # lowest_indices = sorted(range(len(finite_data)), key=lambda i: finite_data[i])[:5]
+
+    # # Get the corresponding dates for the highest and lowest values
+    # highest_dates = [group.iloc[i]['date'] for i in highest_indices]
+    # lowest_dates = [group.iloc[i]['date'] for i in lowest_indices]
+
+    # # Create a string with the highest and lowest values and their corresponding dates
+    # highest_values_str = ', '.join([f'{value:.2f} ({date})' for value, date in zip(sorted(finite_data)[-5:], highest_dates)])
+    # lowest_values_str = ', '.join([f'{value:.2f} ({date})' for value, date in zip(sorted(finite_data)[:5], lowest_dates)])
+    # print(colored(f'Highest values of {file_name} are {highest_values_str}', 'red'))
+    # print(colored(f'Lowest values of {file_name} are {lowest_values_str}', 'blue'))
+
+    # Get the strings for the highest and lowest values with their corresponding dates
+    highest_values_str, lowest_values_str = high_low_values(group)
+    print(colored(f'Highest values of Stat1 are {highest_values_str}', 'red'))
+    print(colored(f'Lowest values of Stat1 are {lowest_values_str}', 'blue'))
+
+    # Add a text box with the highest & lowest values
+    plt.text(0.02, 0.85, f'Highest values: {highest_values_str}', transform=plt.gca().transAxes, fontsize=10, verticalalignment='top')
+    plt.text(0.02, 0.75, f'Lowest values: {lowest_values_str}', transform=plt.gca().transAxes, fontsize=10, verticalalignment='top')
+
+   # Save the plot in the folder for the current file
+    plot_name = f'Histogram_{file_name}_{args.year}.png'
     plot_path = os.path.join(file_folder, plot_name)
-    plt.savefig(plot_path)
+    with tqdm(desc=f'Saving {plot_name}', total=1) as pbar:
+        plt.savefig(plot_path)
+        pbar.update()
+       # plt.savefig(plot_path)     
 
     plt.show()
