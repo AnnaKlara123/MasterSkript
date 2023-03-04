@@ -27,13 +27,13 @@ file_path = os.path.join(args.dir, args.filename)
 plot_dir = os.path.join(args.dir, 'plots')
 if not os.path.exists(plot_dir):
     os.makedirs(plot_dir)
-    print(colored(f'Created directory:',f'{plot_dir}', 'red'))
+    print(f'Created directory: {colored(plot_dir, "green")}')
 
 # Create a folder for the current file if it doesn't exist
 file_folder = os.path.join(plot_dir, f'Histogramm_{file_name[:-4]}')
 if not os.path.exists(file_folder):
     os.makedirs(file_folder)
-    print(colored(f'Created directory: {file_folder}', 'green'))
+    print(f'Created directory: {colored(file_folder, "green")}')
 
 # Read in the CSV file
 df = pd.read_csv(file_path, sep='\t')
@@ -99,8 +99,8 @@ def histogram_plotter(df, plot_dir, file_name, year):
 
     ### This could be smarter somewhere else! #####
     highest_values_str, lowest_values_str, highest_values, lowest_values = high_low_values(df)
-    print(colored(f'Highest values of Stat1 are {highest_values}', 'red'))
-    print(colored(f'Lowest values of Stat1 are {lowest_values}', 'blue'))
+    print(colored(f'Highest values of Stat1 are {highest_values_str}', 'red'))
+    print(colored(f'Lowest values of Stat1 are {lowest_values_str}', 'blue'))
     
     plt.text(0.02, 0.85, f'Highest values: {highest_values}', transform=plt.gca().transAxes, fontsize=10, verticalalignment='top')
     plt.text(0.02, 0.75, f'Lowest values: {lowest_values}', transform=plt.gca().transAxes, fontsize=10, verticalalignment='top')
