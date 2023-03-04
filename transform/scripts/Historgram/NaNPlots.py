@@ -6,20 +6,23 @@ import datetime
 import argparse
 import os
 
+# Create the parser
 parser = argparse.ArgumentParser()
+parser.add_argument('--dir', type=str, help='The directory where the file is located')
+parser.add_argument('--filename', type=str, help='The filename to read')
 parser.add_argument('--year', type=int, help='The year to plot')
 parser.add_argument('--month', type=int, help='The month to plot')
 args = parser.parse_args()
 
-# Read the header row separately to get the column names
-#header = pd.read_csv('C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/AirtempTest.csv', nrows=1).columns
+# Get the base filename
+file_name = os.path.basename(args.filename)
 
-import pandas as pd
 
-# Read in the CSV file ----> CHANGE NAME!
-df = pd.read_csv('C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/AirtempTest2102.csv', sep='\t')
-# Get file_name ---> NEEDS to be CHANGED
-file_name = os.path.basename('C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/AirtempTest2102.csv')
+# Build the full filepath from the directory and filename arguments
+file_path = os.path.join(args.dir, args.filename)
+
+# Read in the CSV file
+df = pd.read_csv(file_path, sep='\t')
 
 # Extract the values from the Stat1 column
 x = df['Stat1'].values
@@ -33,9 +36,6 @@ df.index = dates
 # Remove the YY, MM, DD, HH, and MM.1 columns from the dataframe
 df = df.drop(columns=['YY', 'MM', 'DD', 'HH', 'MM.1'])
 
-# Print the resulting dataframe
-# print(df)
-
 # Create a boolean mask of NaN values
 mask = df['Stat1'].isna()
 
@@ -47,20 +47,20 @@ groups = df.groupby([df.index.year, df.index.month])
 
 # Loop through each group and create a bar chart
 for (year, month), group in groups:
-    # Create a bar chart of the NaN values in the 'Stat1' column
-    fig, ax = plt.subplots(figsize=(20, 8))
-    plt.bar(group.index, plot_data.loc[group.index].values, width=0.001, color='red')
+    if (args.year is None or year == args.year) and (args.month is None or month == args.month):
+        # Create a bar chart of the NaN values in the 'Stat1' column
+        fig, ax = plt.subplots(figsize=(20, 8))
+        plt.bar(group.index, plot_data.loc[group.index].values, width=0.001, color='red')
 
-    # Set the title and axis labels
-    plt.title(f'Occurrences of NaN values in Stat1 column ({year}/{month:02d})')
-    plt.xlabel('Date')
-    plt.ylabel('NaN values')
-     # Add a label to the plot
-    ax.text(group.index[-1], 1.05, f'{year}/{month:02d}', ha='right', va='bottom', transform=ax.transAxes)
-     # Set the x-axis ticks and tick labels
-    ax.xaxis.set_major_locator(mdates.DayLocator(interval=1))
-    ax.xaxis.set_major_formatter(mdates.DateFormatter('%d'))
+        # Set the title and axis labels
+        plt.title(f'Occurrences of NaN values in Stat1 column ({year}/{month:02d})')
+        plt.xlabel('Date')
+        plt.ylabel('NaN values')
+         # Add a label to the plot
+        ax.text(group.index[-1], 1.05, f'{year}/{month:02d}', ha='right', va='bottom', transform=ax.transAxes)
+         # Set the x-axis ticks and tick labels
+        ax.xaxis.set_major_locator(mdates.DayLocator(interval=1))
+        ax.xaxis.set_major_formatter(mdates.DateFormatter('%d'))
 
-    # Display the chart
-    plt.show()
-    
+        # Display the chart
+        plt.show()
