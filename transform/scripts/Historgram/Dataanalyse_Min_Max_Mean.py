@@ -56,7 +56,7 @@ df['date'] = pd.to_datetime(df[['YY', 'MM', 'DD', 'HH', 'MM.1']].rename(columns=
 df.index = df['date']
 
 # Remove the YY, MM, DD, HH, MM.1 and date columns from the dataframe
-#df = df.drop(columns=['YY', 'MM', 'DD', 'HH', 'MM.1', 'date'])
+# df = df.drop(columns=['YY', 'MM', 'DD', 'HH', 'MM.1', 'date'])
 
 # If --year is specified, filter the dataframe to only include rows with the specified year
 if args.year:
@@ -76,60 +76,119 @@ groups = df.groupby(df['date'].dt.year)
 # 2. Mean Value each month 
 # 3. compare months of all years --> Min-Max-Mean 
 
- # Filter out NaN values
-df = df[pd.notnull(df['Stat1'])]
-print(df)
+# # Filter out NaN values
+# df = df[pd.notnull(df['Stat1'])]
+# print(df)
 
-# Group the data by month. Each group contains all values of one month
+
+# Group the data by month
 monthly_data = df.groupby(pd.Grouper(key='date', freq='M'))
-
+# monthly_data = df.groupby(df['date'].dt.to_period('M'))
+### orig
+# # Group the data by month. Each group contains all values of one month
+# monthly_data = df.groupby(pd.Grouper(key='date', freq='M'))
+#####
 # Calculate the daily averages for each month
 daily_data = monthly_data['Stat1'].mean().resample('D').mean()
+print(daily_data, 'dayly')
 
 ## 1.
-  
- # Calculate the maximum, minimum, and mean values for each month (with date)
-monthly_max = monthly_data['Stat1'].max()
-print(monthly_max, "Monthly Maximum Value")
-monthly_min = monthly_data['Stat1'].min()
-print(monthly_min, "Monthly Minimum Value")
-monthly_mean = monthly_data['Stat1'].mean()
-print(monthly_mean, "Monthly Mean Value")
-
-# Calculate the mean values for each month
-monthly_values = monthly_data['Stat1'].mean()
-
-# Create a new figure with a larger size
-fig, ax = plt.subplots(figsize=(20, 12))
-
-# Plot the monthly values from Stat1
-ax.plot(monthly_values.index, monthly_values.values, label='Values')
-
-# Highlight the monthly maximum values with red dashed lines
-ax.plot(monthly_max.index, monthly_max.values, linestyle='--', color='red', label='Max')
-
-# Highlight the monthly minimum values with blue dashed lines
-ax.plot(monthly_min.index, monthly_min.values, linestyle='--', color='blue', label='Min')
-
-# Add a horizontal line for the mean value
-ax.axhline(y=monthly_mean.mean(), color='green', linestyle='-', label='Mean')
-
-# Set the x-axis label
-ax.set_xlabel('Date')
-
-# Set the y-axis label
-ax.set_ylabel('Value')
-
-# Set the title
-ax.set_title('Monthly Data')
-
-# Add a legend
-ax.legend()
-
-# Show the plot
-plt.show()
+                    
+                    # # Calculate the maximum, minimum, and mean values for each month (with date)
+                    # monthly_max = monthly_data['Stat1'].max()
+                    # #print(monthly_max, "Monthly Maximum Value")
+                    # monthly_min = monthly_data['Stat1'].min()
+                    # #print(monthly_min, "Monthly Minimum Value")
+                    # monthly_mean = monthly_data['Stat1'].mean()
+                    # #print(monthly_mean, "Monthly Mean Value")
 
 
+# Create a new figure for each month
+for month, data in monthly_data:
+    
+    # Group the data by day within the month
+    daily_data = data.groupby(data['date'].dt.to_period('D'))
+    
+    # Calculate the maximum, minimum, and mean values for the month
+    monthly_max = data['Stat1'].max()
+    print("Monthly max:",monthly_max)
+    monthly_min = data['Stat1'].min()
+    monthly_mean = data['Stat1'].mean()
+    
+    # Calculate the daily averages for the month
+    daily_means = daily_data['Stat1'].mean()
+
+    # Convert the PeriodIndex to a DatetimeIndex
+    daily_means.index = daily_means.index.to_timestamp()
+    
+    # # Create a new figure with a larger size
+    fig, ax = plt.subplots(figsize=(20, 12))
+    
+    # # # Plot the daily data for the month
+    # ax.plot(daily_means['date'], daily_means.values, label='Daily')
+    ax.scatter(daily_means.index, daily_means.values, color='black', marker='.')
+
+    # Plot the monthly maximum values
+    ax.axhline(monthly_max, linestyle='--', color='red', label='Max')
+    
+    # Plot the monthly minimum values
+    ax.axhline(monthly_min, linestyle='--', color='blue', label='Min')
+    
+    # Add a horizontal line for the mean value
+    ax.axhline(monthly_mean, linestyle='-', color='green', label='Mean')
+    
+    # Set the x-axis label
+    ax.set_xlabel('Date')
+    
+    # Set the y-axis label
+    ax.set_ylabel('Value')
+    
+    # Set the title
+    ax.set_title(f'Monthly Data for {month}')
+    
+    # Add a legend
+    ax.legend()
+    
+    # Show the plot
+    plt.show()
+
+
+###########################################################################################################
+# # Calculate the mean values for each month
+# monthly_values = monthly_data['Stat1'].mean()
+# #print(monthly_values, "monthlyvalues")
+
+# # Create a new figure with a larger size
+# fig, ax = plt.subplots(figsize=(20, 12))
+
+# # Plot the monthly values from Stat1
+# ax.plot(monthly_values.index, monthly_values.values, label='Values')
+
+# # Highlight the monthly maximum values with red dashed lines
+# ax.plot(monthly_max.index, monthly_max.values, linestyle='--', color='red', label='Max')
+
+# # Highlight the monthly minimum values with blue dashed lines
+# ax.plot(monthly_min.index, monthly_min.values, linestyle='--', color='blue', label='Min')
+
+# # Add a horizontal line for the mean value
+# ax.axhline(y=monthly_mean.mean(), color='green', linestyle='-', label='Mean')
+
+# # Set the x-axis label
+# ax.set_xlabel('Date')
+
+# # Set the y-axis label
+# ax.set_ylabel('Value')
+
+# # Set the title
+# ax.set_title('Monthly Data')
+
+# # Add a legend
+# ax.legend()
+
+# # Show the plot
+# plt.show()
+
+############################################################################################
 # def high_low_values(df):
 #     # Find the indices of the highest and lowest values in the dataframe
 #     highest_indices = sorted(range(len(df)), key=lambda i: df.iloc[i]['Stat1'])[-5:]
