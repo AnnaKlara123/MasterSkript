@@ -13,7 +13,7 @@ from termcolor import colored
 # Create the parser
 parser = argparse.ArgumentParser()
 parser.add_argument('--dir', type=str, help='The directory where the file is located', default='C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output')
-parser.add_argument('--filename', type=str, help='The filename to read',  default='AirtempTest2102.csv')
+parser.add_argument('--filename', type=str, help='The filename to read',  default='Airtemp_NaN.csv')
 parser.add_argument('--year', type=int, help='The year to plot', default=2014)
 parser.add_argument('--month', type=int, help='The month to plot', default= 2)
 args = parser.parse_args()
@@ -26,17 +26,17 @@ file_name = os.path.basename(args.filename)
 file_path = os.path.join(args.dir, args.filename)
 
 
-# # Create a subdirectory called 'plots' within the directory specified by --dir
-# plot_dir = os.path.join(args.dir, 'plots')
-# if not os.path.exists(plot_dir):
-#     os.makedirs(plot_dir)
-#     print(f'Created directory: {colored(plot_dir, "green")}')
+# Create a subdirectory called 'plots' within the directory specified by --dir
+plot_dir = os.path.join(args.dir, 'plots')
+if not os.path.exists(plot_dir):
+    os.makedirs(plot_dir)
+    print(f'Created directory: {colored(plot_dir, "green")}')
 
-# # Create a folder for the current file if it doesn't exist
-# file_folder = os.path.join(plot_dir, f'Histogramm_{file_name[:-4]}')
-# if not os.path.exists(file_folder):
-#     os.makedirs(file_folder)
-#     print(f'Created directory: {colored(file_folder, "green")}')
+# Create a folder for the current file if it doesn't exist
+file_folder = os.path.join(plot_dir, f'Dataanalys_plots_{file_name[:-4]}')
+if not os.path.exists(file_folder):
+    os.makedirs(file_folder)
+    print(f'Created directory: {colored(file_folder, "green")}')
 
 # Read in the CSV file
 df = pd.read_csv(file_path, sep='\t')
@@ -90,7 +90,6 @@ monthly_data = df.groupby(pd.Grouper(key='date', freq='M'))
 #####
 # Calculate the daily averages for each month
 daily_data = monthly_data['Stat1'].mean().resample('D').mean()
-print(daily_data, 'dayly')
 
 ## 1.
                     
@@ -102,55 +101,59 @@ print(daily_data, 'dayly')
                     # monthly_mean = monthly_data['Stat1'].mean()
                     # #print(monthly_mean, "Monthly Mean Value")
 
-# Create a new figure for each month
-for month, data in monthly_data:
-    # Only plot the month that matches the specified month argument
-    if month.month != args.month:
-        continue
-    
-    # Group the data by day within the month
-    daily_data = data.groupby(data['date'].dt.to_period('D'))
-    
-    # Calculate the maximum, minimum, and mean values for the month
-    monthly_max = data['Stat1'].max()
-    monthly_min = data['Stat1'].min()
-    monthly_mean = data['Stat1'].mean()
-    
-    # Calculate the daily averages for the month
-    daily_means = daily_data['Stat1'].mean()
 
-    # Convert the PeriodIndex to a DatetimeIndex
-    daily_means.index = daily_means.index.to_timestamp()
-    
-    # Create a new figure for the month
-    fig, ax = plt.subplots(figsize=(10, 5))
-    
-    # Plot the daily data for the month
-    ax.plot(daily_means.index, daily_means.values, label='Daily')
-    
- #     Plot the monthly maximum values
-    ax.axhline(monthly_max, linestyle='--', color='red', label='Max')
-    ax.axhline(monthly_min, linestyle='--', color='blue', label='Min')
-    # Add a horizontal line for the mean value
-    ax.axhline(monthly_mean, linestyle='-', color='green', label='Mean')    
-    # Add a horizontal line for the mean value
-    ax.axhline(monthly_mean, linestyle='-', color='green', label='Mean')
-    
-    # Set the x-axis label
-    ax.set_xlabel('Date')
-    
-    # Set the y-axis label
-    ax.set_ylabel('Value')
-    
-    # Set the title
-    ax.set_title(f'Monthly Data for {month.strftime("%B %Y")}')
-    
-    # Add a legend
-    ax.legend()
-    
-    # Show the plot
-    plt.show()
+# Function that creats a new figure for each month with Min, Max & Mean Values of the month as a line and Mean daily Data
+def data_monthly(file_name, year, month, daily_data, monthly_data):
+        
+    for month, data in monthly_data:
+        # Only plot the month that matches the specified month argument
+        if month.month != args.month:
+            continue
+        
+        # Group the data by day within the month
+        daily_data = data.groupby(data['date'].dt.to_period('D'))
+        
+        # Calculate the maximum, minimum, and mean values for the month
+        monthly_max = data['Stat1'].max()
+        monthly_min = data['Stat1'].min()
+        monthly_mean = data['Stat1'].mean()
+        
+        # Calculate the daily averages for the month
+        daily_means = daily_data['Stat1'].mean()
 
+        # Convert the PeriodIndex to a DatetimeIndex
+        daily_means.index = daily_means.index.to_timestamp()
+        
+        # Create a new figure for the month
+        fig, ax = plt.subplots(figsize=(10, 5))
+        
+        # Plot the daily data for the month
+        ax.plot(daily_means.index.day, daily_means.values, label='Daily')
+        
+    #     Plot the monthly maximum values
+        ax.axhline(monthly_max, linestyle='--', color='red', label='Max')
+        ax.axhline(monthly_min, linestyle='--', color='blue', label='Min')
+        # Add a horizontal line for the mean value
+        ax.axhline(monthly_mean, linestyle='-', color='green', label='Mean')    
+        
+        # Set the x-axis & y-axis label
+        ax.set_xlabel('Day')
+        ax.set_ylabel('Value')
+        # Set the title & Legend 
+        ax.set_title(f'Monthly Data for {month.strftime("%B %Y")}')
+        ax.legend()
+
+        plot_name = f'DataanalyseMinMaxMean{file_name}{year}.png'
+        plot_path = os.path.join(file_folder, plot_name)
+
+        with tqdm(desc=colored(f'Saving {plot_name}', 'yellow'), total=1) as pbar:
+            plt.savefig(plot_path)
+            pbar.update()
+
+        # Show the plot
+        plt.show()
+
+data_monthly(file_name, args.year, args.month, daily_data, monthly_data)
 
 
 ####################################Works perfekt for each month with dayly data plus max, min & mean ###################################################
@@ -197,41 +200,5 @@ for month, data in monthly_data:
     
 #     # Show the plot
 #     plt.show()
+####################################################################################################################################
 
-
-###########################################################################################################
-# # Calculate the mean values for each month
-# monthly_values = monthly_data['Stat1'].mean()
-# #print(monthly_values, "monthlyvalues")
-
-# # Create a new figure with a larger size
-# fig, ax = plt.subplots(figsize=(20, 12))
-
-# # Plot the monthly values from Stat1
-# ax.plot(monthly_values.index, monthly_values.values, label='Values')
-
-# # Highlight the monthly maximum values with red dashed lines
-# ax.plot(monthly_max.index, monthly_max.values, linestyle='--', color='red', label='Max')
-
-# # Highlight the monthly minimum values with blue dashed lines
-# ax.plot(monthly_min.index, monthly_min.values, linestyle='--', color='blue', label='Min')
-
-# # Add a horizontal line for the mean value
-# ax.axhline(y=monthly_mean.mean(), color='green', linestyle='-', label='Mean')
-
-# # Set the x-axis label
-# ax.set_xlabel('Date')
-
-# # Set the y-axis label
-# ax.set_ylabel('Value')
-
-# # Set the title
-# ax.set_title('Monthly Data')
-
-# # Add a legend
-# ax.legend()
-
-# # Show the plot
-# plt.show()
-
-############################################################################################
