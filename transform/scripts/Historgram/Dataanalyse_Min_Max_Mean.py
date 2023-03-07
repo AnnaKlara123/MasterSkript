@@ -13,8 +13,8 @@ from termcolor import colored
 # Create the parser
 parser = argparse.ArgumentParser()
 parser.add_argument('--dir', type=str, help='The directory where the file is located', default='C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output')
-parser.add_argument('--filename', type=str, help='The filename to read',  default='Airtemp_NaN.csv')
-parser.add_argument('--year', type=int, help='The year to plot', default=2014)
+parser.add_argument('--filename', type=str, help='The filename to read',  default='AirtempTest2102.csv')
+parser.add_argument('--year', type=int, help='The year to plot', default= 2014)
 parser.add_argument('--month', type=int, help='The month to plot', default= 2)
 args = parser.parse_args()
 
@@ -56,7 +56,7 @@ df['date'] = pd.to_datetime(df[['YY', 'MM', 'DD', 'HH', 'MM.1']].rename(columns=
 df.index = df['date']
 
 # Remove the YY, MM, DD, HH, MM.1 and date columns from the dataframe
-# df = df.drop(columns=['YY', 'MM', 'DD', 'HH', 'MM.1', 'date'])
+df = df.drop(columns=['YY', 'MM', 'DD', 'HH', 'MM.1'])
 
 # If --year is specified, filter the dataframe to only include rows with the specified year
 if args.year:
@@ -88,6 +88,7 @@ monthly_data = df.groupby(pd.Grouper(key='date', freq='M'))
 # # Group the data by month. Each group contains all values of one month
 # monthly_data = df.groupby(pd.Grouper(key='date', freq='M'))
 #####
+
 # Calculate the daily averages for each month
 daily_data = monthly_data['Stat1'].mean().resample('D').mean()
 
@@ -113,6 +114,7 @@ def data_monthly(file_name, year, month, daily_data, monthly_data):
         
         # Group the data by day within the month
         daily_data = data.groupby(data['date'].dt.to_period('D'))
+    
         
         # Calculate the maximum, minimum, and mean values for the month
         monthly_max = data['Stat1'].max()
@@ -124,18 +126,30 @@ def data_monthly(file_name, year, month, daily_data, monthly_data):
 
         # Convert the PeriodIndex to a DatetimeIndex
         daily_means.index = daily_means.index.to_timestamp()
+
+        # Create a boolean mask indicating which values are NaN
+        nan_mask = daily_means.isna()
         
         # Create a new figure for the month
         fig, ax = plt.subplots(figsize=(10, 5))
         
-        # Plot the daily data for the month
-        ax.plot(daily_means.index.day, daily_means.values, label='Daily')
+        # # Plot the daily data for the month ####
+        # ax.plot(daily_means.index.day, daily_means.values, label='Daily')
+        ######
+
+         # Plot the daily data for the month, coloring missing values differently
+        sc = ax.scatter(daily_means.index.day, daily_means.values, c=nan_mask, cmap='coolwarm', label='Daily mean')
+        ######################
+
         
     #     Plot the monthly maximum values
         ax.axhline(monthly_max, linestyle='--', color='red', label='Max')
+        ax.text(0.95, monthly_max, f'{monthly_max:.2f}', ha='center', va='baseline', color='red')
         ax.axhline(monthly_min, linestyle='--', color='blue', label='Min')
+        ax.text(0.95, monthly_min, f'{monthly_min:.2f}', ha='center', va='baseline', color='blue')
         # Add a horizontal line for the mean value
-        ax.axhline(monthly_mean, linestyle='-', color='green', label='Mean')    
+        ax.axhline(monthly_mean, linestyle='-', color='green', label='Mean')
+        ax.text(0.95, monthly_mean, f'{monthly_mean:.2f}', ha='center', va='baseline', color='green')    
         
         # Set the x-axis & y-axis label
         ax.set_xlabel('Day')
@@ -144,7 +158,21 @@ def data_monthly(file_name, year, month, daily_data, monthly_data):
         ax.set_title(f'Monthly Data for {month.strftime("%B %Y")}')
         ax.legend()
 
-        plot_name = f'DataanalyseMinMaxMean{file_name}{year}.png'
+        # Add value annotations to each point on the plot
+        for i, (x, y) in enumerate(zip(daily_means.index.day, daily_means.values)):
+            if nan_mask[i]:
+                # If the value is NaN, use a different color and add a "NaN" label
+                color = 'gray'
+                label = 'NaN'
+            else:
+                # Otherwise, use the default color and add the value as a label
+                color = sc.cmap(sc.norm(y))
+                label = f'{y:.2f}'
+            ax.annotate(label, xy=(x, y), xytext=(x+0.2, y), color=color, fontsize=8)
+
+        # Save the plot with a unique name based on the month and year
+        plot_name = f'{file_name}_{month.strftime("%Y-%m")}.png'
+        #  plot_name = f'DataanalyseMinMaxMean{file_name}{year}.png'
         plot_path = os.path.join(file_folder, plot_name)
 
         with tqdm(desc=colored(f'Saving {plot_name}', 'yellow'), total=1) as pbar:
