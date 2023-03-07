@@ -103,6 +103,7 @@ daily_data = monthly_data['Stat1'].mean().resample('D').mean()
 
 
 # Function that creats a new figure for each month with Min, Max & Mean Values of the month as a line and Mean daily Data
+##### If NaN Values are in the df it will not show that day! --> Maybe solve that later  ######## 
 def data_monthly(file_name, year, month, daily_data, monthly_data):
         
     for month, data in monthly_data:
