@@ -2,6 +2,7 @@ import pandas as pd
 import argparse
 import os
 from termcolor import colored
+import matplotlib.pyplot as plt
 
 # Create the parser
 parser = argparse.ArgumentParser()
@@ -39,13 +40,17 @@ def prepare_output(file_name, plot_dir):
 # Call the function and assign the result to a variable
 file_folder = prepare_output(file_name, args.dir)
 
-print(file_folder)
+# print(file_folder)
 
 # Read in the CSV file
 df = pd.read_csv(file_path, sep=';')
 
 # Rename the columns
 df.columns = ['date', 'h', 'v', 'QStat']
+df['h'] = df['h'].astype(float)
+df['v'] = df['v'].astype(float)
+df['QStat'] = df['QStat'].astype(float)
+
 
 # Convert the Date column to a pandas datetime format
 df['date'] = pd.to_datetime(df['date'], format='%d-%m-%Y %H:%M:%S')
@@ -53,13 +58,40 @@ df['date'] = pd.to_datetime(df['date'], format='%d-%m-%Y %H:%M:%S')
 # Set the Date column as the index
 df.set_index('date', inplace=True)
 
-# Access the data for a specific timestamp (e.g. 25-06-2019 11:00:00)
-data_for_timestamp = df.loc['2019-06-25 11:00:00']
+# # Access the data for a specific timestamp (e.g. 25-06-2019 11:00:00)
+# data_for_timestamp = df.loc['2019-06-25 11:00:00']
 
-print(df)
+# Resample the data to daily frequency and calculate the mean of each day
+df_daily = df.resample('D')['QStat'].mean()
 
-# If --year is specified, filter the dataframe to only include rows with the specified year
-# Group the data by year / month
+# Resample the data to monthly frequency and calculate the mean, max, and min of each month
+df_monthly = df.resample('M')['QStat'].agg(['mean', 'max', 'min'])
 
-group_year = df.groupby(df['date'].dt.year)
-groups_month = df.groupby(df['date'].dt.month)
+print(df_monthly)
+
+# Plot the data
+ax = df_daily.plot(label='Daily Average')
+df_monthly['mean'].plot(ax=ax, label='Monthly Average')
+df_monthly[['max', 'min']].plot(style=['o', 'o'], ax=ax, label='Max/Min')
+ax.set_xlabel('Date')
+ax.set_ylabel('Discharge')
+ax.legend()
+plt.show()
+
+
+
+
+
+
+
+
+# # Calculate the monthly average, maximum, and minimum
+# df_resampled = df.resample('M')['QStat'].agg(['mean', 'max', 'min'])
+
+# # Plot the data
+# ax = df_grouped.plot(label='Daily Average')
+# df_resampled['mean'].plot(ax=ax, label='Monthly Average')
+# df_resampled[['max', 'min']].plot(style=['o', 'o'], ax=ax, label='Max/Min')
+# ax.set_xlabel('Date')
+# ax.set_ylabel('Discharge')
+# ax.legend()
