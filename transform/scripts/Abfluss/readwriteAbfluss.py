@@ -20,9 +20,6 @@ file_name = os.path.basename(args.filename)
 # Build the full filepath from the directory and filename arguments
 file_path = os.path.join(args.dir, args.filename)
 
-# Build the full filepath from the directory and filename arguments
-file_path = os.path.join(args.dir, args.filename)
-
 def prepare_output(file_name, plot_dir):
     # Create a subdirectory called 'Dischargeanalyse' within the directory specified by --dir
     plot_dir = os.path.join(args.dir, 'Dischargeanalyse')
@@ -78,47 +75,43 @@ df_monthly.to_csv(os.path.join(file_folder, 'monthly_average.csv'))
 
 
 #################################  Plot the data #########################################################
-# Filter the data for the specified year and month
-df_filtered = df.loc[(df.index.year == args.year) & (df.index.month == args.month)]
 
-# Resample the filtered data to daily frequency and calculate the mean and max/min of each day
-df_daily = df_filtered.resample('D')['QStat'].agg(['mean', 'max', 'min'])
+def plotter(df, df_monthly, args):
+    # Filter the data for the specified year and month
+    df_filtered = df.loc[(df.index.year == args.year) & (df.index.month == args.month)]
 
-# Calculate the daily maximum and minimum values
-daily_max = df_daily['max']
-daily_min = df_daily['min']
+    # Resample the filtered data to daily frequency and calculate the mean and max/min of each day
+    df_daily = df_filtered.resample('D')['QStat'].agg(['mean', 'max', 'min'])
 
-# Resample the filtered data to monthly frequency and calculate the mean, max, and min of each month
-df_monthly = df_filtered.resample('M')['QStat'].agg(['mean', 'max', 'min'])
+    # Get the monthly max and min values for the specified year and month
+    monthly_data = df_monthly.loc[f'{args.year}-{args.month:02d}']
+    monthly_max = monthly_data['max']
+    monthly_min = monthly_data['min']
 
-# Get the monthly mean, max, and min values
-monthly_mean = df_monthly['mean']
-monthly_max = df_monthly['max']
-monthly_min = df_monthly['min']
 
-# Plot the data
-fig, ax = plt.subplots(figsize=(10, 5))
-ax = df_daily['mean'].plot(label='Daily Average')
-ax.scatter(daily_max.index, daily_max, marker='.', color='red', label='Daily Max')
-ax.scatter(daily_min.index, daily_min, marker='.', color='green', label='Daily Min')
+    # Plot the data
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax = df_daily['mean'].plot(label='Daily Average')
+    ax.scatter(df_daily['max'].index, df_daily['max'], marker='.', color='red', label='Daily Max')
+    ax.scatter(df_daily['min'].index, df_daily['min'], marker='.', color='green', label='Daily Min')
+    # Add horizontal lines for the monthly max and min values
+    ax.hlines(monthly_max, xmin=df_daily.index.min(), xmax=df_daily.index.max(), 
+              color='red', linestyle='dashed', label='Monthly Max')
+    ax.hlines(monthly_min, xmin=df_daily.index.min(), xmax=df_daily.index.max(), 
+              color='green', linestyle='dashed', label='Monthly Min')
+    ax.set_xlabel('Date')
+    ax.set_ylabel('Discharge QStat mm/s')
+    ax.set_title(f'Average of {args.month:02d}/{args.year}')
+    ax.legend()
+    plt.show()
+    
 
-# Add horizontal lines for the monthly mean, max, and min values
-# ax.axhline(y=monthly_mean, color='r', linestyle='--')
-# ax.hlines(monthly_mean, monthly_mean, color='blue', linestyle='dashed', label='Monthly Mean')
-# ax.hlines(monthly_max, color='black', linestyle='dashed', label='Monthly Max')
-# ax.hlines(monthly_min, color='purple', linestyle='dashed', label='Monthly Min')
-
-ax.set_xlabel('Date')
-ax.set_ylabel('Discharge')
-ax.set_title(f'Average of {args.month:02d}/{args.year}')
-ax.legend()
-plt.show()
 
 # Save the plot to a file
-plt.savefig(os.path.join(file_folder, f'Average_Discharge_{args.month:02d}_{args.year}.png'))
+    plt.savefig(os.path.join(file_folder, f'Average_Discharge_{args.month:02d}_{args.year}.png'))
 
 
-
+plotter(df, df_monthly, args)
 ###########################################################################################
 # # Plot the data
 # fig, ax = plt.subplots(figsize=(10, 5))
