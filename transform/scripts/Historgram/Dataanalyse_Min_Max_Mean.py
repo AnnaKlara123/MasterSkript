@@ -14,8 +14,8 @@ from termcolor import colored
 parser = argparse.ArgumentParser()
 parser.add_argument('--dir', type=str, help='The directory where the file is located', default='C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output')
 parser.add_argument('--filename', type=str, help='The filename to read',  default='AirtempTest2102.csv')
-parser.add_argument('--year', type=int, help='The year to plot', default= 2014)
-parser.add_argument('--month', type=int, help='The month to plot', default= 2)
+parser.add_argument('--year', type=int, help='The year to plot', default= 2013)
+parser.add_argument('--month', type=int, help='The month to plot', default= 10)
 args = parser.parse_args()
 
 # Get the base filename
@@ -62,13 +62,9 @@ df = df.drop(columns=['YY', 'MM', 'DD', 'HH', 'MM.1'])
 if args.year:
     df = df[df['date'].dt.year == args.year]
 
-# If --year is specified, filter the dataframe to only include rows with the specified year
+# If --month is specified, filter the dataframe to only include rows with the specified month
 if args.month:
     df = df[df['date'].dt.month == args.month]
-
-# Group the data by year
-groups = df.groupby(df['date'].dt.year)
-
 
 ##### Data analyse ######
 
@@ -80,7 +76,6 @@ groups = df.groupby(df['date'].dt.year)
 # df = df[pd.notnull(df['Stat1'])]
 # print(df)
 
-
 # Group the data by month
 monthly_data = df.groupby(pd.Grouper(key='date', freq='M'))
 # monthly_data = df.groupby(df['date'].dt.to_period('M'))
@@ -88,9 +83,24 @@ monthly_data = df.groupby(pd.Grouper(key='date', freq='M'))
 # # Group the data by month. Each group contains all values of one month
 # monthly_data = df.groupby(pd.Grouper(key='date', freq='M'))
 #####
+# Filter the dataframe to only include rows with the specified year and month
+df_filtered = df[(df['date'].dt.year == args.year) & (df['date'].dt.month == args.month)]
 
-# Calculate the daily averages for each month
-daily_data = monthly_data['Stat1'].mean().resample('D').mean()
+# Group the data by day within the month and calculate the mean, including NaN values --> change skipna=True)) to see the days with NaN Values!
+daily_data = df_filtered.groupby(df_filtered['date'].dt.day)['Stat1'].apply(lambda x: x.mean(skipna=False))
+print("Daily data:\n", daily_data)
+
+#####################################################################
+# # Calculate the daily averages for each month
+# daily_data = monthly_data['Stat1'].mean().resample('D').mean()
+
+# # Print the entire daily_data DataFrame
+# print(daily_data)
+#### When the line daily_data = monthly_data['Stat1'].mean().resample('D').mean() is executed,
+#  the mean() function is first used to calculate the monthly mean value for each day in the month. Then, resample('D') is
+#  used to create a new pandas Series with daily frequency, which contains NaN values for any days where no data was available.
+#  Finally, mean() is used again to replace the NaN values with the mean of the available data for that day. So, daily_data is not 
+# a fixed value and will change for every day depending on the available data.
 
 ## 1.
                     
@@ -114,6 +124,7 @@ def data_monthly(file_name, year, month, daily_data, monthly_data):
         
         # Group the data by day within the month
         daily_data = data.groupby(data['date'].dt.to_period('D'))
+        print("Dayly data2", daily_data)
     
         
         # Calculate the maximum, minimum, and mean values for the month
@@ -122,13 +133,15 @@ def data_monthly(file_name, year, month, daily_data, monthly_data):
         monthly_mean = data['Stat1'].mean()
         
         # Calculate the daily averages for the month
-        daily_means = daily_data['Stat1'].mean()
+        daily_means = daily_data['Stat1'].apply(lambda x: np.nanmean(x))
+        #daily_means = daily_data['Stat1'].mean()
 
         # Convert the PeriodIndex to a DatetimeIndex
         daily_means.index = daily_means.index.to_timestamp()
 
         # Create a boolean mask indicating which values are NaN
         nan_mask = daily_means.isna()
+        #print(nan_mask, "mask NaN")
         
         # Create a new figure for the month
         fig, ax = plt.subplots(figsize=(10, 5))
@@ -138,9 +151,12 @@ def data_monthly(file_name, year, month, daily_data, monthly_data):
         ######
 
          # Plot the daily data for the month, coloring missing values differently
-        sc = ax.scatter(daily_means.index.day, daily_means.values, c=nan_mask, cmap='coolwarm', label='Daily mean')
+        #sc = ax.scatter(daily_means.index.day, daily_means.values, c=nan_mask, cmap='coolwarm', label='Daily mean')
         ######################
 
+        # Plot the daily data for the month, coloring missing values differently
+        sc = ax.scatter(daily_means.index.day, daily_means.values, c='blue', label='Daily (non-NaN)')
+        ax.scatter(daily_means.index.day[nan_mask], daily_means.values[nan_mask], c='gray', marker='x', label='Daily (NaN)')
         
     #     Plot the monthly maximum values
         ax.axhline(monthly_max, linestyle='--', color='red', label='Max')
@@ -171,7 +187,7 @@ def data_monthly(file_name, year, month, daily_data, monthly_data):
             ax.annotate(label, xy=(x, y), xytext=(x+0.2, y), color=color, fontsize=8)
 
         # Save the plot with a unique name based on the month and year
-        plot_name = f'{file_name}_{month.strftime("%Y-%m")}.png'
+        plot_name = f'new{file_name}_{month.strftime("%Y-%m")}.png'
         #  plot_name = f'DataanalyseMinMaxMean{file_name}{year}.png'
         plot_path = os.path.join(file_folder, plot_name)
 
