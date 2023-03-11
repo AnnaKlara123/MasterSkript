@@ -9,10 +9,20 @@ import calendar
 parser = argparse.ArgumentParser()
 parser.add_argument('--dir', type=str, help='The directory where the file is located', default='C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/input/Abfluss')
 parser.add_argument('--filename', type=str, help='The filename to read',  default='RQ30_data_20190625_20220818.csv')
+parser.add_argument('--unit', type=str, help='The unit to plot', default="h")
 parser.add_argument('--year', type=int, help='The year to plot', default= 2019)
 parser.add_argument('--month', type=int, help='The month to plot', default= 10)
 args = parser.parse_args()
 
+# Select the appropriate column based on the input unit
+if args.unit == 'QStat':
+    unit_col = 'QStat'
+elif args.unit == 'h':
+    unit_col = 'h'
+elif args.unit == 'v':
+    unit_col = 'v'
+else:
+    raise ValueError('Invalid unit specified')
 
 # Get the base filename
 file_name = os.path.basename(args.filename)
@@ -48,6 +58,7 @@ df.columns = ['date', 'h', 'v', 'QStat']
 df['h'] = df['h'].astype(float)
 df['v'] = df['v'].astype(float)
 df['QStat'] = df['QStat'].astype(float)
+df[unit_col] = df[unit_col].astype(float)
 
 
 # Convert the Date column to a pandas datetime format
@@ -60,12 +71,11 @@ df.set_index('date', inplace=True)
 # data_for_timestamp = df.loc['2019-06-25 11:00:00']
 
 ####################### Resample df due to days and Month #############################
-
 # Resample the data to daily frequency and calculate the mean of each day
-df_daily = df.resample('D')['QStat'].mean()
+df_daily = df.resample('D')[unit_col].mean()
 
 # Resample the data to monthly frequency and calculate the mean, max, and min of each month
-df_monthly = df.resample('M')['QStat'].agg(['mean', 'max', 'min'])
+df_monthly = df.resample('M')[unit_col].agg(['mean', 'max', 'min'])
 
 # Save the daily DataFrame to a CSV file
 df_daily.to_csv(os.path.join(file_folder, 'daily_average.csv'))
@@ -81,126 +91,42 @@ def plotter(df, df_monthly, args):
     df_filtered = df.loc[(df.index.year == args.year) & (df.index.month == args.month)]
 
     # Resample the filtered data to daily frequency and calculate the mean and max/min of each day
-    df_daily = df_filtered.resample('D')['QStat'].agg(['mean', 'max', 'min'])
+    df_daily = df_filtered.resample('D')[unit_col].agg(['mean', 'max', 'min'])
 
     # Get the monthly max and min values for the specified year and month
     monthly_data = df_monthly.loc[f'{args.year}-{args.month:02d}']
     monthly_max = monthly_data['max']
     monthly_min = monthly_data['min']
 
-
-    # Plot the data
-    fig, ax = plt.subplots(figsize=(10, 5))
+    # create plot
+    fig, ax = plt.subplots(figsize=(15, 5))
     ax = df_daily['mean'].plot(label='Daily Average')
+    
+    # Add labels to the scatter plot
+    for index, row in df_daily.iterrows():
+        ax.annotate(round(row['max'], 2), xy=(index, row['max']), 
+                    xytext=(-5, 10), textcoords='offset points', color='red', fontsize=5)
+        ax.annotate(round(row['min'], 2), xy=(index, row['min']), 
+                    xytext=(-5, -15), textcoords='offset points', color='green', fontsize=5)
+    
     ax.scatter(df_daily['max'].index, df_daily['max'], marker='.', color='red', label='Daily Max')
     ax.scatter(df_daily['min'].index, df_daily['min'], marker='.', color='green', label='Daily Min')
+    
     # Add horizontal lines for the monthly max and min values
     ax.hlines(monthly_max, xmin=df_daily.index.min(), xmax=df_daily.index.max(), 
               color='red', linestyle='dashed', label='Monthly Max')
     ax.hlines(monthly_min, xmin=df_daily.index.min(), xmax=df_daily.index.max(), 
               color='green', linestyle='dashed', label='Monthly Min')
+    
+    # Lable plot
     ax.set_xlabel('Date')
-    ax.set_ylabel('Discharge QStat mm/s')
+    ax.set_ylabel(f'Discharge {args.unit} mm/s')
     ax.set_title(f'Average of {args.month:02d}/{args.year}')
     ax.legend()
+
+    # Save the plot to a file
+    plt.savefig(os.path.join(file_folder, f'Average_Discharge_{args.unit}{args.month:02d}_{args.year}.png'))
+
     plt.show()
-    
-
-
-# Save the plot to a file
-    plt.savefig(os.path.join(file_folder, f'Average_Discharge_{args.month:02d}_{args.year}.png'))
-
 
 plotter(df, df_monthly, args)
-###########################################################################################
-# # Plot the data
-# fig, ax = plt.subplots(figsize=(10, 5))
-# ax = df_daily['mean'].plot(label='Daily Average')
-# ax.scatter(daily_max.index, daily_max, marker='.', color='red', label='Daily Max')
-# ax.scatter(daily_min.index, daily_min, marker='.', color='green', label='Daily Min')
-# ax.set_xlabel('Date')
-# ax.set_ylabel('Discharge')
-# ax.set_title(f'Average of {args.month:02d}/{args.year}')
-# ax.legend()
-# plt.show()
-
-# # Save the plot to a file
-# plt.savefig(os.path.join(file_folder, f'Average_Discharge_{args.month:02d}_{args.year}.png'))
-
-
-
-
-
-
-#########################################################################################
-# # Filter the data for the specified year and month
-# df_filtered = df.loc[(df.index.year == args.year) & (df.index.month == args.month)]
-
-# # Resample the filtered data to daily frequency and calculate the mean of each day
-# df_daily = df_filtered.resample('D')['QStat'].mean()
-
-# # Resample the filtered data to monthly frequency and calculate the mean, max, and min of each month
-# df_monthly = df_filtered.resample('M')['QStat'].agg(['mean', 'max', 'min'])
-
-# # Plot the data
-# ax = df_daily.plot(label='Daily Average')
-# df_monthly[['mean', 'max', 'min']].plot(style=['-', 'o', 'o'], ax=ax, label='Max/Min/Mean')
-# ax.set_xlabel('Date')
-# ax.set_ylabel('Discharge')
-# ax.set_title(f'Average of {args.month:02d}/{args.year}')
-# ax.legend()
-# plt.show()
-
-# # Save the plot to a file
-# plt.savefig(os.path.join(file_folder, f'Average_{args.month:02d}_{args.year}.png'))
-
-
-
-
-# # Get the month name from the month number
-# month_name = calendar.month_name[args.month]
-
-# # Filter the daily data to include only the data for the specified month
-# df_daily_month = df_daily[df_daily.index.month == args.month]
-
-# # Filter the monthly data to include only the data for the specified month
-# df_monthly_month = df_monthly[df_monthly.index.month == args.month]
-
-# # Create the plot title
-# plot_title = f'Average of {month_name}'
-
-# # Plot the data
-# ax = df_daily_month.plot(label='Daily Average')
-# df_monthly_month[['mean', 'max', 'min']].plot(style=['o', 'o', 'o'], ax=ax, label='Max/Min/Mean')
-# ax.set_xlabel('Date')
-# ax.set_ylabel('Discharge')
-# ax.set_title(plot_title)
-# ax.legend()
-# plt.show()
-
-# # Plot the data for the whole timeframe 
-# ax = df_daily.plot(label='Daily Average')
-# df_monthly['mean'].plot(ax=ax, label='Monthly Average')
-# df_monthly[['max', 'min']].plot(style=['o', 'o'], ax=ax, label='Max/Min')
-# ax.set_xlabel('Date')
-# ax.set_ylabel('Discharge')
-# ax.legend()
-# plt.show()
-
-
-
-
-
-
-
-
-# # Calculate the monthly average, maximum, and minimum
-# df_resampled = df.resample('M')['QStat'].agg(['mean', 'max', 'min'])
-
-# # Plot the data
-# ax = df_grouped.plot(label='Daily Average')
-# df_resampled['mean'].plot(ax=ax, label='Monthly Average')
-# df_resampled[['max', 'min']].plot(style=['o', 'o'], ax=ax, label='Max/Min')
-# ax.set_xlabel('Date')
-# ax.set_ylabel('Discharge')
-# ax.legend()
