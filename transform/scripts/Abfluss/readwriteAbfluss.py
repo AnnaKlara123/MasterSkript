@@ -4,12 +4,14 @@ import os
 from termcolor import colored
 import matplotlib.pyplot as plt
 import calendar
+import matplotlib.dates as mdates
+
 
 # Create the parser
 parser = argparse.ArgumentParser()
 parser.add_argument('--dir', type=str, help='The directory where the file is located', default='C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/input/Abfluss')
 parser.add_argument('--filename', type=str, help='The filename to read',  default='RQ30_data_20190625_20220818.csv')
-parser.add_argument('--unit', type=str, help='The unit to plot', default="h")
+parser.add_argument('--unit', type=str, help='The unit to plot', default="QStat")
 parser.add_argument('--year', type=int, help='The year to plot', default= 2019)
 parser.add_argument('--month', type=int, help='The month to plot', default= 10)
 args = parser.parse_args()
@@ -77,12 +79,6 @@ df_daily = df.resample('D')[unit_col].mean()
 # Resample the data to monthly frequency and calculate the mean, max, and min of each month
 df_monthly = df.resample('M')[unit_col].agg(['mean', 'max', 'min'])
 
-# Save the daily DataFrame to a CSV file
-df_daily.to_csv(os.path.join(file_folder, 'daily_average.csv'))
-
-# Save the monthly DataFrame to a CSV file
-df_monthly.to_csv(os.path.join(file_folder, 'monthly_average.csv'))
-
 
 #################################  Plot the data #########################################################
 
@@ -120,7 +116,7 @@ def plotter(df, df_monthly, args):
     
     # Lable plot
     ax.set_xlabel('Date')
-    ax.set_ylabel(f'Discharge {args.unit} mm/s')
+    ax.set_ylabel(f'Discharge {args.unit}')
     ax.set_title(f'Average of {args.month:02d}/{args.year}')
     ax.legend()
 
@@ -130,3 +126,29 @@ def plotter(df, df_monthly, args):
     plt.show()
 
 plotter(df, df_monthly, args)
+
+
+def max_events(df, unit_col, num_events=15, plot=True):
+    top_events = df.nlargest(num_events, unit_col)
+    top_dates = top_events.index.date
+    for date in top_dates:
+        max_value_timestamp = df.loc[date.strftime('%Y-%m-%d')][unit_col].idxmax()
+        start_time = max_value_timestamp - pd.Timedelta(hours=6)
+        end_time = max_value_timestamp + pd.Timedelta(hours=6)
+        data_for_plot = df[start_time:end_time][unit_col]
+        data_for_plot = data_for_plot.resample('15T').mean()
+        if plot:
+            fig, ax = plt.subplots(figsize=(25, 5))
+            ax.plot(data_for_plot.index, data_for_plot.values)
+            ax.set_title(f'{date.strftime("%Y-%m-%d")}')
+            ax.set_xlabel('Time')
+            ax.set_ylabel(unit_col)
+            #ax.xaxis.set_major_locator(mdates.MinuteLocator(interval=30))
+            #ax.xaxis.set_major_formatter(mdates.AutoDateFormatter(mdates.MinuteLocator(interval=60)))
+            ax.xaxis.set_major_locator(mdates.MinuteLocator(interval=15))
+            ax.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
+            ax.tick_params(axis='x', labelsize=5)
+            plt.show()
+    return top_events, top_dates
+
+max_events(df, unit_col,num_events=15)
