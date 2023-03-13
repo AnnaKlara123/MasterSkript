@@ -12,7 +12,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--dir', type=str, help='The directory where the file is located', default='C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/input/Abfluss')
 parser.add_argument('--filename', type=str, help='The filename to read',  default='RQ30_data_20190625_20220818.csv')
 parser.add_argument('--unit', type=str, help='The unit to plot', default="QStat")
-parser.add_argument('--year', type=int, help='The year to plot', default= 2019)
+parser.add_argument('--year', type=int, help='The year to plot', default= 2020)
 parser.add_argument('--month', type=int, help='The month to plot', default= 10)
 args = parser.parse_args()
 
@@ -68,25 +68,8 @@ df[unit_col] = df[unit_col].astype(float)
 # Convert the Date column to a pandas datetime format
 df['date'] = pd.to_datetime(df['date'], format='%d-%m-%Y %H:%M:%S')
 
-################## create Wasim File ################################################
-
-def WaSiM_output(df):
-    output_file = os.path.join(file_folder, f'{file_name[:-4]}.txt')
-    # Fill NaN values with -9999
-    df = df.fillna(-9999)
-    with open(output_file, 'w') as f:
-        f.write('YY\tMM\tDD\tHH\tMN\tStation1\n')
-        for _, row in df.iterrows():
-            f.write(f"{row['date'].year}\t{row['date'].month}\t{row['date'].day}\t{row['date'].hour}\t{row['date'].minute}\t{row[unit_col]}\n")
-    print(f'WaSiM output saved to {colored(output_file, "green")}')
-
-WaSiM_output(df)
-print("Wasim")
-
 # Set the Date column as the index
 df.set_index('date', inplace=True)
-
-
 # # Access the data for a specific timestamp (e.g. 25-06-2019 11:00:00)
 # data_for_timestamp = df.loc['2019-06-25 11:00:00']
 
@@ -148,34 +131,51 @@ def plotter(df, df_monthly, args):
 
 plotter(df, df_monthly, args)
 
+############### Max Value Events Plotter #######################################################
+# def max_events(df, unit_col, top_15_days, plot=False): # If I don't want plot than set to False!
+#     # Iterate overt 15 days
+#     for date in top_15_days.index:
+#         max_value_timestamp = df.loc[date.strftime('%Y-%m-%d')][unit_col].idxmax()
+#         # Start & Endtime of the Plot
+#         start_time = max_value_timestamp - pd.Timedelta(hours=6)
+#         end_time = max_value_timestamp + pd.Timedelta(hours=6)
+#         data_for_plot = df[start_time:end_time][unit_col]
+#         # Aggregate 15min with mean
+#         data_for_plot = data_for_plot.resample('15T').mean()
+#         if plot:
+#             fig, ax = plt.subplots(figsize=(25, 5))
+#             ax.plot(data_for_plot.index, data_for_plot.values)
+#             ax.set_title(f'{date.strftime("%Y-%m-%d")}')
+#             ax.set_xlabel('Time')
+#             ax.set_ylabel(unit_col)
+#             ax.xaxis.set_major_locator(mdates.MinuteLocator(interval=15))
+#             ax.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
+#             ax.tick_params(axis='x', labelsize=6)
+#             for i, value in enumerate(data_for_plot.values):
+#                 ax.annotate(round(value, 2), (data_for_plot.index[i], value), xytext=(0, 5), textcoords='offset points', ha='center', fontsize=6)
+#             # Save the plot to a file
+#             plt.savefig(os.path.join(file_folder, f'MaximumEvents_{unit_col}_{date.strftime("%Y-%m-%d")}.png'))
+#             plt.show()
+#     return top_15_days
 
-def max_events(df, unit_col, top_15_days, plot=True): # If I don't want plot than set to False!
-    
-    # Iterate overt 15 days
-    for date in top_15_days.index:
-        max_value_timestamp = df.loc[date.strftime('%Y-%m-%d')][unit_col].idxmax()
-        # Start & Endtime of the Plot
-        start_time = max_value_timestamp - pd.Timedelta(hours=6)
-        end_time = max_value_timestamp + pd.Timedelta(hours=6)
-        data_for_plot = df[start_time:end_time][unit_col]
-        # Aggregate 15min with mean
-        data_for_plot = data_for_plot.resample('15T').mean()
-        if plot:
-            fig, ax = plt.subplots(figsize=(25, 5))
-            ax.plot(data_for_plot.index, data_for_plot.values)
-            ax.set_title(f'{date.strftime("%Y-%m-%d")}')
-            ax.set_xlabel('Time')
-            ax.set_ylabel(unit_col)
-            ax.xaxis.set_major_locator(mdates.MinuteLocator(interval=15))
-            ax.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
-            ax.tick_params(axis='x', labelsize=6)
-            for i, value in enumerate(data_for_plot.values):
-                ax.annotate(round(value, 2), (data_for_plot.index[i], value), xytext=(0, 5), textcoords='offset points', ha='center', fontsize=6)
-            # Save the plot to a file
-            plt.savefig(os.path.join(file_folder, f'MaximumEvents_{unit_col}_{date.strftime("%Y-%m-%d")}.png'))
-            plt.show()
-    return top_15_days
+# top_15_days = df.resample('D')[unit_col].mean().nlargest(15)
+# file_folder = prepare_output(file_name, args.dir)
+# max_events(df, unit_col, top_15_days, plot=True)
+#######################################################################################################
 
-top_15_days = df.resample('D')[unit_col].mean().nlargest(15)
-file_folder = prepare_output(file_name, args.dir)
-max_events(df, unit_col, top_15_days, plot=True)
+def total_discharge_year(df, unit_col, year):
+    # Filter the data for the specified year
+    df_filtered = df.loc[df.index.year == year]
+
+    # Calculate the total discharge for the year
+    total_discharge = df_filtered[unit_col].sum()
+
+    # Return the result
+    return total_discharge
+
+
+# Calculate the total discharge for the specified year
+total_discharge = total_discharge_year(df, unit_col, args.year)
+
+# Print the result
+print(f'Total discharge for {args.year}: {total_discharge} {unit_lable}')
