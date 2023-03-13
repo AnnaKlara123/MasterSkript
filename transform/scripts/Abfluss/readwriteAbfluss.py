@@ -19,10 +19,13 @@ args = parser.parse_args()
 # Select the appropriate column based on the input unit
 if args.unit == 'QStat':
     unit_col = 'QStat'
+    unit_lable = "l/s"
 elif args.unit == 'h':
     unit_col = 'h'
+    unit_lable = "cm"
 elif args.unit == 'v':
     unit_col = 'v'
+    unit_lable = "m^3"
 else:
     raise ValueError('Invalid unit specified')
 
@@ -79,6 +82,9 @@ df_daily = df.resample('D')[unit_col].mean()
 # Resample the data to monthly frequency and calculate the mean, max, and min of each month
 df_monthly = df.resample('M')[unit_col].agg(['mean', 'max', 'min'])
 
+top_15_days = df.resample('D')[unit_col].mean().nlargest(15)
+print(top_15_days)
+
 
 #################################  Plot the data #########################################################
 
@@ -128,14 +134,16 @@ def plotter(df, df_monthly, args):
 plotter(df, df_monthly, args)
 
 
-def max_events(df, unit_col, num_events=15, plot=True):
-    top_events = df.nlargest(num_events, unit_col)
-    top_dates = top_events.index.date
-    for date in top_dates:
+def max_events(df, unit_col, top_15_days, plot=True): # If I don't want plot than set to False!
+    
+    # Iterate overt 15 days
+    for date in top_15_days.index:
         max_value_timestamp = df.loc[date.strftime('%Y-%m-%d')][unit_col].idxmax()
+        # Start & Endtime of the Plot
         start_time = max_value_timestamp - pd.Timedelta(hours=6)
         end_time = max_value_timestamp + pd.Timedelta(hours=6)
         data_for_plot = df[start_time:end_time][unit_col]
+        # Aggregate 15min with mean
         data_for_plot = data_for_plot.resample('15T').mean()
         if plot:
             fig, ax = plt.subplots(figsize=(25, 5))
@@ -143,12 +151,16 @@ def max_events(df, unit_col, num_events=15, plot=True):
             ax.set_title(f'{date.strftime("%Y-%m-%d")}')
             ax.set_xlabel('Time')
             ax.set_ylabel(unit_col)
-            #ax.xaxis.set_major_locator(mdates.MinuteLocator(interval=30))
-            #ax.xaxis.set_major_formatter(mdates.AutoDateFormatter(mdates.MinuteLocator(interval=60)))
             ax.xaxis.set_major_locator(mdates.MinuteLocator(interval=15))
             ax.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
-            ax.tick_params(axis='x', labelsize=5)
+            ax.tick_params(axis='x', labelsize=6)
+            for i, value in enumerate(data_for_plot.values):
+                ax.annotate(round(value, 2), (data_for_plot.index[i], value), xytext=(0, 5), textcoords='offset points', ha='center', fontsize=6)
+            # Save the plot to a file
+            plt.savefig(os.path.join(file_folder, f'MaximumEvents_{unit_col}_{date.strftime("%Y-%m-%d")}.png'))
             plt.show()
-    return top_events, top_dates
+    return top_15_days
 
-max_events(df, unit_col,num_events=15)
+top_15_days = df.resample('D')[unit_col].mean().nlargest(15)
+file_folder = prepare_output(file_name, args.dir)
+max_events(df, unit_col, top_15_days, plot=True)
