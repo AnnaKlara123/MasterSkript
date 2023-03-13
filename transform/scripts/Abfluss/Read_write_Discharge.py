@@ -5,6 +5,7 @@ from termcolor import colored
 import matplotlib.pyplot as plt
 import calendar
 import matplotlib.dates as mdates
+import numpy as np
 
 
 # Create the parser
@@ -12,7 +13,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--dir', type=str, help='The directory where the file is located', default='C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/input/Abfluss')
 parser.add_argument('--filename', type=str, help='The filename to read',  default='RQ30_data_20190625_20220818.csv')
 parser.add_argument('--unit', type=str, help='The unit to plot', default="QStat")
-parser.add_argument('--year', type=int, help='The year to plot', default= 2020)
+parser.add_argument('--year', type=int, help='The year to plot', default= 2019)
 parser.add_argument('--month', type=int, help='The month to plot', default= 7)
 parser.add_argument('--Station_name', type=str, help='Name of the Station', default="Jambach")
 parser.add_argument('--hight', type=int, help='Hight of the Station', default="0")
@@ -59,6 +60,24 @@ file_folder = prepare_output(file_name, args.dir)
 
 # Read in the CSV file
 df = pd.read_csv(file_path, sep=';')
+
+# Create an empty list to store the boolean values
+mask_list = []
+
+# Loop over the rows in the DataFrame
+for _, row in df.iterrows():
+    # Check if the value in the unit_col column is NaN
+    if pd.isna(row[unit_col]):
+        # If it is, append True to the mask list
+        mask_list.append(True)
+    else:
+        # If it isn't, append False to the mask list
+        mask_list.append(False)
+
+# Convert the mask list to a boolean mask
+mask = np.array(mask_list)
+print(mask)
+
 # Rename the columns
 df.columns = ['date', 'h', 'v', 'QStat']
 df['h'] = df['h'].astype(float)
@@ -184,3 +203,47 @@ def show_NaN_monthly(df, unit_col, year, month):
             plt.show()
 
 show_NaN_monthly(df, unit_col, args.year, args.month)
+
+
+
+# def show_NaN_yearly(df, unit_col):
+#     # Create a boolean mask of NaN values
+#     mask = df[unit_col].isna()
+#     # # Save the DataFrame to a CSV file
+#     # mask.to_csv(mask, sep='\t', index=False)
+
+#     # Convert the boolean mask to 0 and 1 values
+#     plot_data = mask.astype(int)
+
+#     # Group the data by year
+#     groups = df.groupby(df.index.year)
+
+#     # Loop through each group and create a bar chart
+#     for year, group in groups:
+#         # Create a bar chart of the NaN values in the Value column
+#         fig, ax = plt.subplots(figsize=(20, 5))
+#         plt.bar(group.index, plot_data.loc[group.index].values, width=0.1, color='red')
+
+#         # Set the title and axis labels
+#         plt.title(f'Occurrences of NaN values ({year})')
+#         plt.xlabel('Date')
+#         plt.ylabel('NaN values')
+
+#         # Add a label to the plot for each NaN value
+#         for i, nan_index in enumerate(group.index):
+#             nan_value = plot_data.loc[nan_index]
+#             if nan_value == 1:
+#                 ax.text(nan_index, nan_value+0.1, f"{nan_index.strftime('%m-%d %H:%M')}", ha='center', fontsize=6)
+
+#         # Set the x-axis ticks and tick labels
+#         ax.xaxis.set_major_locator(mdates.MonthLocator(interval=1))
+#         ax.xaxis.set_major_formatter(mdates.DateFormatter('%b'))
+
+#         # Set the y-axis tick labels
+#         ax.set_yticks([0, 1])
+#         ax.set_yticklabels(['No NaN', 'NaN'])
+
+#         # Display the chart
+#         plt.show()
+
+# show_NaN_yearly(df, unit_col)
