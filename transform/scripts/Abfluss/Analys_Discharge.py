@@ -11,7 +11,7 @@ import matplotlib.dates as mdates
 parser = argparse.ArgumentParser()
 parser.add_argument('--dir', type=str, help='The directory where the file is located', default='C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/input/Abfluss')
 parser.add_argument('--filename', type=str, help='The filename to read',  default='RQ30_data_20190625_20220818.csv')
-parser.add_argument('--unit', type=str, help='The unit to plot', default="QStat")
+parser.add_argument('--unit', type=str, help='The unit to plot', default="v")
 parser.add_argument('--year', type=int, help='The year to plot', default= 2020)
 parser.add_argument('--month', type=int, help='The month to plot', default= 10)
 args = parser.parse_args()
@@ -73,7 +73,8 @@ df.set_index('date', inplace=True)
 # # Access the data for a specific timestamp (e.g. 25-06-2019 11:00:00)
 # data_for_timestamp = df.loc['2019-06-25 11:00:00']
 
-####################### Resample df due to days and Month #############################
+
+####################### Resample df due to days and Month #############################################
 # Resample the data to daily frequency and calculate the mean of each day
 df_daily = df.resample('D')[unit_col].mean()
 
@@ -132,37 +133,38 @@ def plotter(df, df_monthly, args):
 plotter(df, df_monthly, args)
 
 ############### Max Value Events Plotter #######################################################
-# def max_events(df, unit_col, top_15_days, plot=False): # If I don't want plot than set to False!
-#     # Iterate overt 15 days
-#     for date in top_15_days.index:
-#         max_value_timestamp = df.loc[date.strftime('%Y-%m-%d')][unit_col].idxmax()
-#         # Start & Endtime of the Plot
-#         start_time = max_value_timestamp - pd.Timedelta(hours=6)
-#         end_time = max_value_timestamp + pd.Timedelta(hours=6)
-#         data_for_plot = df[start_time:end_time][unit_col]
-#         # Aggregate 15min with mean
-#         data_for_plot = data_for_plot.resample('15T').mean()
-#         if plot:
-#             fig, ax = plt.subplots(figsize=(25, 5))
-#             ax.plot(data_for_plot.index, data_for_plot.values)
-#             ax.set_title(f'{date.strftime("%Y-%m-%d")}')
-#             ax.set_xlabel('Time')
-#             ax.set_ylabel(unit_col)
-#             ax.xaxis.set_major_locator(mdates.MinuteLocator(interval=15))
-#             ax.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
-#             ax.tick_params(axis='x', labelsize=6)
-#             for i, value in enumerate(data_for_plot.values):
-#                 ax.annotate(round(value, 2), (data_for_plot.index[i], value), xytext=(0, 5), textcoords='offset points', ha='center', fontsize=6)
-#             # Save the plot to a file
-#             plt.savefig(os.path.join(file_folder, f'MaximumEvents_{unit_col}_{date.strftime("%Y-%m-%d")}.png'))
-#             plt.show()
-#     return top_15_days
+def max_events(df, unit_col, top_15_days, plot=False): # If I don't want plot than set to False!
+    # Iterate overt 15 days
+    for date in top_15_days.index:
+        max_value_timestamp = df.loc[date.strftime('%Y-%m-%d')][unit_col].idxmax()
+        # Start & Endtime of the Plot
+        start_time = max_value_timestamp - pd.Timedelta(hours=6)
+        end_time = max_value_timestamp + pd.Timedelta(hours=6)
+        data_for_plot = df[start_time:end_time][unit_col]
+        # Aggregate 15min with mean
+        data_for_plot = data_for_plot.resample('15T').mean()
+        if plot:
+            fig, ax = plt.subplots(figsize=(25, 5))
+            ax.plot(data_for_plot.index, data_for_plot.values)
+            ax.set_title(f'{date.strftime("%Y-%m-%d")}')
+            ax.set_xlabel('Time')
+            ax.set_ylabel(unit_col)
+            ax.xaxis.set_major_locator(mdates.MinuteLocator(interval=15))
+            ax.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
+            ax.tick_params(axis='x', labelsize=6)
+            for i, value in enumerate(data_for_plot.values):
+                ax.annotate(round(value, 2), (data_for_plot.index[i], value), xytext=(0, 5), textcoords='offset points', ha='center', fontsize=6)
+            # Save the plot to a file
+            plt.savefig(os.path.join(file_folder, f'MaximumEvents_{unit_col}_{date.strftime("%Y-%m-%d")}.png'))
+            plt.show()
+    return top_15_days
 
-# top_15_days = df.resample('D')[unit_col].mean().nlargest(15)
-# file_folder = prepare_output(file_name, args.dir)
-# max_events(df, unit_col, top_15_days, plot=True)
+top_15_days = df.resample('D')[unit_col].mean().nlargest(15)
+file_folder = prepare_output(file_name, args.dir)
+max_events(df, unit_col, top_15_days, plot=True)
 #######################################################################################################
 
+######################### yearly and specific year total discharge ###################################
 def total_discharge_year(df, unit_col, year):
     # Filter the data for the specified year
     df_filtered = df.loc[df.index.year == year]
@@ -179,3 +181,34 @@ total_discharge = total_discharge_year(df, unit_col, args.year)
 
 # Print the result
 print(f'Total discharge for {args.year}: {total_discharge} {unit_lable}')
+
+def total_discharge_all_years(df, unit_col, output_file):
+    # Group the data by year and calculate the total discharge for each year
+    yearly_totals = df.groupby(df.index.year)[unit_col].sum()
+
+    # Convert the result to a dictionary
+    yearly_totals_dict = yearly_totals.to_dict()
+
+    # Create a pandas DataFrame from the dictionary
+    yearly_totals_df = pd.DataFrame.from_dict(yearly_totals_dict, orient='index', columns=['total_discharge'])
+
+    # Add a column for the year
+    yearly_totals_df['year'] = yearly_totals_df.index
+
+    # Reorder the columns
+    yearly_totals_df = yearly_totals_df[['year', 'total_discharge']]
+
+    # Save the DataFrame to a CSV file
+    yearly_totals_df.to_csv(output_file, sep='\t', index=False)
+
+    # Return the dictionary
+    return yearly_totals_dict
+
+# Calculate the total discharge for each year and save to a CSV file
+yearly_totals_dict = total_discharge_all_years(df, unit_col, os.path.join(file_folder, 'yearly_totaldischarge.csv'))
+
+# Print the result
+for year, total in yearly_totals_dict.items():
+    print(f'Total discharge for {year}: {total} {unit_lable}')
+
+#######################################################################################################
