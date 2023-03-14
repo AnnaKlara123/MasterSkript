@@ -66,17 +66,43 @@ args = parser.parse_args()
 # Read in the CSV file
 df = pd.read_csv('C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/input/Abfluss/Dischargeanalyse/DischargeRQ30_data_20190625_20220818/NaNRQ30_data_20190625_20220818test.csv', sep=';', parse_dates=['Date'], na_values=['NA','NaN', 'nan'], index_col='Date')
 
-# Get the boolean mask of NaN values
-mask = pd.isna(df)
+# # Get the boolean mask of NaN values
+# mask1 = pd.isna(df)
 
-# Select only the rows with NaN values and print them out
-print(df[mask.any(axis=1)])
+# # # Select only the rows with NaN values and print them out
+# # print(df[mask.any(axis=1)])
 
-# Creates a df, that contains all days with nan Values
-df_nan = df[mask.any(axis=1)]
+# # Creates a df, that contains all days with nan Values
+# df_nan = df[mask1.any(axis=1)]   # works fine!
+# print(df_nan)
 
-# Create a new DataFrame with 1 for NaN values and 0 for non-NaN values (contains all raws and values!)
-nan_df_mask = mask.astype(int)
+
+import matplotlib.pyplot as plt
+
+# Create a boolean mask indicating whether each value is NaN
+mask = df.isna()
+
+# Reduce the boolean mask to a boolean Series indicating whether each row contains NaN values
+nan_mask = mask.any(axis=1)
+
+# Index the DataFrame to get only the rows that contain NaN values
+df_nan = df[nan_mask]           # Worls fine!
+
+# Extract the date column from the DataFrame
+dates = df_nan.index
+
+# Create a line plot where the x-axis represents the dates and the y-axis represents the occurrence of NaN values
+fig, ax = plt.subplots(figsize=(20, 5))
+plt.plot(dates, [1]*len(dates), '.')
+plt.title('NaN Values over Time')
+plt.xlabel('Date')
+plt.ylabel('NaN Value Occurrence')
+
+# Loop over each date and annotate the corresponding dot with the date
+for date in dates:
+    ax.annotate(str(date.date()), xy=(date, 1), xytext=(date, 1.1), ha='center')
+
+plt.show()
 
 # # Create a line plot of the data with NaN values highlighted in red
 # fig, ax = plt.subplots()
