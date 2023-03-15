@@ -13,8 +13,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--dir', type=str, help='The directory where the file is located', default='C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/input/Abfluss')
 parser.add_argument('--filename', type=str, help='The filename to read',  default='RQ30_data_20190625_20220818.csv')
 parser.add_argument('--unit', type=str, help='The unit to plot', default="QStat")
-parser.add_argument('--year', type=int, help='The year to plot', default= 2019)
-parser.add_argument('--month', type=int, help='The month to plot', default= 7)
+parser.add_argument('--year', type=int, help='The year to plot' )
+parser.add_argument('--month', type=int, help='The month to plot' )
 parser.add_argument('--Station_name', type=str, help='Name of the Station', default="Jambach")
 parser.add_argument('--hight', type=int, help='Hight of the Station', default="0")
 parser.add_argument('--latitude', type=float, help='latitude of the Station', default="0.0")
@@ -59,24 +59,60 @@ def prepare_output(file_name, plot_dir):
 file_folder = prepare_output(file_name, args.dir)
 
 # Read in the CSV file
-df = pd.read_csv(file_path, sep=';')
+#df = pd.read_csv(file_path, sep=';')
+df = pd.read_csv(file_path, sep=';', na_values=['nan', 'NaN'], encoding='utf-8' )
 
-# Create an empty list to store the boolean values
-mask_list = []
+# Get the boolean mask of NaN values in the unit_col column
+mask = pd.isna(df[unit_col])
 
-# Loop over the rows in the DataFrame
-for _, row in df.iterrows():
-    # Check if the value in the unit_col column is NaN
-    if pd.isna(row[unit_col]):
-        # If it is, append True to the mask list
-        mask_list.append(True)
-    else:
-        # If it isn't, append False to the mask list
-        mask_list.append(False)
 
-# Convert the mask list to a boolean mask
-mask = np.array(mask_list)
-print(mask)
+# nan_rows = []
+# for _, row in df.iterrows():
+#     if row.isna().any():
+#         nan_rows.append({'Date': row['Date'], 'h': row['h'], 'v': row['v'], 'QStat': row['QStat']})
+# nan_df = pd.DataFrame(nan_rows)
+
+
+# print(nan_rows, "NaN raws")
+
+# df_naN = pd.isna(row[unit_col])
+
+# print(df_naN,"Df_nan")
+
+
+# df = pd.read_csv(file_path, sep=';', na_values=['NA', 'N/A', 'null', ' '], encoding='utf-8')
+
+# missing_values = df[df['h'].isna() | df['v'].isna() | df['QStat'].isna()]
+# missing_values_df = pd.DataFrame(missing_values)
+# print( "Missing values" , missing_values_df)
+
+# #print(df)                
+
+# nan_df = df[df.isna().any(axis=1)]
+# nan_df = df[df.isna().any(axis=1)].reset_index()
+
+# df_NaN = df.info()
+# df_Valuecount = df.value_counts()
+# df_count = df.count()
+# df_disctibe = df.describe()
+# #df.replace('NaN', np.nan, inplace=True)
+
+# df_NaN = df.isnull()
+# print(df_NaN), "df_NaN_isnull"
+
+# print(df_Valuecount, "Valuecount")
+# print(df_disctibe, "Describe")
+# print(df_count, "Count")
+# # print (df_NaN, "df_NaNreplace")
+
+# missing_values = df[df['h'].str.contains('NA|N/A|null| ') | 
+#                      df['v'].str.contains('NA|N/A|null| ') |
+#                      df['QStat'].str.contains('NA|N/A|null| ')]
+# # print("missing Values", missing_values)
+
+# missing_values_isNull = df[df.isnull().any(axis=1)]
+# print(missing_values_isNull, "Is null")
+
 
 # Rename the columns
 df.columns = ['date', 'h', 'v', 'QStat']
@@ -91,14 +127,14 @@ df['date'] = pd.to_datetime(df['date'], format='%d-%m-%Y %H:%M:%S')
 
 ################## create Wasim File ################################################
 
-def WaSiM_output(df, station_name, station_height, station_latitude, station_longitude):
+def WaSiM_output(df, station_name, station_height, station_latitude, station_longitude, unit):
     output_file = os.path.join(file_folder, f'{file_name[:-4]}.txt')
     with open(output_file, 'w') as f:
         f.write(f'YY\tMM\tDD\tHH\tMN\t{station_name}\n')
         f.write(f'YY\tMM\tDD\tHH\tMN\t{station_height}\n')
         f.write(f'YY\tMM\tDD\tHH\tMN\t{station_latitude}\n')
         f.write(f'YY\tMM\tDD\tHH\tMN\t{station_longitude}\n')
-        f.write(f'YY\tMM\tDD\tHH\tMN\t{station_name}\n')
+        f.write(f'YY\tMM\tDD\tHH\tMN\t{unit}\n')
         for _, row in df.iterrows():
             if pd.isna(row[unit_col]):
                 value = -9999
@@ -108,8 +144,26 @@ def WaSiM_output(df, station_name, station_height, station_latitude, station_lon
     print(f'WaSiM output saved to {colored(output_file, "green")}')
 
 
-# WaSiM_output(df, args.Station_name, args.hight, args.latitude, args.longitude)
+#WaSiM_output(df, args.Station_name, args.hight, args.latitude, args.longitude, args.unit)
 print("Wasim")
+
+
+def NaN_output(df, station_name, station_height, station_latitude, station_longitude, unit):
+    output_file = os.path.join(file_folder, f'NaN{file_name[:-4]}.csv')
+    with open(output_file, 'w') as f:
+        f.write(f"Date;{unit}\n")
+        for _, row in df.iterrows():
+            if pd.isna(row[unit_col]):
+                value = "NaN"
+            else:
+                value = row[unit_col]
+            f.write(f"{row['date']};{value}\n")
+    print(f'NaN output saved to {colored(output_file, "green")}')
+
+NaN_output(df, args.Station_name, args.hight, args.latitude, args.longitude, args.unit)
+print("NaN Output")
+
+   
 
 # Extract the values from the Stat1 column
 x = df[unit_col].values
@@ -117,16 +171,16 @@ x = df[unit_col].values
 # Set the datetime index for the dataframe
 df = df.set_index('date')
 
-# # Create a boolean mask of NaN values
-# mask = df[unit_col].isna()
+# # Get the boolean mask of NaN values
+# mask = pd.isna(df)
 
-# # Convert the boolean mask to 0 and 1 values
-# plot_data = mask.astype(int)
+# Convert the boolean mask to 0 and 1 values
+plot_data = mask.astype(int)
 
-# # Group the data by year and month
-# groups = df.groupby([df.index.year, df.index.month])
+# Group the data by year and month
+groups = df.groupby([df.index.year, df.index.month])
 
-# # Loop through each group and create a bar chart
+# Loop through each group and create a bar chart
 # for (year, month), group in groups:
 #     if (args.year is None or year == args.year) and (args.month is None or month == args.month):
 #         # Create a bar chart of the NaN values in the Value column
@@ -180,7 +234,7 @@ def show_NaN_monthly(df, unit_col, year, month):
             plt.xlabel('Date')
             plt.ylabel('NaN values')
 
-#   Add a label to the plot for each NaN value
+            #   Add a label to the plot for each NaN value
             for i, nan_index in enumerate(group.index):
                 nan_value = plot_data.loc[nan_index]
                 if nan_value == 1:
@@ -202,7 +256,7 @@ def show_NaN_monthly(df, unit_col, year, month):
             # Display the chart
             plt.show()
 
-show_NaN_monthly(df, unit_col, args.year, args.month)
+#show_NaN_monthly(df, unit_col, args.year, args.month)
 
 
 
