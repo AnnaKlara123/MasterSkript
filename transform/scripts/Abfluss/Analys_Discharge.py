@@ -10,12 +10,12 @@ import matplotlib.dates as mdates
 # Create the parser
 parser = argparse.ArgumentParser()
 # Create the parser and add help information
-parser = argparse.ArgumentParser(description='This script analyzes the discharge data from a CSV file and plots the average daily discharge values for a specified month and year. It also plots the daily maximum and minimum values for the specified month and year, as well as the monthly maximum and minimum values. In addition, it calculates and prints the total discharge for the specified year, and saves a CSV file containing the yearly total discharge for each year in the input CSV file. Finally, it also plots the top 15 days with the highest discharge value in the input CSV file.')
+#parser = argparse.ArgumentParser(description='This script analyzes the discharge data from a CSV file and plots the average daily discharge values for a specified month and year. It also plots the daily maximum and minimum values for the specified month and year, as well as the monthly maximum and minimum values. In addition, it calculates and prints the total discharge for the specified year, and saves a CSV file containing the yearly total discharge for each year in the input CSV file. Finally, it also plots the top 15 days with the highest discharge value in the input CSV file.')
 parser.add_argument('--dir', type=str, help='The directory where the inputfile is located', default='C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/input/Abfluss')
 parser.add_argument('--filename', type=str, help='The filename to read',  default='RQ30_data_20190625_20220818.csv')
 parser.add_argument('--unit', type=str, help='The unit to plot (valid values: QStat, h, v)', default="QStat")
-parser.add_argument('--year', type=int, help='The year to plot (default: 2019)',help= "The year must be in the Dataset", default = 2019)
-parser.add_argument('--month', type=int, help='The month to plot (default: 7)', help= "The month must be in the Dataset. The discharge meassurements usualy start in April and end in Octrober  " default = 7)
+parser.add_argument('--year', type=int, help='The year to plot (default: 2019). The year must be in the Dataset', default = 2019)
+parser.add_argument('--month', type=int, help='The month to plot (default: 7). The month must be in the Dataset. The discharge meassurements usualy start in April and end in Octrober',default = 7)
 # parser.add_argument('--plot-all', action='store_true', help='Plot the average daily discharge for all months and years')
 # parser.add_argument('--top-15', action='store_true', help='Plot the top 15 days with the highest discharge value')
 # parser.add_argument('--total-year', action='store_true', help='Calculate the total discharge for the specified year')
@@ -78,9 +78,6 @@ df['date'] = pd.to_datetime(df['date'], format='%d-%m-%Y %H:%M:%S')
 
 # Set the Date column as the index
 df.set_index('date', inplace=True)
-# # Access the data for a specific timestamp (e.g. 25-06-2019 11:00:00)
-# data_for_timestamp = df.loc['2019-06-25 11:00:00']
-
 
 ####################### Resample df due to days and Month #############################################
 # Resample the data to daily frequency and calculate the mean of each day
@@ -90,7 +87,7 @@ df_daily = df.resample('D')[unit_col].mean()
 df_monthly = df.resample('M')[unit_col].agg(['mean', 'max', 'min'])
 
 top_15_days = df.resample('D')[unit_col].mean().nlargest(15)
-# print(top_15_days)
+print("Days with the Maximum discharge: ",top_15_days)
 
 
 #################################  Plot the data #########################################################
@@ -138,7 +135,7 @@ def plotter(df, df_monthly, args):
 
     plt.show()
 
-#plotter(df, df_monthly, args)
+plotter(df, df_monthly, args)
 
 ######################### Plot all months of all years ###################################################################
 
