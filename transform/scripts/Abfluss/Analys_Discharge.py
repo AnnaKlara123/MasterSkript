@@ -9,11 +9,21 @@ import matplotlib.dates as mdates
 
 # Create the parser
 parser = argparse.ArgumentParser()
-parser.add_argument('--dir', type=str, help='The directory where the file is located', default='C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/input/Abfluss')
+# Create the parser and add help information
+parser = argparse.ArgumentParser(description='This script analyzes the discharge data from a CSV file and plots the average daily discharge values for a specified month and year. It also plots the daily maximum and minimum values for the specified month and year, as well as the monthly maximum and minimum values. In addition, it calculates and prints the total discharge for the specified year, and saves a CSV file containing the yearly total discharge for each year in the input CSV file. Finally, it also plots the top 15 days with the highest discharge value in the input CSV file.')
+parser.add_argument('--dir', type=str, help='The directory where the inputfile is located', default='C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/input/Abfluss')
 parser.add_argument('--filename', type=str, help='The filename to read',  default='RQ30_data_20190625_20220818.csv')
-parser.add_argument('--unit', type=str, help='The unit to plot', default="v")
-parser.add_argument('--year', type=int, help='The year to plot', default= 2020)
-parser.add_argument('--month', type=int, help='The month to plot', default= 10)
+parser.add_argument('--unit', type=str, help='The unit to plot (valid values: QStat, h, v)', default="QStat")
+parser.add_argument('--year', type=int, help='The year to plot (default: 2019)',help= "The year must be in the Dataset", default = 2019)
+parser.add_argument('--month', type=int, help='The month to plot (default: 7)', help= "The month must be in the Dataset. The discharge meassurements usualy start in April and end in Octrober  " default = 7)
+# parser.add_argument('--plot-all', action='store_true', help='Plot the average daily discharge for all months and years')
+# parser.add_argument('--top-15', action='store_true', help='Plot the top 15 days with the highest discharge value')
+# parser.add_argument('--total-year', action='store_true', help='Calculate the total discharge for the specified year')
+# parser.add_argument('--total-all', action='store_true', help='Calculate the total discharge for each year in the input CSV file and save to a CSV file')
+# parser.add_argument('--nan-dist', action='store_true', help='Plot the distribution of NaN values over time')
+# If I want to perse to call functions form CMD I need to change skript to: 
+# if args.FUNCTION:
+    #FUNCTION()
 args = parser.parse_args()
 
 # Select the appropriate column based on the input unit
@@ -80,7 +90,7 @@ df_daily = df.resample('D')[unit_col].mean()
 df_monthly = df.resample('M')[unit_col].agg(['mean', 'max', 'min'])
 
 top_15_days = df.resample('D')[unit_col].mean().nlargest(15)
-print(top_15_days)
+# print(top_15_days)
 
 
 #################################  Plot the data #########################################################
@@ -128,7 +138,75 @@ def plotter(df, df_monthly, args):
 
     plt.show()
 
-plotter(df, df_monthly, args)
+#plotter(df, df_monthly, args)
+
+######################### Plot all months of all years ###################################################################
+
+def plotter_all(df, df_monthly, args):
+    # Get the unique years in the DataFrame
+    years = df.index.year.unique()
+
+    # Iterate through all the years in the DataFrame
+    for year in years:
+        # Get the unique months in the year
+        months = df.loc[df.index.year == year].index.month.unique()
+
+        # Iterate through all the months in the year
+        for month in months:
+            # Check if the month exists in the DataFrame
+            if (year, month) not in zip(df.index.year, df.index.month):
+                continue
+
+            # Filter the data for the specified year and month
+            df_filtered = df.loc[(df.index.year == year) & (df.index.month == month)]
+
+            # Resample the filtered data to daily frequency and calculate the mean and max/min of each day
+            df_daily = df_filtered.resample('D')[args.unit].agg(['mean', 'max', 'min'])
+
+            # Get the monthly max and min values for the specified year and month
+            monthly_data = df_monthly.loc[f'{year}-{month:02d}']
+            monthly_max = monthly_data['max']
+            monthly_min = monthly_data['min']
+
+            # Create plot
+            fig, ax = plt.subplots(figsize=(15, 5))
+            ax = df_daily['mean'].plot(label='Daily Average')
+
+            # Add labels to the scatter plot
+            for index, row in df_daily.iterrows():
+                ax.annotate(round(row['max'], 2), xy=(index, row['max']), 
+                            xytext=(-5, 10), textcoords='offset points', color='red', fontsize=5)
+                ax.annotate(round(row['min'], 2), xy=(index, row['min']), 
+                            xytext=(-5, -15), textcoords='offset points', color='green', fontsize=5)
+
+            ax.scatter(df_daily['max'].index, df_daily['max'], marker='.', color='red', label='Daily Max')
+            ax.scatter(df_daily['min'].index, df_daily['min'], marker='.', color='green', label='Daily Min')
+
+            # Add horizontal lines for the monthly max and min values
+            ax.hlines(monthly_max, xmin=df_daily.index.min(), xmax=df_daily.index.max(), 
+                      color='red', linestyle='dashed', label='Monthly Max')
+            ax.hlines(monthly_min, xmin=df_daily.index.min(), xmax=df_daily.index.max(), 
+                      color='green', linestyle='dashed', label='Monthly Min')
+
+            # Label plot
+            ax.set_xlabel('Date')
+            ax.set_ylabel(f'Discharge {args.unit}')
+            ax.set_title(f'Average of {month:02d}/{year}')
+            ax.legend()
+
+            # Save the plot to a file
+            plt.savefig(os.path.join(file_folder, f'Average_Discharge_{args.unit}{month:02d}_{year}.png'))
+
+            plt.show()
+
+
+# for month in range(1, 13):
+#     args.month = month
+#     plotter_all(df, df_monthly, args)
+
+###################################################################################################
+
+
 
 ############### Max Value Events Plotter #######################################################
 def max_events(df, unit_col, top_15_days, plot=False): # If I don't want plot than set to False!
@@ -157,9 +235,9 @@ def max_events(df, unit_col, top_15_days, plot=False): # If I don't want plot th
             plt.show()
     return top_15_days
 
-top_15_days = df.resample('D')[unit_col].mean().nlargest(15)
-file_folder = prepare_output(file_name, args.dir)
-max_events(df, unit_col, top_15_days, plot=True)
+# top_15_days = df.resample('D')[unit_col].mean().nlargest(15)
+# file_folder = prepare_output(file_name, args.dir)
+# max_events(df, unit_col, top_15_days, plot=True)
 #######################################################################################################
 
 ######################### yearly and specific year total discharge ###################################
@@ -174,11 +252,12 @@ def total_discharge_year(df, unit_col, year):
     return total_discharge
 
 
-# Calculate the total discharge for the specified year
-total_discharge = total_discharge_year(df, unit_col, args.year)
+# # Calculate the total discharge for the specified year
+# total_discharge = total_discharge_year(df, unit_col, args.year)
 
-# Print the result
-print(f'Total discharge for {args.year}: {total_discharge} {unit_lable}')
+# # Print the result
+# print(f'Total discharge for {args.year}: {total_discharge} {unit_lable}')
+
 
 def total_discharge_all_years(df, unit_col, output_file):
     # Group the data by year and calculate the total discharge for each year
@@ -202,12 +281,12 @@ def total_discharge_all_years(df, unit_col, output_file):
     # Return the dictionary
     return yearly_totals_dict
 
-# Calculate the total discharge for each year and save to a CSV file
-yearly_totals_dict = total_discharge_all_years(df, unit_col, os.path.join(file_folder, 'yearly_totaldischarge.csv'))
+# # Calculate the total discharge for each year and save to a CSV file
+# yearly_totals_dict = total_discharge_all_years(df, unit_col, os.path.join(file_folder, 'yearly_totaldischarge.csv'))
 
-# Print the result
-for year, total in yearly_totals_dict.items():
-    print(f'Total discharge for {year}: {total} {unit_lable}')
+# # Print the result
+# for year, total in yearly_totals_dict.items():
+#     print(f'Total discharge for {year}: {total} {unit_lable}')
 
 ##################  NaN Distribution #####################################################################################
 
@@ -251,4 +330,4 @@ def NaN_distribution(df):
 
     plt.show()
 
-NaN_distribution(df)
+# NaN_distribution(df)
