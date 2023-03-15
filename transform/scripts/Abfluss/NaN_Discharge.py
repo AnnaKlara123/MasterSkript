@@ -64,7 +64,11 @@ args = parser.parse_args()
 
 
 # Read in the CSV file
-df = pd.read_csv('C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/input/Abfluss/Dischargeanalyse/DischargeRQ30_data_20190625_20220818/NaNRQ30_data_20190625_20220818test.csv', sep=';', parse_dates=['Date'], na_values=['NA','NaN', 'nan'], index_col='Date')
+df = pd.read_csv('C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/input/Abfluss/Dischargeanalyse/DischargeRQ30_data_20190625_20220818/NaNRQ30_data_20190625_20220818.csv', sep=';', parse_dates=['Date'], na_values=['NA','NaN', 'nan'], index_col='Date')
+
+print(df)
+# Convert the Date column to a pandas datetime format
+#df['Date'] = pd.to_datetime(df['Date'], format='%d-%m-%Y %H:%M:%S')
 
 # # Get the boolean mask of NaN values
 # mask1 = pd.isna(df)
@@ -76,9 +80,6 @@ df = pd.read_csv('C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMa
 # df_nan = df[mask1.any(axis=1)]   # works fine!
 # print(df_nan)
 
-
-import matplotlib.pyplot as plt
-
 # Create a boolean mask indicating whether each value is NaN
 mask = df.isna()
 
@@ -87,9 +88,12 @@ nan_mask = mask.any(axis=1)
 
 # Index the DataFrame to get only the rows that contain NaN values
 df_nan = df[nan_mask]           # Worls fine!
-
+# df_nan.to_csv('C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/input/Abfluss/Dischargeanalyse/DischargeRQ30_data_20190625_20220818/nan_valuelist_discharge.csv')
+# print('NaN outputlist saved')
 # Extract the date column from the DataFrame
 dates = df_nan.index
+# df_nan.to_csv('C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/input/Abfluss/Dischargeanalyse/DischargeRQ30_data_20190625_20220818/nan_dates_discharge.csv')
+# print('NaN Dates saved')
 
 # Create a line plot where the x-axis represents the dates and the y-axis represents the occurrence of NaN values
 fig, ax = plt.subplots(figsize=(20, 5))
@@ -99,8 +103,17 @@ plt.xlabel('Date')
 plt.ylabel('NaN Value Occurrence')
 
 # Loop over each date and annotate the corresponding dot with the date
-for date in dates:
-    ax.annotate(str(date.date()), xy=(date, 1), xytext=(date, 1.1), ha='center')
+# Add a label to the plot for each NaN value
+for i, date in enumerate(dates):
+    ax.text(date, 0.9, f"{date.strftime('%m-%d %H:%M')}", ha='center', fontsize=6)
+
+# Set the x-axis ticks and tick labels
+ax.xaxis.set_major_locator(mdates.MonthLocator(interval=1))
+ax.xaxis.set_major_formatter(mdates.DateFormatter('%m-%y'),fontsize=6)
+
+# Set the y-axis tick labels
+ax.set_yticks([0, 1])
+ax.set_yticklabels(['No NaN', 'NaN'])
 
 plt.show()
 
