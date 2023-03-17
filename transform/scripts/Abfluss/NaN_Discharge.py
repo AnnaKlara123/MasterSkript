@@ -30,15 +30,6 @@ plt.xlabel('Date')
 plt.ylabel('NaN Value Occurrence')
 
 # Loop over each date and annotate the corresponding dot with the date
-# # Add a label to the plot for each NaN value
-# annotated_dates = set()
-# for i, date in enumerate(dates):
-#     if date.strftime('%d-%h-%Y--%H:%M') not in annotated_dates:
-#         y_pos = 1 - (0.03 * len(annotated_dates)) # Adjust the y position based on the index of the annotation
-#         ax.text(date, y_pos, f"{date.strftime('%d-%h-%Y--%H:%M')}", ha='center', fontsize=6)
-#         annotated_dates.add(date.strftime('%d-%h-%Y--%H:%M'))
-
-# Loop over each date and annotate the corresponding dot with the date
 # Add a label to the plot for each NaN value
 annotated_dates = set()
 for i, date in enumerate(dates):

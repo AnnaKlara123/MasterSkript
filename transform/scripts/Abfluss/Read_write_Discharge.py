@@ -12,7 +12,7 @@ import numpy as np
 parser = argparse.ArgumentParser()
 parser.add_argument('--dir', type=str, help='The directory where the file is located', default='C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/input/Abfluss')
 parser.add_argument('--filename', type=str, help='The filename to read',  default='RQ30_data_20190625_20220818.csv')
-parser.add_argument('--unit', type=str, help='The unit to plot', default="h")
+parser.add_argument('--unit', type=str, help='The unit to plot', default="QStat")
 parser.add_argument('--Station_name', type=str, help='Name of the Station', default="Jambach")
 parser.add_argument('--hight', type=int, help='Hight of the Station', default="0")
 parser.add_argument('--latitude', type=float, help='latitude of the Station', default="0.0")

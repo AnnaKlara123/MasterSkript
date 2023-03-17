@@ -90,7 +90,7 @@ top_15_days = df.resample('D')[unit_col].mean().nlargest(15)
 print("Days with the Maximum discharge: ",top_15_days)
 
 
-#################################  Plot the data #########################################################
+#################################  Plot the data wit average Discharge and Max & Min per Month #########################################################
 
 def plotter(df, df_monthly, args):
     # Filter the data for the specified year and month
@@ -279,11 +279,11 @@ def total_discharge_all_years(df, unit_col, output_file):
     return yearly_totals_dict
 
 # # Calculate the total discharge for each year and save to a CSV file
-# yearly_totals_dict = total_discharge_all_years(df, unit_col, os.path.join(file_folder, 'yearly_totaldischarge.csv'))
+yearly_totals_dict = total_discharge_all_years(df, unit_col, os.path.join(file_folder, 'yearly_totaldischarge.csv'))
 
-# # Print the result
-# for year, total in yearly_totals_dict.items():
-#     print(f'Total discharge for {year}: {total} {unit_lable}')
+# Print the result
+for year, total in yearly_totals_dict.items():
+    print(f'Total discharge for {year}: {total} {unit_lable}')
 
 ##################  NaN Distribution #####################################################################################
 
@@ -327,4 +327,4 @@ def NaN_distribution(df):
 
     plt.show()
 
-# NaN_distribution(df)
+NaN_distribution(df)
