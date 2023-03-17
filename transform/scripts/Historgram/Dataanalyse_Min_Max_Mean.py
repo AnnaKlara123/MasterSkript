@@ -13,8 +13,8 @@ from termcolor import colored
 # Create the parser
 parser = argparse.ArgumentParser()
 parser.add_argument('--dir', type=str, help='The directory where the file is located', default='C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output')
-parser.add_argument('--filename', type=str, help='The filename to read',  default='Airtemp_NaN.csv')
-parser.add_argument('--year', type=int, help='The year to plot', default= 2021)
+parser.add_argument('--filename', type=str, help='The filename to read',  default='Globalradiation_NaN.csv')
+parser.add_argument('--year', type=int, help='The year to plot', default= 2020)
 parser.add_argument('--month', type=int, help='The month to plot', default= 10)
 args = parser.parse_args()
 
@@ -203,50 +203,50 @@ daily_data = df_filtered.groupby(df_filtered['date'].dt.day)['Stat1'].apply(lamb
 # data_monthly(file_name, args.year, args.month, daily_data, monthly_data)
 
 
-####################################Works perfekt for each month with dayly data plus max, min & mean ###################################################
-# # Create a new figure for each month
-# for month, data in monthly_data:
+###################################Works perfekt for each month with dayly data plus max, min & mean ###################################################
+# Create a new figure for each month
+for month, data in monthly_data:
     
-#     # Group the data by day within the month
-#     daily_data = data.groupby(data['date'].dt.to_period('D'))
+    # Group the data by day within the month
+    daily_data = data.groupby(data['date'].dt.to_period('D'))
     
-#     # Calculate the maximum, minimum, and mean values for the month
-#     monthly_max = data['Stat1'].max()
-#     monthly_min = data['Stat1'].min()
-#     monthly_mean = data['Stat1'].mean()
+    # Calculate the maximum, minimum, and mean values for the month
+    monthly_max = data['Stat1'].max()
+    monthly_min = data['Stat1'].min()
+    monthly_mean = data['Stat1'].mean()
     
-#     # Calculate the daily averages for the month
-#     daily_means = daily_data['Stat1'].mean()
+    # Calculate the daily averages for the month
+    daily_means = daily_data['Stat1'].mean()
 
-#     # Convert the PeriodIndex to a DatetimeIndex
-#     daily_means.index = daily_means.index.to_timestamp()
+    # Convert the PeriodIndex to a DatetimeIndex
+    daily_means.index = daily_means.index.to_timestamp()
     
-#     # # Create a new figure with a larger size
-#     fig, ax = plt.subplots(figsize=(20, 12))
+    # # Create a new figure with a larger size
+    fig, ax = plt.subplots(figsize=(20, 12))
     
-#     # # # Plot the daily data for the month
-#     ax.scatter(daily_means.index, daily_means.values, color='black', marker='.')
+    # # # Plot the daily data for the month
+    ax.scatter(daily_means.index, daily_means.values, color='black', marker='.')
 
-#     # Plot the monthly maximum values
-#     ax.axhline(monthly_max, linestyle='--', color='red', label='Max')
-#     ax.axhline(monthly_min, linestyle='--', color='blue', label='Min')
-#     # Add a horizontal line for the mean value
-#     ax.axhline(monthly_mean, linestyle='-', color='green', label='Mean')
+    # Plot the monthly maximum values
+    ax.axhline(monthly_max, linestyle='--', color='red', label='Max')
+    ax.axhline(monthly_min, linestyle='--', color='blue', label='Min')
+    # Add a horizontal line for the mean value
+    ax.axhline(monthly_mean, linestyle='-', color='green', label='Mean')
     
-#     # Set the x-axis label
-#     ax.set_xlabel('Date')
+    # Set the x-axis label
+    ax.set_xlabel('Date')
     
-#     # Set the y-axis label
-#     ax.set_ylabel('Value')
+    # Set the y-axis label
+    ax.set_ylabel('Value')
     
-#     # Set the title
-#     ax.set_title(f'Monthly Data for {month}')
+    # Set the title
+    ax.set_title(f'Monthly Data for {month}')
     
-#     # Add a legend
-#     ax.legend()
+    # Add a legend
+    ax.legend()
     
-#     # Show the plot
-#     plt.show()
+    # Show the plot
+    plt.show()
 # ###################################################################################################################################
 
 def yearly_plot(file_path, year, filename):
@@ -275,8 +275,8 @@ def yearly_plot(file_path, year, filename):
     # Create a line plot of the daily average of Stat1
     plt.plot(daily_data.index, daily_data['Stat1'])
     plt.xlabel('Date')
-    plt.ylabel('Daily Average of Stat1 Temperature C')
-    plt.title('Yearly Plot of Daily Average of Stat1')
+    plt.ylabel('Daily Average of Global Radiation W/m²')
+    plt.title('Yearly Plot of Daily Global Radiation')
     
     # Get the base filename without the extension
     file_name, extension = os.path.splitext(args.filename)
@@ -322,8 +322,8 @@ def plot_all(file_path, filename):
     # Create a line plot of the daily average of Stat1 for all years
     plt.plot(daily_data.index, daily_data['Stat1'])
     plt.xlabel('Date')
-    plt.ylabel('Daily Average of Stat1 Temperature C')
-    plt.title('Yearly Plot of Daily Average of Stat1')
+    plt.ylabel('Daily Average of Global Radiation W/m²')
+    plt.title('Plot of Daily Average of Global Radiation')
 
     # Get the base filename without the extension
     file_name, extension = os.path.splitext(filename)
@@ -342,4 +342,4 @@ def plot_all(file_path, filename):
     # Show the plot
     plt.show()
 
-plot_all(file_path, args.filename)
+#plot_all(file_path, args.filename)
