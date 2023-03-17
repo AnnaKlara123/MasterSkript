@@ -109,7 +109,7 @@ def histogram_plotter(df, plot_dir, file_name, year):
     if not os.path.exists(file_folder):
         os.makedirs(file_folder)
 
-    plot_name = f'Histogram_{file_name}{year}.png'
+    plot_name = f'Histogram_{file_name[:-4]}{year}.png'
     plot_path = os.path.join(file_folder, plot_name)
 
     with tqdm(desc=f'Saving {plot_name}', total=1) as pbar:
