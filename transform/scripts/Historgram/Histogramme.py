@@ -12,8 +12,8 @@ from termcolor import colored
 
 # Create the parser
 parser = argparse.ArgumentParser()
-parser.add_argument('--dir', type=str, help='The directory where the file is located')
-parser.add_argument('--filename', type=str, help='The filename to read')
+parser.add_argument('--dir', type=str, help='The directory where the file is located', default= 'C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output')
+parser.add_argument('--filename', type=str, help='The filename to read', default= 'lwd_Tirol_1197091-LF-BasisganglinieNaN.csv')
 parser.add_argument('--year', type=int, help='The year to plot')
 args = parser.parse_args()
 
@@ -36,17 +36,17 @@ if not os.path.exists(file_folder):
     print(f'Created directory: {colored(file_folder, "green")}')
 
 # Read in the CSV file
-df = pd.read_csv(file_path, sep='\t')
+df = pd.read_csv(file_path, sep='\t', skiprows=5)
 
 # Extract the values from the Stat1 column
 x = df['Stat1'].values
 
 # Combine the datetime columns into a single datetime object
-dates = [pd.Timestamp(int(row['YY']), int(row['MM']), int(row['DD']), int(row['HH']), int(row['MM.1'])) for i, row in df.iterrows()]
+dates = [pd.Timestamp(int(row['YY']), int(row['MM']), int(row['DD']), int(row['HH']), int(row['MN'])) for i, row in df.iterrows()]
 
 
 # Create a new column called 'date' by combining the individual date columns
-df['date'] = pd.to_datetime(df[['YY', 'MM', 'DD', 'HH', 'MM.1']].rename(columns={'YY':'year', 'MM':'month', 'DD':'day', 'HH':'hour', 'MM.1':'minute' }))
+df['date'] = pd.to_datetime(df[['YY', 'MM', 'DD', 'HH', 'MN']].rename(columns={'YY':'year', 'MM':'month', 'DD':'day', 'HH':'hour', 'MN':'minute' }))
 
 # Set the datetime index for the dataframe
 df.index = df['date']
