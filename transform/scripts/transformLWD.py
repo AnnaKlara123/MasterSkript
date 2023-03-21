@@ -1,4 +1,3 @@
-import argparse
 import os
 import pandas as pd
 import numpy as np
@@ -9,7 +8,7 @@ def main(file_path, station_number, nan_replacement):
     filename = os.path.splitext(os.path.basename(file_path))[0]
 
     # read in the data as a pandas dataframe
-    skip_rows = 128 if station_number == "15140917" else 98
+    skip_rows = 219 if station_number == "1197091" else 98
     df = pd.read_csv(file_path, delimiter=";", names=["datetime", "Stat1"], skiprows=skip_rows)
 
     # split the datetime column into date and time columns
@@ -56,15 +55,15 @@ def main(file_path, station_number, nan_replacement):
         header_row = pd.DataFrame([['YY', 'MM', 'DD', 'HH', 'MN', 'LDW Gamshorn'],
                                    ['YY', 'MM', 'DD', 'HH', 'MN', '2997'],
                                    ['YY', 'MM', 'DD', 'HH', 'MN', '46.896034'],
-                                    ['YY', 'MM', 'DD', 'HH', 'MN', '10.190435'], 
-                                    ['YY', 'MM', 'DD', 'HH', 'MN', 'Stat1']],
-                                      columns=['YY', 'MM', 'DD', 'HH', 'MN', 'Stat1'])
+                                   ['YY', 'MM', 'DD', 'HH', 'MN', '10.190435'],
+                                   ['YY', 'MM', 'DD', 'HH', 'MN', 'Stat1']],
+                                   columns=['YY', 'MM', 'DD', 'HH', 'MN', 'Stat1'])
         # create a .csv copy for later calculations 
         header_row_copy = pd.DataFrame(columns=['YY', 'MM', 'DD', 'HH', 'MN', 'Stat1'])
 
     # concatenate the header row with the data frame
     df = pd.concat([header_row, df], ignore_index=True)
-    df_csv = pd.concat([header_row_copy, df], ignore_index=True)
+    #df_csv = pd.concat([header_row_copy, df], ignore_index=True)
 
     # set the file path for saving the CSV file
     if nan_replacement == "NaN":
@@ -75,7 +74,7 @@ def main(file_path, station_number, nan_replacement):
         raise ValueError("Invalid value for nan_replacement argument. Must be either 'NaN' or '-9999'.")
 
     # save the new dataframe as a CSV file
-    df_csv.to_csv(csv_path, sep='\t', index=False)
+    #df_csv.to_csv(csv_path, sep='\t', index=False)
 
     # set the file path for saving the output.txt  file
     if nan_replacement == "NaN":
@@ -90,4 +89,4 @@ def main(file_path, station_number, nan_replacement):
 
     print('done')
 
-main("C:Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/input/LWD_Inputs/lwd_Tirol_1197091-LT-Basisganglinie.csv", "1197091", "-9999")
+main("C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/input/LWD_Inputs/lwd_Tirol_15140917-LT-Basisganglinie.csv", "15140917", "NaN")
