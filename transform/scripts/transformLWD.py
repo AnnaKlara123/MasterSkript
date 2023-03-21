@@ -90,4 +90,4 @@ def main(file_path, station_number, nan_replacement):
 
     print('done')
 
-main("C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/input/LWD_Inputs/lwd_Tirol_1197091-LF-Basisganglinie.csv", "1197091", "NaN")
+main("C:Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/input/LWD_Inputs/lwd_Tirol_1197091-LT-Basisganglinie.csv", "1197091", "-9999")
