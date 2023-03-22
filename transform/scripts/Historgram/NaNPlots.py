@@ -4,6 +4,9 @@ import pandas as pd
 from matplotlib.dates import date2num
 import argparse
 import os
+from termcolor import colored
+from tqdm import tqdm
+
 
 # Create the parser
 parser = argparse.ArgumentParser()
@@ -27,13 +30,14 @@ df = pd.read_csv(file_path, sep='\t')
 plot_dir = os.path.join(args.dir, 'plots')
 if not os.path.exists(plot_dir):
     os.makedirs(plot_dir)
-    print(f'Created directory: {plot_dir}')
+    print(f'Created directory: {colored(plot_dir, "green")}')
 
 # Create a folder for the current file if it doesn't exist
 file_folder = os.path.join(plot_dir, f'NaN_Plots{file_name[:-4]}')
 if not os.path.exists(file_folder):
     os.makedirs(file_folder)
-    print(f'Created directory: {file_folder}')
+    print(f'Created directory: {colored(file_folder, "green")}')
+
 
 # Extract the values from the Stat1 column
 x = df['Stat1'].values
@@ -46,6 +50,10 @@ df.index = dates
 
 # Remove the YY, MM, DD, HH, and MN columns from the dataframe
 df = df.drop(columns=['YY', 'MM', 'DD', 'HH', 'MN'])
+
+# Print the number of NaN values per year
+nan_count = df['Stat1'].isna().groupby(df.index.year).sum()
+print(colored('Number of NaN values per year:', 'green'), colored(nan_count, 'red'))
 
 # Create a boolean mask of NaN values
 mask = df['Stat1'].isna()
@@ -81,10 +89,12 @@ if year is not None and month is not None:
     # Save the plot as a file
     plot_filename = f'NaN_Plots_{file_name[:-4]}_{year}_{month:02d}.png'
     plot_filepath = os.path.join(file_folder, plot_filename)
-    fig.savefig(plot_filepath)
+    with tqdm(desc=f'Saving {plot_filename}', total=1) as pbar:
+        fig.savefig(plot_filepath)
+        pbar.update()
 
     # Display the chart
-    plt.show()
+    #plt.show()
 
 # If year is specified, plot monthly data for the year
 elif year is not None:
@@ -107,10 +117,12 @@ elif year is not None:
     # Save the plot as a file
     plot_filename = f'NaN_Plots_{file_name[:-4]}_{year}.png'
     plot_filepath = os.path.join(file_folder, plot_filename)
-    fig.savefig(plot_filepath)
+    with tqdm(desc=f'Saving {plot_filename}', total=1) as pbar:
+        fig.savefig(plot_filepath)
+        pbar.update()
 
     # Display the chart
-    plt.show()
+    #plt.show()
 
 # If neither year nor month is specified, plot data for the entire dataframe
 else:
@@ -126,12 +138,16 @@ else:
     # Set the x-axis ticks and tick labels
     ax.xaxis.set_major_locator(mdates.MonthLocator(interval=1))
     ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m'))
-    ax.tick_params(axis='x', labelsize=4)
+    plt.xticks(rotation=45)
+    ax.tick_params(axis='x', labelsize=7)
 
     # Save the plot as a file
     plot_filename = f'NaN_Plots_{file_name[:-4]}.png'
     plot_filepath = os.path.join(file_folder, plot_filename)
-    fig.savefig(plot_filepath)
+
+    with tqdm(desc=f'Saving {plot_filename}', total=1) as pbar:
+        fig.savefig(plot_filepath)
+        pbar.update(0.5)  # update the progress bar with a value between 0 and 1
 
     # Display the chart
-    plt.show()
+    #plt.show()
