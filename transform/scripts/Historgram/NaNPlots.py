@@ -70,6 +70,7 @@ month = args.month
 
 # If year and month are specified, plot data for the month of the year
 if year is not None and month is not None:
+    print(colored(f'plots data for {args.year}:{args.month}', 'blue'))
     # Filter the dataframe by the year and month specified in the command line arguments
     df_month = df[(df.index.year == year) & (df.index.month == month)]
 
@@ -98,6 +99,7 @@ if year is not None and month is not None:
 
 # If year is specified, plot monthly data for the year
 elif year is not None:
+    print(colored(f'The year{args.year} is plotted', 'blue'))
     # Filter the dataframe by the year specified in the command line argument
     df_year = df[df.index.year == year]
 
@@ -126,9 +128,10 @@ elif year is not None:
 
 # If neither year nor month is specified, plot data for the entire dataframe
 else:
+    print(colored('The whole Dataframe is plotted', 'blue'))
     # Create a bar chart of the NaN values in the 'Stat1' column
     fig, ax = plt.subplots(figsize=(20, 8))
-    plt.bar(df.index, plot_data.loc[df.index].values, width=0.001, color='red')
+    plt.bar(df.index, plot_data.loc[df.index].values, width=0.01, color='red')
 
     # Set the title and axis labels
     plt.title(f'Occurrences of NaN values in {file_name}')
@@ -147,7 +150,7 @@ else:
 
     with tqdm(desc=f'Saving {plot_filename}', total=1) as pbar:
         fig.savefig(plot_filepath)
-        pbar.update(0.5)  # update the progress bar with a value between 0 and 1
+        pbar.update()  # update the progress bar with a value between 0 and 1
 
     # Display the chart
     #plt.show()
