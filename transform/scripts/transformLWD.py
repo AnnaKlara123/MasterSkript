@@ -25,11 +25,11 @@ def main(file_path, station_number, nan_replacement):
     # replace missing values represented as "---" with NaN
     df['Stat1'] = pd.to_numeric(df['Stat1'], errors='coerce')
 
-    # set all missing values and values above 100 to NaN or -9999
+   # set all missing values, negative values, and values above 100 to NaN or -9999
     if nan_replacement == "NaN":
-        df['Stat1'] = np.where((df['Stat1'].isna()) | (df['Stat1'] > 100), np.nan, df['Stat1'])
+        df['Stat1'] = np.where((df['Stat1'].isna()) | (df['Stat1'] < 0) | (df['Stat1'] > 100), np.nan, df['Stat1'])
     elif nan_replacement == "-9999":
-        df['Stat1'] = np.where((df['Stat1'].isna()) | (df['Stat1'] > 100), -9999, df['Stat1'])
+        df['Stat1'] = np.where((df['Stat1'].isna()) | (df['Stat1'] < 0) | (df['Stat1'] > 100), -9999, df['Stat1'])
     else:
         raise ValueError("Invalid value for nan_replacement argument. Must be either 'NaN' or '-9999'.")
 
@@ -89,4 +89,4 @@ def main(file_path, station_number, nan_replacement):
 
     print('done')
 
-main("C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/input/LWD_Inputs/lwd_Tirol_15140917-LT-Basisganglinie.csv", "15140917", "NaN")
+main("C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/input/LWD_Inputs/lwd_Tirol_1197091-LF-Basisganglinie.csv", "1197091", "NaN")
