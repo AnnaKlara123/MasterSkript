@@ -56,55 +56,82 @@ plot_data = mask.astype(int)
 # Group the data by year and month
 groups = df.groupby([df.index.year, df.index.month])
 
-############################## NaN Plot specific Month / Year ###################################
+# Get the year and month from the command line arguments
+year = args.year
+month = args.month
 
-# # Loop through each group and create a bar chart
-# for (year, month), group in groups:
-#     if (args.year is None or year == args.year) and (args.month is None or month == args.month):
-#         # Create a bar chart of the NaN values in the 'Stat1' column
-#         fig, ax = plt.subplots(figsize=(20, 8))
-#         plt.bar(group.index, plot_data.loc[group.index].values, width=0.001, color='red')
+# If year and month are specified, plot data for the month of the year
+if year is not None and month is not None:
+    # Filter the dataframe by the year and month specified in the command line arguments
+    df_month = df[(df.index.year == year) & (df.index.month == month)]
 
-#         # Set the title and axis labels
-#         plt.title(f'Occurrences of NaN values in Stat1 column ({year}/{month:02d})')
-#         plt.xlabel('Date')
-#         plt.ylabel('NaN values')
-#          # Add a label to the plot
-#         ax.text(group.index[-1], 1.05, f'{year}/{month:02d}', ha='right', va='bottom', transform=ax.transAxes)
-#          # Set the x-axis ticks and tick labels
-#         ax.xaxis.set_major_locator(mdates.DayLocator(interval=1))
-#         ax.xaxis.set_major_formatter(mdates.DateFormatter('%d'))
+    # Create a bar chart of the NaN values in the 'Stat1' column
+    fig, ax = plt.subplots(figsize=(20, 8))
+    plt.bar(df_month.index, plot_data.loc[df_month.index].values, width=0.001, color='red')
 
-#         # Display the chart
-#         plt.show()
+    # Set the title and axis labels
+    plt.title(f'Occurrences of NaN values in {file_name} ({year}/{month:02d})')
+    plt.xlabel('Date')
+    plt.ylabel('NaN values')
 
-###################################################################################################
+    # Set the x-axis ticks and tick labels
+    ax.xaxis.set_major_locator(mdates.DayLocator(interval=1))
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%d'))
 
-###################### Get the data monthly for a specific year ###################################
-# Filter the dataframe by the year specified in the command line argument
-if args.year is not None:
-    df = df[df.index.year == args.year]
+    # Save the plot as a file
+    plot_filename = f'NaN_Plots_{file_name[:-4]}_{year}_{month:02d}.png'
+    plot_filepath = os.path.join(file_folder, plot_filename)
+    fig.savefig(plot_filepath)
 
-# Create a bar chart of the NaN values in the 'Stat1' column
-fig, ax = plt.subplots(figsize=(20, 8))
-plt.bar(df.index, plot_data.loc[df.index].values, width=0.001, color='red')
+    # Display the chart
+    plt.show()
 
-# Set the title and axis labels
-plt.title(f'Occurrences of NaN values in Stat1 column ({args.year})')
-plt.xlabel('Month')
-plt.ylabel('NaN values')
+# If year is specified, plot monthly data for the year
+elif year is not None:
+    # Filter the dataframe by the year specified in the command line argument
+    df_year = df[df.index.year == year]
 
-# Set the x-axis ticks and tick labels
-ax.xaxis.set_major_locator(mdates.MonthLocator(interval=1))
-ax.xaxis.set_major_formatter(mdates.DateFormatter('%b'))
+    # Create a bar chart of the NaN values in the 'Stat1' column
+    fig, ax = plt.subplots(figsize=(20, 8))
+    plt.bar(df_year.index, plot_data.loc[df_year.index].values, width=0.001, color='red')
 
-# Save the plot as a file
-if args.year is not None:
-    plot_filename = f'NaN_Plots_{file_name[:-4]}_{args.year}.png'
+    # Set the title and axis labels
+    plt.title(f'Occurrences of NaN values in{file_name} ({year})')
+    plt.xlabel('Month')
+    plt.ylabel('NaN values')
+
+    ax.xaxis.set_major_locator(mdates.MonthLocator(interval=1))
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m'))
+    ax.tick_params(axis='x', labelsize=7)
+    
+    # Save the plot as a file
+    plot_filename = f'NaN_Plots_{file_name[:-4]}_{year}.png'
+    plot_filepath = os.path.join(file_folder, plot_filename)
+    fig.savefig(plot_filepath)
+
+    # Display the chart
+    plt.show()
+
+# If neither year nor month is specified, plot data for the entire dataframe
 else:
-    plot_filename = f'NaN_Plots_{file_name[:-4]}.png'
-plot_filepath = os.path.join(file_folder, plot_filename)
-fig.savefig(plot_filepath)
+    # Create a bar chart of the NaN values in the 'Stat1' column
+    fig, ax = plt.subplots(figsize=(20, 8))
+    plt.bar(df.index, plot_data.loc[df.index].values, width=0.001, color='red')
 
-# Display the chart
-plt.show()
+    # Set the title and axis labels
+    plt.title(f'Occurrences of NaN values in {file_name}')
+    plt.xlabel('Date')
+    plt.ylabel('NaN values')
+
+    # Set the x-axis ticks and tick labels
+    ax.xaxis.set_major_locator(mdates.MonthLocator(interval=1))
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m'))
+    ax.tick_params(axis='x', labelsize=4)
+
+    # Save the plot as a file
+    plot_filename = f'NaN_Plots_{file_name[:-4]}.png'
+    plot_filepath = os.path.join(file_folder, plot_filename)
+    fig.savefig(plot_filepath)
+
+    # Display the chart
+    plt.show()
