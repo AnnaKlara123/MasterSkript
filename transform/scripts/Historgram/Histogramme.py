@@ -36,7 +36,7 @@ if not os.path.exists(file_folder):
     print(f'Created directory: {colored(file_folder, "green")}')
 
 # Read in the CSV file
-df = pd.read_csv(file_path, sep='\t', skiprows=5)
+df = pd.read_csv(file_path, sep='\t')
 
 # Extract the values from the Stat1 column
 x = df['Stat1'].values
