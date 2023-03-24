@@ -158,21 +158,6 @@ class File:
             self.df['Stat1'] = self.df['Stat1'].apply(lambda x: replacement if (isinstance(x, (int, float)) and x < 0 and '-' in identifier) or (x in ident_int) or (str(x) in ident_str) else x)
 
 
-    # def replace_nan(self):
-    #     if self.config.get('replace_nan_values') is False:
-    #         return
-    #     replacement = self.config.get('nan_value_replacement') if isinstance(self.config.get('nan_value_replacement'), int) else float("NaN")
-    #     identifier = self.config.get('nan_value_identifier')
-    #     if isinstance(identifier, int):
-    #         self.df['Stat1'] = self.df['Stat1'].apply(lambda x: replacement if x == identifier else x)
-    #     elif isinstance(identifier, str):
-    #         identifiers = [int(i) for i in identifier.split(',') if i.lstrip('-').isdigit()]
-    #         if '-' in identifier:
-    #             self.df['Stat1'] = self.df['Stat1'].apply(lambda x: replacement if (x in identifiers or x < 0) else x)
-    #         else:
-    #             self.df['Stat1'] = self.df['Stat1'].apply(lambda x: replacement if x in identifiers else x)
-
-
 def main():
     Transformer().run()
 
