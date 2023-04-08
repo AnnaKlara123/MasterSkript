@@ -34,6 +34,7 @@ df["RR"] = pd.to_numeric(df["RR"], errors="coerce")
 # replace all NaN values with -9999 TUNR ON IF -9999 is wished! 
 #df["RR"].fillna(-9999, inplace=True)
 
+
 ################################ Format the DF for the WaSiM output################################
 # rename RR column to Stat1
 df = df.rename(columns={"RR": "Stat1"})
@@ -47,10 +48,8 @@ df = pd.concat([header_row, df], ignore_index=True)
 
 #################### Save Files ################################################################################
 # set the file path for saving the CSV file
-csv_path = f"C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/{filename}NaN.csv"
+csv_path = f"C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/{filename}.csv"
 
 # save the new dataframe as a CSV file
 df.to_csv(csv_path,sep='\t', index=False)
 
-# set the file path for saving the output.txt file
-output_path = f"{filename}.txt"
