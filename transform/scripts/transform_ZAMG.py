@@ -4,7 +4,7 @@ import numpy as np
 
 ######################## Read in file ########################################################################
 # set the file path
-file_path = "C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/input/ZAMG_RR_20131023T0000_20230402T2350TEST.csv"
+file_path = "C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/input/ZAMG_RR_20131023T0000_20230402T2350.csv"
 
 # extract the filename without the extension
 filename = os.path.splitext(os.path.basename(file_path))[0]
@@ -22,7 +22,7 @@ df["MN"] = pd.to_datetime(df["time"], format="%Y-%m-%dT%H:%M:%S%z").dt.strftime(
 # drop original time column
 df = df.drop(["time"], axis=1)
 df = df.drop(["station"], axis=1)
-df = df.drop(["index"], axis=1)
+#df = df.drop(["index"], axis=1)
 ######################## NaN Replacement & Exclude of irrational Values ################################
 
 # format the value column as required
@@ -32,7 +32,7 @@ df["RR"] = df["RR"].astype(str).str.replace(",", ".")
 df["RR"] = pd.to_numeric(df["RR"], errors="coerce")
 
 # replace all NaN values with -9999 TUNR ON IF -9999 is wished! 
-df["RR"].fillna(-9999, inplace=True)
+#df["RR"].fillna(-9999, inplace=True)
 
 ################################ Format the DF for the WaSiM output################################
 # rename RR column to Stat1
@@ -54,5 +54,3 @@ df.to_csv(csv_path,sep='\t', index=False)
 
 # set the file path for saving the output.txt file
 output_path = f"{filename}.txt"
-
-# save the dataframe as a tab-separated .txt
