@@ -90,14 +90,23 @@ new_low_freq['HH'] = new_low_freq.index.hour
 new_low_freq['MN'] = new_low_freq.index.minute
 
 
-# set the datetime index for the new DataFrame
-#new_low_freq = new_low_freq.set_index('datetime')
+# # set the datetime index for the new DataFrame
+# #new_low_freq = new_low_freq.set_index('datetime')
+
+# # fill NaN values in the high-frequency dataframe with values from the low-frequency dataframe
+# if freq_ratio > 0:
+#     high_freq['Stat1'].fillna((new_low_freq['Stat1']/10).resample(args.freq1).ffill().astype(float) * freq_ratio, inplace=True)
+# else:
+#     high_freq['Stat1'].fillna((new_low_freq['Stat1']/10).resample(args.freq1).ffill().astype(float), inplace=True)
+
+# # save the filled dataframe as a CSV file
+# high_freq.to_csv(os.path.join(args.dir, f"filled_NEW{args.freq}{file_name2}"), sep='\t', index=False)
+
 
 # fill NaN values in the high-frequency dataframe with values from the low-frequency dataframe
-if freq_ratio > 0:
-    high_freq['Stat1'].fillna((new_low_freq['Stat1']/10).resample(args.freq1).ffill().astype(float) * freq_ratio, inplace=True)
-else:
-    high_freq['Stat1'].fillna((new_low_freq['Stat1']/10).resample(args.freq1).ffill().astype(float), inplace=True)
+high_freq['Stat1'].fillna((new_low_freq['Stat1']/10).interpolate(method='time'), inplace=True)
+# The interpolate() method uses linear interpolation to fill NaN values. By specifying the method='time' argument, it will interpolate based on the time index, so each minute will get the corresponding value of the other dataframe.
+
 
 # save the filled dataframe as a CSV file
 high_freq.to_csv(os.path.join(args.dir, f"filled_NEW{args.freq}{file_name2}"), sep='\t', index=False)
