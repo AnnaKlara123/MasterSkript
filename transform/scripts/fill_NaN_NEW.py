@@ -52,18 +52,54 @@ else:
     low_freq = df1
     freq_ratio = int(args.freq2[:-1]) // int(args.freq1[:-1])
 
+#### Fill in low Frequencay DF #### WORKS!! 
+# # resample the high-frequency dataframe to the frequency of the low-frequency dataframe, and fill NaN values using forward filling
+# high_freq = high_freq.resample(args.freq1).sum()
 
-# resample the high-frequency dataframe to the frequency of the low-frequency dataframe, and fill NaN values using forward filling
-high_freq = high_freq.resample(args.freq1).sum()
+# # create a new datetime index with the 10-minute intervals
+# high_freq.index = pd.date_range(high_freq.index[0].floor('10T'), high_freq.index[-1], freq=args.freq1)
 
-# create a new datetime index with the 10-minute intervals
-high_freq.index = pd.date_range(high_freq.index[0].floor('10T'), high_freq.index[-1], freq=args.freq1)
+# # fill NaN values in the low-frequency dataframe with values from the high-frequency dataframe
+# if freq_ratio > 0:
+#     low_freq['Stat1'].fillna(high_freq['Stat1'].resample('1T').ffill().astype(float)/freq_ratio, inplace=True)
+# else:
+#     low_freq['Stat1'].fillna(high_freq['Stat1'].resample('1T').ffill().astype(float), inplace=True)
 
-# fill NaN values in the low-frequency dataframe with values from the high-frequency dataframe
+# # save the filled dataframe as a CSV file
+# low_freq.to_csv(os.path.join(args.dir, f"filled_NEW{args.freq}{file_name1}"), sep='\t', index=False)
+###########################################################################################################################
+
+# create a new datetime index with 1-minute intervals
+new_index = pd.date_range(low_freq.index[0], low_freq.index[-1], freq='1T')
+
+# create a new DataFrame with the new index and fill it with NaN values
+new_low_freq = pd.DataFrame(index=new_index, columns=low_freq.columns).fillna(method='ffill')
+
+# # update the values of the new DataFrame with values from the original low-frequency DataFrame
+# for i, row in low_freq.iterrows():
+#     new_low_freq.loc[row.name] = row.values[0] / 10
+
+
+# update the values of the new DataFrame with values from the original low-frequency DataFrame
+for i, row in low_freq.iterrows():
+    new_low_freq.at[row.name, 'Stat1'] = row['Stat1'] / 10
+
+# update the index of the new DataFrame to match the format of the original low-frequency DataFrame
+new_low_freq['YY'] = new_low_freq.index.year
+new_low_freq['MM'] = new_low_freq.index.month
+new_low_freq['DD'] = new_low_freq.index.day
+new_low_freq['HH'] = new_low_freq.index.hour
+new_low_freq['MN'] = new_low_freq.index.minute
+
+
+# set the datetime index for the new DataFrame
+#new_low_freq = new_low_freq.set_index('datetime')
+
+# fill NaN values in the high-frequency dataframe with values from the low-frequency dataframe
 if freq_ratio > 0:
-    low_freq['Stat1'].fillna(high_freq['Stat1'].resample('1T').ffill().astype(float)/freq_ratio, inplace=True)
+    high_freq['Stat1'].fillna((new_low_freq['Stat1']/10).resample(args.freq1).ffill().astype(float) * freq_ratio, inplace=True)
 else:
-    low_freq['Stat1'].fillna(high_freq['Stat1'].resample('1T').ffill().astype(float), inplace=True)
+    high_freq['Stat1'].fillna((new_low_freq['Stat1']/10).resample(args.freq1).ffill().astype(float), inplace=True)
 
 # save the filled dataframe as a CSV file
-low_freq.to_csv(os.path.join(args.dir, f"filled_NEW{args.freq}{file_name1}"), sep='\t', index=False)
+high_freq.to_csv(os.path.join(args.dir, f"filled_NEW{args.freq}{file_name2}"), sep='\t', index=False)
