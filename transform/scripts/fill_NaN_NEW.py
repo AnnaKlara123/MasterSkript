@@ -47,7 +47,7 @@ if  args.freq1 > args.freq2:
     high_freq = df1
     low_freq = df2
     freq_ratio = int(args.freq1[:-1]) // int(args.freq2[:-1])
-else:
+else: # 0 = freq_ration because no calculation is needed as the high freq. Value stays the same 
     high_freq = df2
     low_freq = df1
     freq_ratio = int(args.freq2[:-1]) // int(args.freq1[:-1])
@@ -75,14 +75,12 @@ new_index = pd.date_range(low_freq.index[0], low_freq.index[-1], freq='1T')
 # create a new DataFrame with the new index and fill it with NaN values
 new_low_freq = pd.DataFrame(index=new_index, columns=low_freq.columns).fillna(method='ffill')
 
-# # update the values of the new DataFrame with values from the original low-frequency DataFrame
-# for i, row in low_freq.iterrows():
-#     new_low_freq.loc[row.name] = row.values[0] / 10
-
-
 # update the values of the new DataFrame with values from the original low-frequency DataFrame
 for i, row in low_freq.iterrows():
-    new_low_freq.at[row.name, 'Stat1'] = row['Stat1'] / 10
+    new_val = row['Stat1'] / 10
+    start_time = i
+    end_time = start_time + pd.Timedelta(minutes=10)
+    new_low_freq.loc[start_time:end_time, 'Stat1'] = new_val
 
 # update the index of the new DataFrame to match the format of the original low-frequency DataFrame
 new_low_freq['YY'] = new_low_freq.index.year
