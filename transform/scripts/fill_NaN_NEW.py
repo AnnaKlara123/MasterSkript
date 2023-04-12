@@ -1,6 +1,7 @@
 import pandas as pd
 import argparse 
 import os
+from termcolor import colored
 
 # Create the parser
 parser = argparse.ArgumentParser()
@@ -35,12 +36,14 @@ df1 = df1.set_index('datetime')
 df2['datetime'] = pd.to_datetime(df2['YY'].astype(str) + '-' + df2['MM'].astype(str) + '-' + df2['DD'].astype(str) + ' ' + df2['HH'].astype(str) + ':' + df2['MN'].astype(str) + ':00')
 df2 = df2.set_index('datetime')
 
+
 if args.freq1 != args.freq2:
-    print("Warning: The measurement frequency of the two dataframes is different.")
+    print(colored("Warning: The measurement frequency of the two dataframes is different.", "yellow"))
+
 
     # Calculate the frequency ratio (for converting between the two dataframes)
     freq_ratio = int(args.freq1[:-1]) // int(args.freq2[:-1])
-    print(f"Frequency ratio: {args.freq1} / {args.freq2} = {freq_ratio}")
+    print(colored("Frequency ratio:", "yellow"), colored(f"{args.freq1} / {args.freq2} = {freq_ratio}", "blue"))
 
 # check which dataframe has higher frequency
 if  args.freq1 > args.freq2:
@@ -53,20 +56,22 @@ else: # 0 = freq_ration because no calculation is needed as the high freq. Value
     freq_ratio = int(args.freq2[:-1]) // int(args.freq1[:-1])
 
 #### Fill in low Frequencay DF #### WORKS!! 
-# # resample the high-frequency dataframe to the frequency of the low-frequency dataframe, and fill NaN values using forward filling
-# high_freq = high_freq.resample(args.freq1).sum()
+# resample the high-frequency dataframe to the frequency of the low-frequency dataframe, and fill NaN values using forward filling
+high_freq = high_freq.resample(args.freq1).sum()
 
-# # create a new datetime index with the 10-minute intervals
-# high_freq.index = pd.date_range(high_freq.index[0].floor('10T'), high_freq.index[-1], freq=args.freq1)
+# create a new datetime index with the 10-minute intervals
+high_freq.index = pd.date_range(high_freq.index[0].floor('10T'), high_freq.index[-1], freq=args.freq1)
 
-# # fill NaN values in the low-frequency dataframe with values from the high-frequency dataframe
-# if freq_ratio > 0:
-#     low_freq['Stat1'].fillna(high_freq['Stat1'].resample('1T').ffill().astype(float)/freq_ratio, inplace=True)
-# else:
-#     low_freq['Stat1'].fillna(high_freq['Stat1'].resample('1T').ffill().astype(float), inplace=True)
+# fill NaN values in the low-frequency dataframe with values from the high-frequency dataframe
+if freq_ratio > 0:
+    low_freq['Stat1'].fillna(high_freq['Stat1'].resample('1T').ffill().astype(float)/freq_ratio, inplace=True)
+else:
+    low_freq['Stat1'].fillna(high_freq['Stat1'].resample('1T').ffill().astype(float), inplace=True)
 
-# # save the filled dataframe as a CSV file
-# low_freq.to_csv(os.path.join(args.dir, f"filled_NEW{args.freq}{file_name1}"), sep='\t', index=False)
+# save the filled dataframe as a CSV file
+low_freq.to_csv(os.path.join(args.dir, f"filled_NEW{args.freq}{file_name1}"), sep='\t', index=False)
+print(colored("Low-Frequancy Dataframe is filled and saved", "yellow"))
+
 ###########################################################################################################################
 
 # create a new datetime index with 1-minute intervals
@@ -89,20 +94,6 @@ new_low_freq['DD'] = new_low_freq.index.day
 new_low_freq['HH'] = new_low_freq.index.hour
 new_low_freq['MN'] = new_low_freq.index.minute
 
-
-# # set the datetime index for the new DataFrame
-# #new_low_freq = new_low_freq.set_index('datetime')
-
-# # fill NaN values in the high-frequency dataframe with values from the low-frequency dataframe
-# if freq_ratio > 0:
-#     high_freq['Stat1'].fillna((new_low_freq['Stat1']/10).resample(args.freq1).ffill().astype(float) * freq_ratio, inplace=True)
-# else:
-#     high_freq['Stat1'].fillna((new_low_freq['Stat1']/10).resample(args.freq1).ffill().astype(float), inplace=True)
-
-# # save the filled dataframe as a CSV file
-# high_freq.to_csv(os.path.join(args.dir, f"filled_NEW{args.freq}{file_name2}"), sep='\t', index=False)
-
-
 # fill NaN values in the high-frequency dataframe with values from the low-frequency dataframe
 high_freq['Stat1'].fillna((new_low_freq['Stat1']/10).interpolate(method='time'), inplace=True)
 # The interpolate() method uses linear interpolation to fill NaN values. By specifying the method='time' argument, it will interpolate based on the time index, so each minute will get the corresponding value of the other dataframe.
@@ -110,3 +101,4 @@ high_freq['Stat1'].fillna((new_low_freq['Stat1']/10).interpolate(method='time'),
 
 # save the filled dataframe as a CSV file
 high_freq.to_csv(os.path.join(args.dir, f"filled_NEW{args.freq}{file_name2}"), sep='\t', index=False)
+print(colored("High-Frequancy Dataframe is filled and saved", "yellow"))
