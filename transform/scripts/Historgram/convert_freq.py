@@ -6,11 +6,14 @@ import pandas as pd
 parser = argparse.ArgumentParser()
 parser.add_argument('--dirin', type=str, help='The directory where the files are located', default="C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/convert_frequancy")
 parser.add_argument('--dirout', type=str, help='The directory where the files should be saved', default="C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/convert_frequancy/10min_Frequancy")
-parser.add_argument('--startdate', type=str, help='The startdate then the df shoud start', default='2014-09-01')
+parser.add_argument('--startdate', type=str, help='The startdate that the df shoud start', default='2014-09-01')
+parser.add_argument('--enddate', type=str, help='The enddate of the dataset', default='2021-09-01')
 args = parser.parse_args()
 
-# Define the desired start date
+# Define the desired start / end date
 start_date = pd.to_datetime(args.startdate)
+# Define the desired start date
+end_date = pd.to_datetime(args.enddate)
 
 count = 0
 
@@ -42,14 +45,16 @@ for file in os.listdir(args.dirin):
         # Update the MN column with the minutes from the new index
         df['MN'] = df.index.minute
         # Convert the YY, MM, DD, and HH columns to integers and remove the .0
-        df['YY'] = df.index.year.astype(int).astype(str)
-        df['MM'] = df.index.month.astype(int).astype(str)
-        df['DD'] = df.index.day.astype(int).astype(str)
-        df['HH'] = df.index.hour.astype(int).astype(str)
-        df['MN'] = df.index.minute.astype(int).astype(str)
+        df['YY'] = df.index.year.astype(str)
+        df['MM'] = df.index.month.astype(str)
+        df['DD'] = df.index.day.astype(str)
+        df['HH'] = df.index.hour.astype(str)
+        df['MN'] = df.index.minute.astype(str)
+        
 
        # Define the new index with the desired start date and frequency
         new_index = pd.date_range(start=start_date, periods=len(df), freq='10T')
+        df = df.truncate(before=start_date, after=end_date)  # Truncate the data to the desired start and end dates
 
         # Reindex the DataFrame using the new index
         df = df.reindex(new_index)
