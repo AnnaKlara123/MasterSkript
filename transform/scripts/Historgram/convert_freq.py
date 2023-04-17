@@ -12,10 +12,15 @@ args = parser.parse_args()
 # Define the desired start date
 start_date = pd.to_datetime(args.startdate)
 
+count = 0
+
 # Loop through all the files in the folder
 for file in os.listdir(args.dirin):
     # Check if the file is a CSV file
     if file.endswith(".csv"):
+        # Increment the counter variable
+        count += 1
+        
         # Read the CSV file into a pandas DataFrame
         df = pd.read_csv(os.path.join(args.dirin, file), delimiter='\t')
 
@@ -28,8 +33,11 @@ for file in os.listdir(args.dirin):
         # Convert the DataFrame values to float
         df = df.apply(pd.to_numeric, errors='coerce')
 
-        # Resample the DataFrame to a 10-minute frequency using mean
-        df = df.resample('10T').mean()
+        # Resample the DataFrame to a 10-minute frequency using mean for non-Precipitation files, and sum for Precipitation files
+        if "Precipitation" in file:
+            df = df.resample('10T').sum()
+        else:
+            df = df.resample('10T').mean()
 
         # Update the MN column with the minutes from the new index
         df['MN'] = df.index.minute
@@ -57,3 +65,6 @@ for file in os.listdir(args.dirin):
         new_file_name = os.path.splitext(file)[0] + "_10min.csv"
         df.to_csv(os.path.join(args.dirout, new_file_name), sep='\t', index=False)
         print("Saving:",new_file_name)
+
+# Print the number of files found and converted
+print("all", count, "files converted")
