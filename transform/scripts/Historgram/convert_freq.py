@@ -47,6 +47,19 @@ for file in os.listdir(args.dirin):
         #df['MN'] = df.index.minute
 
         # Convert the YY, MM, DD, and HH columns to integers and remove the .0
+        # df['YY'] = df.index.year
+        # df['MM'] = df.index.month
+        # df['DD'] = df.index.day
+        # df['HH'] = df.index.hour
+        # df['MN'] = df.index.minute
+        # df.info()
+
+       # Define new index and the desired start and end date and frequency
+        new_index = pd.date_range(start=start_date, periods=len(df), freq='10T')
+
+        # Reindex the DataFrame using the new index
+        df = df.reindex(new_index)
+
         df['YY'] = df.index.year
         df['MM'] = df.index.month
         df['DD'] = df.index.day
@@ -54,15 +67,9 @@ for file in os.listdir(args.dirin):
         df['MN'] = df.index.minute
         df.info()
 
-       # Define the new index with the desired start date and frequency
-        new_index = pd.date_range(start=start_date, periods=len(df), freq='10T')
         df = df.truncate(before=start_date, after=end_date)  # Truncate the data to the desired start and end dates
-
-        # Reindex the DataFrame using the new index
-        df = df.reindex(new_index)
-
-        # # Reset the index and drop the timestamp column. Save the resampled DataFrame as a new CSV file
-        # df = df.reset_index().drop('index', axis=1)
+        # Reset the index and drop the timestamp column
+        df.reset_index(drop=True, inplace=True)
 
         ## # #####  create a header row CHANGE LAT, LONG & height FOR DIFFERENT STATIONS!#####################################
         # # header_row = pd.DataFrame([['YY', 'MM', 'DD', 'HH', 'MN', 'STATIONNAEME'], ['YY', 'MM', 'DD', 'HH', 'MN', 'height'], ['YY', 'MM', 'DD', 'HH', 'MN', 'LONGNITUDE'], ['YY', 'MM', 'DD', 'HH', 'MN', 'LATITUDE'], ['YY', 'MM', 'DD', 'HH', 'MN', 'Stat1']], columns=['YY', 'MM', 'DD', 'HH', 'MN', 'Stat1'])
