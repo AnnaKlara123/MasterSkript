@@ -24,9 +24,18 @@ if not os.path.exists(plot_dir):
     os.makedirs(plot_dir)
     print(f'Created directory: {colored(plot_dir, "green")}')
 
-for file_name in os.listdir(args.dir):
-    if file_name.endswith(".csv"):
-        count += 1
+# Create a list of files to plot
+files_to_plot = []
+if args.filename:
+    # If filename is specified, plot only the specified file
+    files_to_plot.append(args.filename)
+else:
+    # If filename is not specified, plot all CSV files in the directory
+    for file_name in os.listdir(args.dir):
+        if file_name.endswith(".csv"):
+            files_to_plot.append(file_name)
+
+for file_name in files_to_plot:
         # Build the full filepath from the directory and filename arguments
         file_path = os.path.join(args.dir, file_name)
 
@@ -34,7 +43,8 @@ for file_name in os.listdir(args.dir):
         df = pd.read_csv(file_path, sep='\t')
         df.info()
 
-        # Create a folder for the current file if it doesn't exist
+
+            # Create a folder for the current file if it doesn't exist
         file_folder = os.path.join(plot_dir, f'NaN_Plots{file_name[:-4]}')
         if not os.path.exists(file_folder):
             os.makedirs(file_folder)
@@ -54,7 +64,7 @@ for file_name in os.listdir(args.dir):
 
         # Print the number of NaN values per year
         nan_count = df['Stat1'].isna().groupby(df.index.year).sum()
-        print(colored('Number of NaN values per year:', 'green'), colored(nan_count, 'red'))
+        print(colored('Number of NaN values per year for:', 'green'),colored(file_name, 'yellow'),  colored(nan_count, 'red'))
 
         # Create a boolean mask of NaN values
         mask = df['Stat1'].isna()
@@ -71,7 +81,7 @@ for file_name in os.listdir(args.dir):
 
         # If year and month are specified, plot data for the month of the year
         if year is not None and month is not None:
-            print(colored(f'plots data for {args.year}:{args.month}', 'blue'))
+            print(colored(f'plots data for {file_name} {args.year}:{args.month}', 'blue'))
             # Filter the dataframe by the year and month specified in the command line arguments
             df_month = df[(df.index.year == year) & (df.index.month == month)]
 
@@ -100,7 +110,7 @@ for file_name in os.listdir(args.dir):
 
         # If year is specified, plot monthly data for the year
         elif year is not None:
-            print(colored(f'The year{args.year} is plotted', 'blue'))
+            print(colored(f'The year{args.year} of {file_name} is plotted', 'blue'))
             # Filter the dataframe by the year specified in the command line argument
             df_year = df[df.index.year == year]
 
