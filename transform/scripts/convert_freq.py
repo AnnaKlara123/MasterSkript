@@ -6,8 +6,8 @@ import pandas as pd
 parser = argparse.ArgumentParser()
 parser.add_argument('--dirin', type=str, help='The directory where the files are located', default="C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/convert_frequancy")
 parser.add_argument('--dirout', type=str, help='The directory where the files should be saved', default= "C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/convert_frequancy/10min_Frequancy")
-parser.add_argument('--startdate', type=str, help='The startdate that the df shoud start', default='2013-10-11')
-parser.add_argument('--enddate', type=str, help='The enddate of the dataset', default='2013-10-14')
+parser.add_argument('--startdate', type=str, help='The startdate that the df shoud start', default='2014-09-01')
+parser.add_argument('--enddate', type=str, help='The enddate of the dataset', default='2021-09-01')
 args = parser.parse_args()
 
 # Define the desired start / end date
