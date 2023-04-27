@@ -6,9 +6,9 @@ import numpy as np
 # Set the folder path where the CSV files are located
 parser = argparse.ArgumentParser()
 parser.add_argument('--dirin', type=str, help='The directory where the files are located', default="C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/convert_frequancy/20.4Testdatasets")
-parser.add_argument('--dirout', type=str, help='The directory where the files should be saved', default= "C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/convert_frequancy/10min_Frequancy")
-parser.add_argument('--startdate', type=str, help='The startdate that the df shoud start',default='2013-10-11') #default='2014-09-01')
-parser.add_argument('--enddate', type=str, help='The enddate of the dataset', default='2013-10-14') #default='2021-09-01')
+parser.add_argument('--dirout', type=str, help='The directory where the files should be saved', default= "C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/convert_frequancy/20.4Testdatasets")
+parser.add_argument('--startdate', type=str, help='The startdate that the df shoud start',default='2014-09-01')
+parser.add_argument('--enddate', type=str, help='The enddate of the dataset', default='2021-09-01')
 args = parser.parse_args()
 
 # Define the desired start / end date
@@ -46,7 +46,8 @@ for file in os.listdir(args.dirin):
 
      # Resample the Stat1 column to a 10-minute frequency using mean for non-Precipitation files, and sum for Precipitation files
         if "Precipitation" in file:
-            df['Stat1'] = df['Stat1'].resample('10T').sum()
+             df['Stat1'] = df['Stat1'].resample('10T').apply(lambda x: np.nan if x.isnull().sum() > 5 else x.sum())
+             # Wenn mehr als 5 Werte NaN sind wird das Ergebnis auch NaN sein
         else:
             df['Stat1'] = df['Stat1'].resample('10T').mean()
      # ACHTUNG! Wenn ein NaN Value im Original vorhanden ist, so wird der neue Wert beim resampling auch weiterhin NaN sein! 
@@ -69,7 +70,7 @@ for file in os.listdir(args.dirin):
         df.reset_index(drop=True, inplace=True)
         # Print the number of NaN values per year
         nan_count = df['Stat1'].isna().sum()
-        print('Number of NaN values per year are:',nan_count)
+        print('Number of NaN in total are:',nan_count)
 
 
         ## # #####  create a header row CHANGE LAT, LONG & height FOR DIFFERENT STATIONS!#####################################
