@@ -6,19 +6,10 @@ from datetime import timedelta
 from pandas import np
 
 # # Create the parser
-# parser = argparse.ArgumentParser()
-# parser.add_argument('--dir', type=str, help='The directory where the file is located')
-# parser.add_argument('--df1', type=str, help='The Dataframe 1. DF with lower frequency ')
-# parser.add_argument('--height1', type=str, help='The height of the Station of Dataframe 1 in m. For example use "1587" for the Station in Galtuer')
-# parser.add_argument('--df2', type=str, help='The Dataframe 2 DF with higher frequency')
-# parser.add_argument('--height2', type=str, help='The height f the Station of Dataframe 1 in m.')
-# parser.add_argument('--lapsrate', type=str, help='The lapsrate that should be used. Use 1, if you do not want to use a lapsrate.')  
-# args = parser.parse_args()
-
 parser = argparse.ArgumentParser()
-parser.add_argument('--dir', type=str, help='The directory where the file is located', default="C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/convert_frequancy/20.4Testdatasets")
-parser.add_argument('--df1', type=str, help='The Dataframe 1. DF', default="hd_Windspeed_NaN_10minTest.csv")
-parser.add_argument('--df2', type=str, help='The Dataframe 2 DF', default= 'lwd_Tirol_GH_1197091-WG-BasisganglinieNaN_10minTest.csv')
+parser.add_argument('--dir', type=str, help='The directory where the file is located', default="C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/convert_frequancy/10min_Frequancy")
+parser.add_argument('--df1', type=str, help='The Dataframe 1. DF', default="lwd_Tirol_GH_1197091-WG-BasisganglinieNaN_10min.csv")
+parser.add_argument('--df2', type=str, help='The Dataframe 2 DF', default= 'hd_Windspeed_NaN_10min.csv')
 #parser.add_argument('--df3', type=str, help='The Dataframe 3 DF', default= 'ZAMG_Precipitation_NaN_10minTEST.csv')
 #parser.add_argument('--lapsrate', type=str, help='The lapsrate that should be used. Use 1, if you want a 1:1 filling.', default= "6.5")  
 args = parser.parse_args()
@@ -45,11 +36,17 @@ df2 = pd.read_csv(file_path2, sep='\t')
 timestamp1 = [pd.Timestamp(int(row['YY']), int(row['MM']), int(row['DD']), int(row['HH']), int(row['MN'])) for i, row in df1.iterrows()]
 # Convert the timestamp list to a DatetimeIndex object and set it as the new index
 df1.index = pd.DatetimeIndex(timestamp1)
+# Print the number of NaN values per year
+nan_count1 = df1['Stat1'].isna().groupby(df1.index.year).sum()
+print('Number of NaN values per year in', file_name1,' are:',nan_count1)
 
 # Set the date-time index for all dataframes
 timestamp2 = [pd.Timestamp(int(row['YY']), int(row['MM']), int(row['DD']), int(row['HH']), int(row['MN'])) for i, row in df2.iterrows()]
 # Convert the timestamp list to a DatetimeIndex object and set it as the new index
 df2.index = pd.DatetimeIndex(timestamp2)
+# Print the number of NaN values per year
+nan_count2 = df2['Stat1'].isna().groupby(df2.index.year).sum()
+print('Number of NaN values per year in', file_name2,' are:',nan_count2)
 
 ################# Filling 1:1 #########################################
 # # Combine the dataframes to fill in missing values in df1
@@ -106,9 +103,15 @@ for col in df2.columns:
 # save the filled dataframe as a CSV file
 df1.to_csv(os.path.join(args.dir, f"filled_{file_name1}"), sep='\t', index=False)
 print(colored(" Dataframe 1 is filled and saved", "yellow"))
+# Print the number of NaN values per year
+nan_count11 = df1['Stat1'].isna().groupby(df1.index.year).sum()
+print('Number of NaN values per year in', file_name1,' are:',nan_count11)
 
 # save the filled dataframe as a CSV file
 df2.to_csv(os.path.join(args.dir, f"filled_{file_name2}"), sep='\t', index=False)
+# Print the number of NaN values per year
+nan_count22 = df2['Stat1'].isna().groupby(df2.index.year).sum()
+print('Number of NaN values per year in', file_name2,' are:',nan_count22)
 print(colored("Dataframe 2 is filled and saved", "yellow"))
 ##############################################################################################
 

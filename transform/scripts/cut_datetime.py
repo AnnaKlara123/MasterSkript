@@ -5,10 +5,10 @@ import numpy as np
 
 # Set the folder path where the CSV files are located
 parser = argparse.ArgumentParser()
-parser.add_argument('--dirin', type=str, help='The directory where the files are located', default="C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/convert_frequancy/20.4Testdatasets")
-parser.add_argument('--dirout', type=str, help='The directory where the files should be saved', default= "C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/convert_frequancy/20.4Testdatasets")
+parser.add_argument('--dirin', type=str, help='The directory where the files are located', default="C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/convert_frequancy/Testdatasets")
+parser.add_argument('--dirout', type=str, help='The directory where the files should be saved', default= "C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/convert_frequancy/Testdatasets")
 parser.add_argument('--startdate', type=str, help='The startdate that the df shoud start',default='2014-09-01')
-parser.add_argument('--enddate', type=str, help='The enddate of the dataset', default='2021-09-01')
+parser.add_argument('--enddate', type=str, help='The enddate of the dataset', default='2022-09-30')
 
 args = parser.parse_args()
 

@@ -87,7 +87,7 @@ for file_name in files_to_plot:
 
             # Create a bar chart of the NaN values in the 'Stat1' column
             fig, ax = plt.subplots(figsize=(20, 8))
-            plt.bar(df_month.index, plot_data.loc[df_month.index].values, width=0.001, color='red')
+            plt.bar(df_month.index, plot_data.loc[df_month.index].values, width=0.01, color='red')
 
             # Set the title and axis labels
             plt.title(f'Occurrences of NaN values in {file_name} ({year}/{month:02d})')
@@ -102,7 +102,7 @@ for file_name in files_to_plot:
             plot_filename = f'NaN_Plots_{file_name[:-4]}_{year}_{month:02d}.png'
             plot_filepath = os.path.join(file_folder, plot_filename)
             with tqdm(desc=f'Saving {plot_filename}', total=1) as pbar:
-                fig.savefig(plot_filepath)
+                fig.savefig(plot_dir)
                 pbar.update()
 
             # Display the chart
@@ -116,7 +116,7 @@ for file_name in files_to_plot:
 
             # Create a bar chart of the NaN values in the 'Stat1' column
             fig, ax = plt.subplots(figsize=(20, 8))
-            plt.bar(df_year.index, plot_data.loc[df_year.index].values, width=0.001, color='red')
+            plt.bar(df_year.index, plot_data.loc[df_year.index].values, width=0.01, color='red')
 
             # Set the title and axis labels
             plt.title(f'Occurrences of NaN values in{file_name} ({year})')
@@ -131,7 +131,7 @@ for file_name in files_to_plot:
             plot_filename = f'NaN_Plots_{file_name[:-4]}_{year}.png'
             plot_filepath = os.path.join(file_folder, plot_filename)
             with tqdm(desc=f'Saving {plot_filename}', total=1) as pbar:
-                fig.savefig(plot_filepath)
+                fig.savefig(plot_dir)
                 pbar.update()
 
             # Display the chart
@@ -160,7 +160,7 @@ for file_name in files_to_plot:
             plot_filepath = os.path.join(file_folder, plot_filename)
 
             with tqdm(desc=f'Saving {plot_filename}', total=1) as pbar:
-                fig.savefig(plot_filepath)
+                fig.savefig(plot_dir)
                 pbar.update()  # update the progress bar with a value between 0 and 1
 
             # Display the chart
