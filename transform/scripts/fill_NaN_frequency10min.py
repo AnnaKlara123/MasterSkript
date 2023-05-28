@@ -96,9 +96,17 @@ elif args.method == 't_minus_1':
                         df1.loc[i, col] = df2.loc[i, col] - np.abs(diff)
                     else:
                         df1.loc[i, col] = df2.loc[i, col] + np.abs(diff)
-                    # Ensure that the value is not negative
-                    if df1.loc[i, col] < 0:
-                        df1.loc[i, col] = 0    
+                    # # Folgendes ausschalten bei Airtemp!
+                    # # Ensure that the value is not negative
+                    # if df1.loc[i, col] < 0:
+                    #     df1.loc[i, col] = 0 
+
+                    # NUR BEI LUFTFEUCHTIGKEIT !!!!!
+                    # Ensure that the filled value is not greater than the maximum value in the original dataframe
+                    if df1.loc[i, col] > 100:
+                        df1.loc[i, col] = 100
+                   
+   
 
     # Fill NaN values using the difference calculation in df2
     for col in df2.columns:
@@ -111,10 +119,16 @@ elif args.method == 't_minus_1':
                         df2.loc[i, col] = df1.loc[i, col] + np.abs(diff)
                     else:
                         df2.loc[i, col] = df1.loc[i, col]  + np.abs(diff)
-                    # Ensure that the value is not negative
-                    if df2.loc[i, col] < 0:
-                        df2.loc[i, col] = 0
-
+                    # Folgendes ausschalten bei Airtemp!
+                    # # Ensure that the value is not negative
+                    # if df2.loc[i, col] < 0:
+                    #     df2.loc[i, col] = 0
+                   # NUR BEI LUFTFEUCHTIGKEIT !!!!!
+                    # # Ensure that the filled value is not greater than the maximum value in the original dataframe
+                    # if df2.loc[i, col] > 100:
+                    #     df2.loc[i, col] = 100
+                  
+                   
 
     # save the filled dataframe as a CSV file
     df1.to_csv(os.path.join(args.dir, f"filled_{file_name1}"), sep='\t', index=False)
