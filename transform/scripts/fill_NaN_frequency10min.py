@@ -7,9 +7,9 @@ from pandas import np
 
 # # Create the parser
 parser = argparse.ArgumentParser()
-parser.add_argument('--dir', type=str, help='The directory where the file is located', default="C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/convert_frequancy/10min_Frequancy")
-parser.add_argument('--df1', type=str, help='The Dataframe 1. DF', default="lwd_Tirol_GH_1197091-WG-BasisganglinieNaN_10min.csv")
-parser.add_argument('--df2', type=str, help='The Dataframe 2 DF', default= 'hd_Windspeed_NaN_10min.csv')
+parser.add_argument('--dir', type=str, help='The directory where the file is located', default="C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/convert_frequancy/10min_frequency_Neu/GH_filled/Humidity_LWD/cut")
+parser.add_argument('--df1', type=str, help='The Dataframe 1. DF', default="lwd_Tirol_GH_1197091-LF-BasisganglinieNaN_10min_2022_cut_fill.csv")
+parser.add_argument('--df2', type=str, help='The Dataframe 2 DF', default= 'filled_lwd_Tirol_JTH_15140917-LF-BasisganglinieNaN_cut.csv')
 parser.add_argument('--method', type=str, help='Choose the filling method. Options: 1_1, t_minus_1', default='1_1')
 #parser.add_argument('--df3', type=str, help='The Dataframe 3 DF', default= 'ZAMG_Precipitation_NaN_10minTEST.csv')
 #parser.add_argument('--lapsrate', type=str, help='The lapsrate that should be used. Use 1, if you want a 1:1 filling.', default= "6.5")  
