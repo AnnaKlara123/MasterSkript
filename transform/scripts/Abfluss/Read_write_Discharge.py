@@ -85,7 +85,7 @@ def WaSiM_output(df, station_name, station_height, station_latitude, station_lon
             if pd.isna(row[unit_col]):
                 value = -9999
             else:
-                value = row[unit_col]
+                value = round(row[unit_col]/ 1000,3) 
             f.write(f"{row['date'].year}\t{row['date'].month}\t{row['date'].day}\t{row['date'].hour}\t{row['date'].minute}\t{value}\n")
     print(f'WaSiM output saved to {colored(output_file, "green")}')
 
