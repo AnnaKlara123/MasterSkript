@@ -10,9 +10,9 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--dir', type=str, help='The directory where the file is located',
                     default="C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/WaSiM_Combined_files/WaSimfile_airtemp")
 parser.add_argument('--df_low', type=str, help='The Dataframe Valley',
-                    default="filled_df_low_short.csv")
+                    default="filled_df_low.csv")
 parser.add_argument('--df_high', type=str, help='The Dataframe Peak',
-                    default='filled_df_high_short.csv')
+                    default='filled_df_high.csv')
 # parser.add_argument('--df3', type=str, help='The Dataframe 3 DF', default= 'ZAMG_Precipitation_NaN_10minTEST.csv')
 # parser.add_argument('--lapsrate', type=str, help='The lapsrate that should be used. Use 1, if you want a 1:1 filling.', default= "6.5")
 args = parser.parse_args()
@@ -24,7 +24,6 @@ def transform_time_row(row):
     # create a pandas series
     # series = pd.Series(timestamp)
     return timestamp
-
 
 # Get the base filename
 file_name_low = os.path.basename(args.df_low)
@@ -78,9 +77,10 @@ df_combined_grouped = df_combined.groupby('DateTime').first().reset_index()
 
 # Drop the DateTime index column from the DataFrame.
 df_combined_grouped = df_combined_grouped.drop(columns=['DateTime'])
+df_combined_grouped = df_combined_grouped.round(2)
 
 # Save the merged DataFrame to a CSV file
-output_filename = "merged_df.csv"
+output_filename = "merged_df_Airtemp.csv"
 output_filepath = os.path.join(args.dir, output_filename)
 df_combined_grouped.to_csv(output_filepath, sep='\t', index=False)
 
