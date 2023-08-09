@@ -8,7 +8,7 @@ from tqdm import tqdm
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--dir', type=str, help='The directory where the file is located',
-                    default="C:\Users\annak\OneDrive\Documents\Master\Masterarbeit\GitHubMasterSkripts\MasterSkript\transform\output\WaSiM_Combined_files\WaSiM_Globalrad")
+                    default="C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/WaSiM_Combined_files/WaSiM_Globalrad")
 parser.add_argument('--df_low', type=str, help='The Dataframe Valley',
                     default="hd_GlobalradiationNEW_NaN_10min.csv")
 parser.add_argument('--df_high', type=str, help='The Dataframe Peak',
@@ -89,6 +89,7 @@ def fill_values_in_df_high(df_low_s, df_high_s):
         mean_diff = calculate_mean_difference(tuples_list)
         adjusted_value = df_low_s.loc[nan_indices[index], 'Stat1'] + mean_diff
         adjusted_value = max(adjusted_value, 0)  # Set adjusted value to 0 if negative
+        adjusted_value = round(adjusted_value, 3)  # Round to 3 decimal places
         df_high_s.loc[nan_indices[index], 'Stat1'] = adjusted_value
     return df_high_s
 
@@ -103,6 +104,7 @@ def fill_values_in_df_low(df_low_s, df_high_s):
         mean_diff = calculate_mean_difference(tuples_list)
         adjusted_value = df_high_s.loc[nan_indices[index], 'Stat1'] - mean_diff
         adjusted_value = max(adjusted_value, 0)  # Set adjusted value to 0 if negative
+        adjusted_value = round(adjusted_value, 3)  # Round to 3 decimal places
         df_low_s.loc[nan_indices[index], 'Stat1'] = adjusted_value
     return df_low_s
 
