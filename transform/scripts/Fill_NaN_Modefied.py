@@ -8,11 +8,11 @@ from tqdm import tqdm
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--dir', type=str, help='The directory where the file is located',
-                    default="C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/WaSiM_Combined_files/WaSiM_Globalrad")
+                    default="C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/WaSiM_Combined_files/WaSiM_Humidity")
 parser.add_argument('--df_low', type=str, help='The Dataframe Valley',
-                    default="hd_GlobalradiationNEW_NaN_10min.csv")
+                    default="hd_Humidity_nan_10min_cut_22fill_new.csv")
 parser.add_argument('--df_high', type=str, help='The Dataframe Peak',
-                    default='lwd_Tirol_JTH_15140917-GS-BasisganglinieNaN_cut.csv')
+                    default='lwd_Tirol_JTH_15140917-LF-BasisganglinieNaN_cut.csv')
 # parser.add_argument('--df3', type=str, help='The Dataframe 3 DF', default= 'ZAMG_Precipitation_NaN_10minTEST.csv')
 # parser.add_argument('--lapsrate', type=str, help='The lapsrate that should be used. Use 1, if you want a 1:1 filling.', default= "6.5")
 args = parser.parse_args()
@@ -89,6 +89,7 @@ def fill_values_in_df_high(df_low_s, df_high_s):
         mean_diff = calculate_mean_difference(tuples_list)
         adjusted_value = df_low_s.loc[nan_indices[index], 'Stat1'] + mean_diff
         adjusted_value = max(adjusted_value, 0)  # Set adjusted value to 0 if negative
+        adjusted_value = min(adjusted_value, 100)  # Set adjusted value to 100 if exceeding 100 (Needed for Humidity)
         adjusted_value = round(adjusted_value, 3)  # Round to 3 decimal places
         df_high_s.loc[nan_indices[index], 'Stat1'] = adjusted_value
     return df_high_s
@@ -103,7 +104,8 @@ def fill_values_in_df_low(df_low_s, df_high_s):
         tuples_list = get_tuples_for_same_timestamp(df_low_s, df_high_s, nan_indices[index])
         mean_diff = calculate_mean_difference(tuples_list)
         adjusted_value = df_high_s.loc[nan_indices[index], 'Stat1'] - mean_diff
-        adjusted_value = max(adjusted_value, 0)  # Set adjusted value to 0 if negative
+        adjusted_value = max(adjusted_value, 0)  # Set adjusted value to 0 if negative (Needed for Humidity, Wind & Globalrad)
+        adjusted_value = min(adjusted_value, 100)  # Set adjusted value to 100 if exceeding 100 (Needed for Humidity)
         adjusted_value = round(adjusted_value, 3)  # Round to 3 decimal places
         df_low_s.loc[nan_indices[index], 'Stat1'] = adjusted_value
     return df_low_s
