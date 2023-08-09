@@ -3,7 +3,7 @@ from datetime import datetime
 from datetime import timedelta 
 
 # Read the dataset from a CSV file
-df = pd.read_csv('C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/convert_frequancy/10min_frequency_Neu/GH_filled/Humidity_LWD/cut/lwd_Tirol_GH_1197091-LF-BasisganglinieNaN_10min_2022_cut.csv', sep='\t')
+df = pd.read_csv('C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/WaSiM_Combined_files/WaSiM_Wind/cut/lwd_Tirol_GH_1197091-WG-BasisganglinieNaN_10min_cut.csv', sep='\t')
 
 # Convert YY, MM, DD, HH, MN columns to a single datetime column
 
@@ -38,7 +38,9 @@ lwd_Tirol_GH_1197091_LF_BasisganglinieNaN_10min_2022['MN'] = lwd_Tirol_GH_119709
 lwd_Tirol_GH_1197091_LF_BasisganglinieNaN_10min_2022.reset_index(drop=True, inplace=True)
 
 # Construct the output file path
-output_file_path = 'C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/convert_frequancy/10min_frequency_Neu/GH_filled/Humidity_LWD/cut/lwd_Tirol_GH_1197091-LF-BasisganglinieNaN_10min_2022_cut_fill.csv'
+output_file_path = 'C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/WaSiM_Combined_files/WaSiM_Wind/cut/lwd_Tirol_GH_1197091-WG-BasisganglinieNaN_10min_cut_fillup.csv'
 
 # Save the DataFrame as a CSV file with custom formatting
 lwd_Tirol_GH_1197091_LF_BasisganglinieNaN_10min_2022.to_csv(output_file_path, index=False, sep='\t')
+
+print("saved")
