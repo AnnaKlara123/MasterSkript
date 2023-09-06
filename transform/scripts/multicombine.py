@@ -8,11 +8,11 @@ from tqdm import tqdm
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--dir', type=str, help='The directory where the file is located',
-                    default="C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/WaSiM_Combined_files/WaSiM_Globalrad/")
+                    default="C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output/WaSiM_Combined_files/WaSiM_Precipitaiton/")
 parser.add_argument('--df_low', type=str, help='The Dataframe Valley',
-                    default="hd_GlobalradiationNEW_NaN_10min.csv")
+                    default="filled_hd_Precipitation_NaN_10min.csv")
 parser.add_argument('--df_high', type=str, help='The Dataframe Peak',
-                    default='merged_df_Globalrad.csv')
+                    default='filled_ZAMG_Precipitation_NaN_cut.csv')
 # parser.add_argument('--df3', type=str, help='The Dataframe 3 DF', default= 'ZAMG_Precipitation_NaN_10minTEST.csv')
 # parser.add_argument('--lapsrate', type=str, help='The lapsrate that should be used. Use 1, if you want a 1:1 filling.', default= "6.5")
 args = parser.parse_args()
@@ -38,11 +38,14 @@ file_path_high = os.path.join(args.dir, args.df_high)
 df_low = pd.read_csv(file_path_low, sep='\t')
 df_high = pd.read_csv(file_path_high, sep='\t')
 
+
 # Merge the dataframes based on common timestamp columns
 merged_df = pd.merge(df_low, df_high, on=['YY', 'MM', 'DD', 'HH', 'MN'])
 
-# Add a fictional column 'Stat4' filled with NaN values
-merged_df['Stat4'] = -9999
+# # Add a fictional column 'Stat4' filled with NaN values
+# merged_df['Stat3'] = -9999
+# # Add a fictional column 'Stat4' filled with NaN values
+# merged_df['Stat4'] = -9999
 
 # Round all numeric columns to 2 decimal places
 merged_df = merged_df.round(2)
