@@ -2,9 +2,6 @@ import numpy as np
 import pandas as pd
 import argparse
 import os
-from termcolor import colored
-from tqdm import tqdm
-
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--dir', type=str, help='The directory where the file is located',
@@ -42,9 +39,8 @@ df_high = pd.read_csv(file_path_high, sep='\t')
 # Merge the dataframes based on common timestamp columns
 merged_df = pd.merge(df_low, df_high, on=['YY', 'MM', 'DD', 'HH', 'MN'])
 
-# # Add a fictional column 'Stat4' filled with NaN values
+# # Add fictional columns filled with NaN values (for WaSiM -9999)
 # merged_df['Stat3'] = -9999
-# # Add a fictional column 'Stat4' filled with NaN values
 # merged_df['Stat4'] = -9999
 
 # Round all numeric columns to 2 decimal places
@@ -54,7 +50,7 @@ merged_df = merged_df.fillna(-9999)
 
 
 # Save the merged DataFrame to a CSV file
-output_filename = "multimerge_Airtemp.csv"
+output_filename = "multimerge.csv"
 output_filepath = os.path.join(args.dir, output_filename)
 merged_df.to_csv(output_filepath, sep='\t', index=False)
 
