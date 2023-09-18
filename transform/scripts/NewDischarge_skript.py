@@ -2,12 +2,13 @@ import pandas as pd
 import argparse
 import os
 import numpy as np
+from tqdm import tqdm  # Import tqdm for the progress bar
 
 # Create the parser
 parser = argparse.ArgumentParser()
 parser.add_argument('--dir', type=str, help='The directory where the files are located', default='C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/input/Abfluss')
 parser.add_argument('--filename', type=str, help='The filename to read',  default='RQ30_data_20190625_20220818.csv')
-parser.add_argument('--unit', type=str, help='The unit to plot', default="QStat")
+parser.add_argument('--unit', type=str, help='The unit to plot', default="h")
 parser.add_argument('--Station_name', type=str, help='Name of the Station', default="Jambach")
 parser.add_argument('--hight', type=int, help='Height of the Station', default=0)
 parser.add_argument('--latitude', type=float, help='Latitude of the Station', default=0.0)
@@ -46,9 +47,9 @@ df = df[(df['date'] >= start_date) & (df['date'] <= end_date)]
 # Create a subdirectory for output files (same as input directory)
 output_dir = args.dir
 
-# Function to create Wasim File
+# Function to create Wasim File with a progress bar
 def WaSiM_output(df, station_name, station_height, station_latitude, station_longitude, unit, start_date, end_date):
-    output_file = os.path.join(output_dir, f'{file_name[:-4]}.txt')
+    output_file = os.path.join(output_dir, f'{file_name[:-4]}_{unit}.txt')
     with open(output_file, 'w') as f:
         f.write(f'YY\tMM\tDD\tHH\tMN\t{station_name}\n')
         f.write(f'YY\tMM\tDD\tHH\tMN\t{station_height}\n')
@@ -59,6 +60,9 @@ def WaSiM_output(df, station_name, station_height, station_latitude, station_lon
         # Create a date range with 10-minute intervals
         date_range = pd.date_range(start=start_date, end=end_date, freq='10T')
         
+        # Initialize tqdm progress bar
+        progress_bar = tqdm(total=len(date_range), desc="Processing", unit=" intervals")
+
         # Iterate over the date range and write values from the DataFrame
         for timestamp in date_range:
             # Extract data for the 10-minute interval
@@ -69,9 +73,15 @@ def WaSiM_output(df, station_name, station_height, station_latitude, station_lon
             else:
                 value = round(interval_data[unit_col].mean(), 3)  # Calculate mean for the interval
             f.write(f"{timestamp.year}\t{timestamp.month}\t{timestamp.day}\t{timestamp.hour}\t{timestamp.minute}\t{value}\n")
+
+            # Update the progress bar
+            progress_bar.update(1)
+
+        # Close the progress bar
+        progress_bar.close()
     print(f'WaSiM output saved to {output_file}')
 
 # Call the function to create Wasim File
 WaSiM_output(df, args.Station_name, args.hight, args.latitude, args.longitude, args.unit, start_date, end_date)
-print("Wasim")
+print("done")
 
