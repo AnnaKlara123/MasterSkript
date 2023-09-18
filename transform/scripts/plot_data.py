@@ -1,5 +1,4 @@
 ############################# Multiplot 
-
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -21,12 +20,8 @@ for file_name in file_list_Discharge:
     file_path_Discharge = os.path.join(folder_path_Discharge, file_name)
     file_data_Discharge = pd.read_csv(file_path_Discharge, delimiter='\t')
 
-    # Extract the timestamp and data columns
-    timestamp_Discharge = pd.to_datetime(file_data_Discharge['YY'].astype(int).astype(str) + '-' +
-                                         file_data_Discharge['MM'].astype(int).astype(str) + '-' +
-                                         file_data_Discharge['DD'].astype(int).astype(str) + ' ' +
-                                         file_data_Discharge['HH'].astype(int).astype(str) + ':' +
-                                         file_data_Discharge['MN'].astype(int).astype(str))
+    # Combine the datetime columns into a single datetime object
+    timestamp_Discharge = [pd.Timestamp(int(row['YY']), int(row['MM']), int(row['DD']), int(row['HH']), int(row['MN'])) for _, row in file_data_Discharge.iterrows()]
 
     # Extract the column name and data columns
     column_name = os.path.splitext(file_name)[0]
@@ -36,20 +31,16 @@ for file_name in file_list_Discharge:
     # Store timestamps for later use
     timestamps.append(timestamp_Discharge)
 
-# Create a DataFrame for the timestamps
-timestamps_df = pd.concat(timestamps, axis=1)
-timestamps_df.columns = column_names_Discharge
-
-# Define a list of colors for plotting
-colors = cycle(['b', 'g', 'c', 'c', 'm', 'y', 'y'])
-
 # Create subplots for each dataset with increased spacing
 num_datasets = len(column_names_Discharge)
 fig, axs = plt.subplots(num_datasets, 1, figsize=(12, 6*num_datasets), sharex=True, gridspec_kw={'hspace': 0.3})
 
+# Create a list of colors for plotting
+colors = cycle(['b', 'g', 'c', 'c', 'm', 'y', 'y'])
+
 # Plot each dataset on a separate subplot with a different color
 for i, column in enumerate(column_names_Discharge):
-    axs[i].plot(timestamps_df.index, data_Discharge[column], color=next(colors), label=column)
+    axs[i].plot(timestamps[i], data_Discharge[column], color=next(colors), label=column, linewidth=0.5)
     axs[i].set_ylabel(column, rotation=0, ha='right')  # Set y-axis label horizontally
     axs[i].grid(True)
 
@@ -59,6 +50,8 @@ axs[-1].set_xlabel('Timestamp', fontsize=14)
 
 # Show the plot
 plt.show()
+
+
 
 ####################################### NAN Plot################################################
 
