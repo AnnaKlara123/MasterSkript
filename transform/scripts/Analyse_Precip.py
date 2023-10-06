@@ -40,16 +40,22 @@ for file in os.listdir(args.dirin):
         # Convert the DataFrame values to float
         df['Stat1'] = pd.to_numeric(df['Stat1'], errors='coerce')
 
-        # Calculate the daily sum and add it to the daily_sum_df
+        # Calculate the daily sum
         daily_sum = df['Stat1'].resample('D').sum()
+
+        # Create a DataFrame for daily_sum with 'Date' and 'Sum' columns
+        daily_sum = daily_sum.reset_index()
+        daily_sum.columns = ['Date', 'Sum']
+
+        # Append the daily_sum to the daily_sum_df
         daily_sum_df = pd.concat([daily_sum_df, daily_sum], axis=0)
 
 
 # Sort the daily_sum_df by the 'Sum' column in descending order
-daily_sum_df = daily_sum_df.sort_values(by='Sum', ascending=False)
+daily_sum_df_sorted = daily_sum_df.sort_values(by='Sum', ascending=False)
 
 # Get the top 20 days with the highest sum values
-top_20_days = daily_sum_df.head(20)
+top_20_days = daily_sum_df_sorted.head(20)
 
 # Print the top 20 days
 print("Top 20 days with the highest sum values:")
