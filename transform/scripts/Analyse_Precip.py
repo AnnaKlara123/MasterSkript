@@ -8,19 +8,15 @@ parser.add_argument('--dirin', type=str, help='The directory where the files are
                     default="C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Meteo_Discharge/AnalyseTest_0610")
 parser.add_argument('--dirout', type=str, help='The directory where the files should be saved',
                     default="C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Meteo_Discharge/AnalyseTest_0610")
-parser.add_argument('--startdate', type=str, help='The startdate that the df should start', default='2019-6-26')
-parser.add_argument('--enddate', type=str, help='The enddate of the dataset', default='2022-8-19')
 args = parser.parse_args()
-
-# Define the desired start / end date
-start_date = pd.to_datetime(args.startdate)
-end_date = pd.to_datetime(args.enddate)
 
 count = 0
 
 # Create an empty DataFrame to store the daily sum values
 daily_sum_df = pd.DataFrame(columns=['Date', 'Sum'])
 
+# Create an empty DataFrame to store the hourly sum values
+hourly_sum_df = pd.DataFrame(columns=['Date', 'Sum'])
 
 # Loop through all the files in the folder
 for file in os.listdir(args.dirin):
@@ -51,12 +47,24 @@ for file in os.listdir(args.dirin):
         # Append the daily_sum to the daily_sum_df
         daily_sum_df = pd.concat([daily_sum_df, daily_sum], axis=0)
 
+        # Calculate the hourly sum
+        hourly_sum = df['Stat1'].resample('H').sum()
+
+        # Create a DataFrame for hourly_sum with 'Date' and 'Sum' columns
+        hourly_sum = hourly_sum.reset_index()
+        hourly_sum.columns = ['Date', 'Sum']
+
+        # Append the hourly_sum to the hourly_sum_df
+        hourly_sum_df = pd.concat([hourly_sum_df, hourly_sum], axis=0)
+
 
 # Sort the daily_sum_df by the 'Sum' column in descending order
 daily_sum_df_sorted = daily_sum_df.sort_values(by='Sum', ascending=False)
 
 # Get the top 20 days with the highest sum values
 top_20_days = daily_sum_df_sorted.head(20)
+
+top_20_days['Sum'] = top_20_days['Sum'].round(2)
 
 # Print the top 20 days
 print("Top 20 days with the highest sum values:")
@@ -67,6 +75,23 @@ output_csv_path = os.path.join(args.dirout, "top_20_days.txt")
 top_20_days.to_csv(output_csv_path, index=False, header=['Date', 'Sum'])
 print(f"Top 20 days saved to {output_csv_path}")
 
+
+# Sort the hourly_sum_df by the 'Sum' column in descending order
+hourly_sum_df_sorted = hourly_sum_df.sort_values(by='Sum', ascending=False)
+
+# Get the top 20 hours with the highest sum values
+top_20_hours = hourly_sum_df_sorted.head(20)
+
+# Round the 'Sum' values to 2 decimal places
+top_20_hours['Sum'] = top_20_hours['Sum'].round(2)
+
+# Save the top 20 hours to a new CSV file without index and header
+output_top_20_hours_path = os.path.join(args.dirout, "top_20_hours.txt")
+if not top_20_hours.empty:
+    top_20_hours.to_csv(output_top_20_hours_path, index=False, header=['Date', 'Sum'])
+    print(f"Top 20 hours with the highest sum values saved to {output_top_20_hours_path}")
+else:
+    print("No data available for the specified period.")
 
 
 
@@ -94,3 +119,23 @@ with open(rain_periods_output_path, 'w') as f:
         f.write(f"End Date: {period['Period'][-1]}\n")
         f.write(f"Total Rainfall: {period['Total Rainfall']} mm\n\n")
 print(f"Rain periods saved to {rain_periods_output_path}")
+
+
+# Convert the 'Date' columns in both DataFrames to a common date format
+top_20_days['Date'] = top_20_days['Date'].dt.strftime('%Y-%m-%d')
+top_20_hours['Date'] = top_20_hours['Date'].dt.strftime('%Y-%m-%d')
+
+# Check if any of the dates in top_20_days match any of the dates in top_20_hours
+matching_dates = top_20_days['Date'].isin(top_20_hours['Date'])
+
+# Get the matching days
+matching_days = top_20_days[matching_dates]
+
+# Save the matching days to a CSV file
+output_matching_days_path = os.path.join(args.dirout, "matching_top_days.txt")
+
+if not matching_days.empty:
+    matching_days.to_csv(output_matching_days_path, index=False)
+    print(f"Matching days saved to {output_matching_days_path}")
+else:
+    print("No matching days found between top 20 days and top 20 hours, so no file was saved.")
