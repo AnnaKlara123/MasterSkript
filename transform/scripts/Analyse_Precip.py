@@ -106,6 +106,7 @@ for _, row in daily_sum_df.iterrows():
         current_rain_sum += row['Sum']
     else:
         if len(current_rain_period) >= 3:
+            current_rain_sum = round(current_rain_sum, 2)
             rain_periods.append({'Period': current_rain_period, 'Total Rainfall': current_rain_sum})
         current_rain_period = []
         current_rain_sum = 0
