@@ -1,13 +1,14 @@
 import os
 import argparse
 import pandas as pd
+from tqdm import tqdm
 
 # Set the folder path where the CSV files are located
 parser = argparse.ArgumentParser()
 parser.add_argument('--dirin', type=str, help='The directory where the files are located',
-                    default="C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Meteo_Discharge/AnalyseTest_0610")
+                    default="C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Meteo_Discharge/AnalyseTest_0610/Precipitation")
 parser.add_argument('--dirout', type=str, help='The directory where the files should be saved',
-                    default="C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Meteo_Discharge/AnalyseTest_0610")
+                    default="C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Meteo_Discharge/AnalyseTest_0610/Precipitation")
 args = parser.parse_args()
 
 count = 0
@@ -27,6 +28,9 @@ for file in os.listdir(args.dirin):
 
         # Read the CSV file into a pandas DataFrame
         df = pd.read_csv(os.path.join(args.dirin, file), delimiter='\t')
+        # Extract the base name of the input file without the extension
+        input_file_name = os.path.splitext(os.path.basename(file))[0]
+
 
         # Combine the datetime columns into a single datetime object
         timestamp = [pd.Timestamp(int(row['YY']), int(row['MM']), int(row['DD']), int(row['HH']), int(row['MN'])) for i, row in df.iterrows()]
@@ -37,8 +41,10 @@ for file in os.listdir(args.dirin):
         # Convert the DataFrame values to float
         df['Stat1'] = pd.to_numeric(df['Stat1'], errors='coerce')
 
-        # Calculate the daily sum
-        daily_sum = df['Stat1'].resample('D').sum()
+        # Calculate the daily sum for the period between April 20th and October 20th each year (summer months)
+        df_filtered = df[(df.index.month >= 4) & (df.index.month <= 10) | ((df.index.month == 4) & (df.index.day >= 20)) | ((df.index.month == 10) & (df.index.day <= 20))]
+        daily_sum = df_filtered['Stat1'].resample('D').sum()
+
 
         # Create a DataFrame for daily_sum with 'Date' and 'Sum' columns
         daily_sum = daily_sum.reset_index()
@@ -47,8 +53,8 @@ for file in os.listdir(args.dirin):
         # Append the daily_sum to the daily_sum_df
         daily_sum_df = pd.concat([daily_sum_df, daily_sum], axis=0)
 
-        # Calculate the hourly sum
-        hourly_sum = df['Stat1'].resample('H').sum()
+        # Calculate the hourly sum for the period between April 20th and October 20th each year
+        hourly_sum = df_filtered['Stat1'].resample('H').sum()
 
         # Create a DataFrame for hourly_sum with 'Date' and 'Sum' columns
         hourly_sum = hourly_sum.reset_index()
@@ -71,7 +77,7 @@ print("Top 20 days with the highest sum values:")
 print(top_20_days)
 
 # Save the top 20 days to a new CSV file without index and in a cleaner format
-output_csv_path = os.path.join(args.dirout, "top_20_days.txt")
+output_csv_path = os.path.join(args.dirout, f"top_20_days_{input_file_name}.txt")
 top_20_days.to_csv(output_csv_path, index=False, header=['Date', 'Sum'])
 print(f"Top 20 days saved to {output_csv_path}")
 
@@ -86,7 +92,7 @@ top_20_hours = hourly_sum_df_sorted.head(20)
 top_20_hours['Sum'] = top_20_hours['Sum'].round(2)
 
 # Save the top 20 hours to a new CSV file without index and header
-output_top_20_hours_path = os.path.join(args.dirout, "top_20_hours.txt")
+output_top_20_hours_path = os.path.join(args.dirout, f"top_20_hours_{input_file_name}.txt")
 if not top_20_hours.empty:
     top_20_hours.to_csv(output_top_20_hours_path, index=False, header=['Date', 'Sum'])
     print(f"Top 20 hours with the highest sum values saved to {output_top_20_hours_path}")
