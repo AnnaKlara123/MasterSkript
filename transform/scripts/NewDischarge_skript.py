@@ -8,7 +8,8 @@ from tqdm import tqdm  # Import tqdm for the progress bar
 parser = argparse.ArgumentParser()
 parser.add_argument('--dir', type=str, help='The directory where the files are located', default='C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/input/Abfluss')
 parser.add_argument('--filename', type=str, help='The filename to read',  default='RQ30_data_20190625_20220818.csv')
-parser.add_argument('--unit', type=str, help='The unit to plot', default="h")
+parser.add_argument('--unit', type=str, help='The unit to plot', default="QStat")
+parser.add_argument('--fill_value', type=str, help='Value to use for filling missing time periods (NaN or -9999)', default='NaN')
 parser.add_argument('--Station_name', type=str, help='Name of the Station', default="Jambach")
 parser.add_argument('--hight', type=int, help='Height of the Station', default=0)
 parser.add_argument('--latitude', type=float, help='Latitude of the Station', default=0.0)
@@ -69,7 +70,10 @@ def WaSiM_output(df, station_name, station_height, station_latitude, station_lon
             interval_data = df[(df['date'] >= timestamp) & (df['date'] < timestamp + pd.Timedelta(minutes=10))]
             
             if interval_data.empty:
-                value = -9999  # Fill gaps with -9999 (NaN value)
+                if args.fill_value == 'NaN':
+                    value = 'NaN'  # Fill gaps with "NaN"
+                else:
+                    value = args.fill_value  # Fill gaps with -9999 (default)
             else:
                 value = round(interval_data[unit_col].mean(), 3)  # Calculate mean for the interval
             f.write(f"{timestamp.year}\t{timestamp.month}\t{timestamp.day}\t{timestamp.hour}\t{timestamp.minute}\t{value}\n")
