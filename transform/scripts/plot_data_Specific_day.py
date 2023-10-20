@@ -47,9 +47,8 @@ colors = cycle(['b', 'g', 'm', 'c', 'c', 'k', 'k'])
 # Create subplots with adjusted spacing
 fig, axs = plt.subplots(num_datasets, 1, figsize=(10, 6*num_datasets), sharex=True, 
                         gridspec_kw={'top': 0.85, 'bottom': 0.11, 'left': 0.45, 'right': 0.9, 'hspace': 0.22, 'wspace': 0.2},
-                        constrained_layout=True)  # Use constrained_layout to maintain aspect ratio
+                        constrained_layout=True)
 
-# Plot each dataset on a separate subplot with a different color
 # Plot each dataset on a separate subplot with a different color
 for i, column in enumerate(column_names_Discharge):
     # Filter the timestamps and data based on the date range
@@ -69,12 +68,19 @@ for i, column in enumerate(column_names_Discharge):
     # Annotate the peak value on the plot in black and smaller font size
     axs[i].annotate(f'Peak Value: {peak_value:.2f}', xy=(peak_timestamp, peak_value), xytext=(peak_timestamp, peak_value + 1),
                     fontsize=8, color='black', ha='center')
+
+    # Set the y-axis limits for each subplot individually
+    y_min = filtered_data.min()-0.5
+    y_max = filtered_data.max()+0.5
+    axs[i].set_ylim(y_min, y_max)
+    
+    # Add a grid to the subplot
+    axs[i].grid(True)
+
 # Show the plot (optional)
 plt.show()
 
 # Save the figure as a .png file with the defined size
 plt.savefig('output_plot.png')
-
-
 
 print("done")
