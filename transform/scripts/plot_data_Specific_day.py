@@ -34,20 +34,22 @@ for file_name in file_list_Discharge:
     timestamps.append(timestamp_Discharge)
 
 # Define the central date and the date range around it
-central_date = pd.Timestamp('2020-10-03')
+central_date = pd.Timestamp('2019-07-01')
 start_date = central_date - pd.Timedelta(days=12)
 end_date = central_date + pd.Timedelta(days=3)
 
 # Calculate the number of datasets based on the length of column_names_Discharge
 num_datasets = len(column_names_Discharge)
 # Define a list of colors to cycle through
-colors = cycle(['b', 'g', 'm', 'c', 'y', 'r', 'k'])
+colors = cycle(['b', 'g', 'm', 'c', 'c', 'k', 'k'])
 
 
 # Create subplots with adjusted spacing
 fig, axs = plt.subplots(num_datasets, 1, figsize=(10, 6*num_datasets), sharex=True, 
-                        gridspec_kw={'top': 0.85, 'bottom': 0.11, 'left': 0.45, 'right': 0.9, 'hspace': 0.22, 'wspace': 0.2})
+                        gridspec_kw={'top': 0.85, 'bottom': 0.11, 'left': 0.45, 'right': 0.9, 'hspace': 0.22, 'wspace': 0.2},
+                        constrained_layout=True)  # Use constrained_layout to maintain aspect ratio
 
+# Plot each dataset on a separate subplot with a different color
 # Plot each dataset on a separate subplot with a different color
 for i, column in enumerate(column_names_Discharge):
     # Filter the timestamps and data based on the date range
@@ -56,22 +58,23 @@ for i, column in enumerate(column_names_Discharge):
     filtered_data = np.array(data_Discharge[column])[mask]
     
     axs[i].plot(filtered_timestamps, filtered_data, color=next(colors), label=column, linewidth=0.5)
-    axs[i].set_ylabel(column, rotation=0, ha='right')  # Set y-axis label horizontally
-    axs[i].grid(True)
-    
-    # Format the x-axis tick labels as day-month-year
-    axs[i].xaxis.set_major_formatter(mdates.DateFormatter('%d-%m-%Y'))
-    
+
     # Find the index of the maximum value in the current dataset
     max_index = np.argmax(filtered_data)
 
-    # # Get the timestamp and value at the peak
-    # peak_timestamp = filtered_timestamps[max_index]
-    # peak_value = filtered_data[max_index]
+    # Get the timestamp and value at the peak
+    peak_timestamp = filtered_timestamps[max_index]
+    peak_value = filtered_data[max_index]
 
-    # # Annotate the peak value on the plot in the same color
-    # axs[i].annotate(f'Peak Value: {peak_value:.2f}', xy=(peak_timestamp, peak_value), xytext=(peak_timestamp, peak_value + 1),
-    #                 arrowprops=dict(facecolor='red', arrowstyle='->', color='red'), fontsize=12, color='red')
-
-# Show the plot
+    # Annotate the peak value on the plot in black and smaller font size
+    axs[i].annotate(f'Peak Value: {peak_value:.2f}', xy=(peak_timestamp, peak_value), xytext=(peak_timestamp, peak_value + 1),
+                    fontsize=8, color='black', ha='center')
+# Show the plot (optional)
 plt.show()
+
+# Save the figure as a .png file with the defined size
+plt.savefig('output_plot.png')
+
+
+
+print("done")
