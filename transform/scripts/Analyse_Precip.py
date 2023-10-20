@@ -165,7 +165,7 @@ top_100_data = data.head(100)
 
 # Create subplots with adjusted spacing
 fig, ax = plt.subplots(figsize=(10, 6))
-plt.plot(top_100_data['Date'], top_100_data['Sum'], marker='o', linestyle='-', color='b')
+plt.plot(top_100_data['Date'], top_100_data['Sum'],  linestyle='-', color='b',  linewidth=0.8)
 plt.title('Top 100 Daily Mean Discharge Values')
 plt.xlabel('Date')
 plt.ylabel('Mean Discharge m3/s')
