@@ -7,7 +7,7 @@ import numpy as np
 import matplotlib.dates as mdates
 
 # Define the path to the folder containing the .csv files
-folder_path_Discharge = 'C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Meteo_Discharge/Filtered'
+folder_path_Discharge = 'C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Meteo_Discharge/Filtered_OHNEGH'
 
 # Get a list of all .csv files in the folder
 file_list_Discharge = [file for file in os.listdir(folder_path_Discharge) if file.endswith(".csv")]
@@ -34,15 +34,15 @@ for file_name in file_list_Discharge:
     timestamps.append(timestamp_Discharge)
 
 # Define the central date and the date range around it
-central_date = pd.Timestamp('2018-05-31')
-start_date = central_date - pd.Timedelta(days=20)
+central_date = pd.Timestamp('2022-05-31')
+start_date = central_date - pd.Timedelta(days=10)
 end_date = central_date + pd.Timedelta(days=10)
 
 # Calculate the number of datasets based on the length of column_names_Discharge
 num_datasets = len(column_names_Discharge)
 # Define a list of colors to cycle through
-colors = cycle(['b', 'g', 'm', 'c', 'c', 'k', 'k'])
-#colors = cycle(['b', 'g', 'm', 'c', 'k'])
+#colors = cycle(['b', 'g', 'm', 'c', 'c', 'k', 'k'])
+colors = cycle(['b', 'g', 'm', 'c', 'k'])
 
 
 # Create subplots with adjusted spacing
