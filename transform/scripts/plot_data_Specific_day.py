@@ -34,75 +34,62 @@ for file_name in file_list_Discharge:
     timestamps.append(timestamp_Discharge)
 
 # Define the central date and the date range around it
-central_date = pd.Timestamp('2019-07-01')
-start_date = central_date - pd.Timedelta(days=12)
-end_date = central_date + pd.Timedelta(days=3)
+central_date = pd.Timestamp('2018-05-31')
+start_date = central_date - pd.Timedelta(days=20)
+end_date = central_date + pd.Timedelta(days=10)
 
 # Calculate the number of datasets based on the length of column_names_Discharge
 num_datasets = len(column_names_Discharge)
 # Define a list of colors to cycle through
 colors = cycle(['b', 'g', 'm', 'c', 'c', 'k', 'k'])
+#colors = cycle(['b', 'g', 'm', 'c', 'k'])
+
 
 # Create subplots with adjusted spacing
-fig, axs = plt.subplots(2, 1, figsize=(10, 12), sharex=True, 
-                        gridspec_kw={'top': 0.85, 'bottom': 0.11, 'left': 0.45, 'right': 0.9, 'hspace': 0.22, 'wspace': 0.2},
+fig, axs = plt.subplots(num_datasets, 1, figsize=(10, 6*num_datasets), sharex=True, 
+                        gridspec_kw={'top': 0.85, 'bottom': 0.11, 'left': 0.45, 'right': 0.9, 'hspace': 0.10, 'wspace': 0.10},
                         constrained_layout=True)
 
-# Define lists to store the indices of datasets for temperature and humidity
-temperature_indices = [i for i, name in enumerate(column_names_Discharge) if "Temp" in name]
-humidity_indices = [i for i, name in enumerate(column_names_Discharge) if "HU" in name]
-
-# Plot datasets containing "T" in their name in the first subplot
-for i in temperature_indices:
+# Plot each dataset on a separate subplot with a different color
+for i, column in enumerate(column_names_Discharge):
     # Filter the timestamps and data based on the date range
     mask = (np.array(timestamps[i]) >= start_date) & (np.array(timestamps[i]) <= end_date)
     filtered_timestamps = np.array(timestamps[i])[mask]
-    filtered_data = np.array(data_Discharge[column_names_Discharge[i]])[mask]
+    filtered_data = np.array(data_Discharge[column])[mask]
     
-    axs[0].plot(filtered_timestamps, filtered_data, color=next(colors), label=column_names_Discharge[i], linewidth=0.5)
+    axs[i].plot(filtered_timestamps, filtered_data, color=next(colors), label=column, linewidth=0.5)
 
-# Plot datasets containing "HU" in their name in the second subplot
-for i in humidity_indices:
-    # Filter the timestamps and data based on the date range
-    mask = (np.array(timestamps[i]) >= start_date) & (np.array(timestamps[i]) <= end_date)
-    filtered_timestamps = np.array(timestamps[i])[mask]
-    filtered_data = np.array(data_Discharge[column_names_Discharge[i]])[mask]
+     # Set the x-axis limits to the specified date range
+    axs[i].set_xlim(start_date, end_date)
+
+    # Find the index of the maximum value in the current dataset
+    max_index = np.argmax(filtered_data)
+
+    # Find the index of the maximum value in the current dataset
+    max_index = np.argmax(filtered_data)
+
+    # Get the timestamp and value at the peak
+    peak_timestamp = filtered_timestamps[max_index]
+    peak_value = filtered_data[max_index]
+
+    # Annotate the peak value on the plot in black and smaller font size
+    #axs[i].annotate(f'Peak Value: {peak_value:.2f}', xy=(peak_timestamp, peak_value), xytext=(peak_timestamp, peak_value + 1),
+    #                fontsize=8, color='black', ha='center')
+
+    # Set the y-axis limits for each subplot individually
+    y_min = filtered_data.min()-0.5
+    y_max = filtered_data.max()+0.5
+    axs[i].set_ylim(y_min, y_max)
     
-    axs[1].plot(filtered_timestamps, filtered_data, color=next(colors), label=column_names_Discharge[i], linewidth=0.5)
+    # Add a grid to the subplot
+    axs[i].grid(True)
 
-
-# # Plot each dataset on a separate subplot with a different color
-# for i, column in enumerate(column_names_Discharge):
-#     # Filter the timestamps and data based on the date range
-#     mask = (np.array(timestamps[i]) >= start_date) & (np.array(timestamps[i]) <= end_date)
-#     filtered_timestamps = np.array(timestamps[i])[mask]
-#     filtered_data = np.array(data_Discharge[column])[mask]
-    
-#     axs[i].plot(filtered_timestamps, filtered_data, color=next(colors), label=column, linewidth=0.5)
-
-#     # Find the index of the maximum value in the current dataset
-#     max_index = np.argmax(filtered_data)
-
-#     # Get the timestamp and value at the peak
-#     peak_timestamp = filtered_timestamps[max_index]
-#     peak_value = filtered_data[max_index]
-
-#     # Annotate the peak value on the plot in black and smaller font size
-#     axs[i].annotate(f'Peak Value: {peak_value:.2f}', xy=(peak_timestamp, peak_value), xytext=(peak_timestamp, peak_value + 1),
-#                     fontsize=8, color='black', ha='center')
-
-#     # Set the y-axis limits for each subplot individually
-#     y_min = filtered_data.min()-0.5
-#     y_max = filtered_data.max()+0.5
-#     axs[i].set_ylim(y_min, y_max)
-    
-#     # Add a grid to the subplot
-#     axs[i].grid(True)
+# Save the figure as a .png file with the defined size
+plt.savefig('output_plot.png')    
 
 # Show the plot (optional)
 plt.show()
 
-# Save the figure as a .png file with the defined size
-plt.savefig('output_plot.png')
+
 
 print("done")
