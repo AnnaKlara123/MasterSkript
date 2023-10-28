@@ -34,9 +34,9 @@ for file_name in file_list_Discharge:
     timestamps.append(timestamp_Discharge)
 
 # Define the central date and the date range around it
-central_date = pd.Timestamp('2022-05-31')
-start_date = central_date - pd.Timedelta(days=10)
-end_date = central_date + pd.Timedelta(days=10)
+central_date = pd.Timestamp('2019-08-01')
+start_date = central_date - pd.Timedelta(days=80)
+end_date = central_date + pd.Timedelta(days=80)
 
 # Calculate the number of datasets based on the length of column_names_Discharge
 num_datasets = len(column_names_Discharge)
@@ -44,6 +44,9 @@ num_datasets = len(column_names_Discharge)
 #colors = cycle(['b', 'g', 'm', 'c', 'c', 'k', 'k'])
 colors = cycle(['b', 'g', 'm', 'c', 'k'])
 
+
+# Define the labels for each dataset
+labels = ["Discharge m³/s", "Precipitation mm/m²", "Global Radiation W/m²", "Temperature °C", "Relative Humidity %"]
 
 # Create subplots with adjusted spacing
 fig, axs = plt.subplots(num_datasets, 1, figsize=(10, 6*num_datasets), sharex=True, 
@@ -57,39 +60,42 @@ for i, column in enumerate(column_names_Discharge):
     filtered_timestamps = np.array(timestamps[i])[mask]
     filtered_data = np.array(data_Discharge[column])[mask]
     
-    axs[i].plot(filtered_timestamps, filtered_data, color=next(colors), label=column, linewidth=0.5)
+    # Create arrays for x and y values without NaN
+    x_values = []
+    y_values = []
+    for x, y in zip(filtered_timestamps, filtered_data):
+        if not np.isnan(y):
+            x_values.append(x)
+            y_values.append(y)
 
-     # Set the x-axis limits to the specified date range
+    axs[i].plot(x_values, y_values, color=next(colors), label=column, linewidth=0.5)
+
+    # Set the x-axis limits to the specified date range
     axs[i].set_xlim(start_date, end_date)
 
     # Find the index of the maximum value in the current dataset
-    max_index = np.argmax(filtered_data)
-
-    # Find the index of the maximum value in the current dataset
-    max_index = np.argmax(filtered_data)
+    max_index = np.argmax(y_values)
 
     # Get the timestamp and value at the peak
-    peak_timestamp = filtered_timestamps[max_index]
-    peak_value = filtered_data[max_index]
-
-    # Annotate the peak value on the plot in black and smaller font size
-    #axs[i].annotate(f'Peak Value: {peak_value:.2f}', xy=(peak_timestamp, peak_value), xytext=(peak_timestamp, peak_value + 1),
-    #                fontsize=8, color='black', ha='center')
+    peak_timestamp = x_values[max_index]
+    peak_value = y_values[max_index]
 
     # Set the y-axis limits for each subplot individually
-    y_min = filtered_data.min()-0.5
-    y_max = filtered_data.max()+0.5
+    y_min = min(y_values) - 0.5
+    y_max = max(y_values) + 0.5
     axs[i].set_ylim(y_min, y_max)
-    
+
     # Add a grid to the subplot
     axs[i].grid(True)
+
+    # Add labels to the subplots
+    axs[i].set_ylabel(labels[i])
 
 # Save the figure as a .png file with the defined size
 plt.savefig('output_plot.png')    
 
 # Show the plot (optional)
 plt.show()
-
 
 
 print("done")
