@@ -1,85 +1,105 @@
-# import os
-# import argparse
-# import pandas as pd
-# from tqdm import tqdm
+import os
+import argparse
+import pandas as pd
+from tqdm import tqdm
 
-# # Set the folder path where the CSV files are located
-# parser = argparse.ArgumentParser()
-# parser.add_argument('--dirin', type=str, help='The directory where the files are located',
-#                     default="C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Meteo_Discharge/AnalyseTest_0610/Discharge")
-# parser.add_argument('--dirout', type=str, help='The directory where the files should be saved',
-#                     default="C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Meteo_Discharge/AnalyseTest_0610/Discharge")
-# args = parser.parse_args()
+# Set the folder path where the CSV files are located
+parser = argparse.ArgumentParser()
+parser.add_argument('--dirin', type=str, help='The directory where the files are located',
+                    default="C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Meteo_Discharge/AnalyseTest_0610/Precipitation")
+parser.add_argument('--dirout', type=str, help='The directory where the files should be saved',
+                    default="C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Meteo_Discharge/AnalyseTest_0610/Precipitation")
+args = parser.parse_args()
 
-# count = 0
+count = 0
 
-# # Create an empty DataFrame to store the daily sum values
-# daily_sum_df = pd.DataFrame(columns=['Date', 'Sum'])
+# Create an empty DataFrame to store the daily sum values
+daily_sum_df = pd.DataFrame(columns=['Date', 'Sum'])
 
-# # Create an empty DataFrame to store the hourly sum values
-# hourly_sum_df = pd.DataFrame(columns=['Date', 'Sum'])
+# Create an empty DataFrame to store the hourly sum values
+hourly_sum_df = pd.DataFrame(columns=['Date', 'Sum'])
 
-# # Loop through all the files in the folder
-# for file in os.listdir(args.dirin):
-#     # Check if the file is a CSV file
-#     if file.endswith(".csv"):
-#         # Increment the counter variable
-#         count += 1
+# Create an empty DataFrame to store the annual sum values
+annual_sum_df = pd.DataFrame(columns=['Year', 'Sum'])
 
-#         # Read the CSV file into a pandas DataFrame
-#         df = pd.read_csv(os.path.join(args.dirin, file), delimiter='\t')
-#         # Extract the base name of the input file without the extension
-#         input_file_name = os.path.splitext(os.path.basename(file))[0]
+# Loop through all the files in the folder
+for file in os.listdir(args.dirin):
+    # Check if the file is a CSV file
+    if file.endswith(".csv"):
+        # Increment the counter variable
+        count += 1
 
-
-#         # Combine the datetime columns into a single datetime object
-#         timestamp = [pd.Timestamp(int(row['YY']), int(row['MM']), int(row['DD']), int(row['HH']), int(row['MN'])) for i, row in df.iterrows()]
-
-#         # Convert the timestamp list to a DatetimeIndex object and set it as the new index
-#         df.index = pd.DatetimeIndex(timestamp)
-
-#         # Convert the DataFrame values to float
-#         df['Stat1'] = pd.to_numeric(df['Stat1'], errors='coerce')
-
-#         # Calculate the daily sum/mean for the period between April 20th and October 20th each year (summer months)
-#         df_filtered = df[(df.index.month >= 4) & (df.index.month <= 10) | ((df.index.month == 4) & (df.index.day >= 20)) | ((df.index.month == 10) & (df.index.day <= 20))]
-#         daily_sum = df_filtered['Stat1'].resample('D').mean()
+        # Read the CSV file into a pandas DataFrame
+        df = pd.read_csv(os.path.join(args.dirin, file), delimiter='\t')
+        # Extract the base name of the input file without the extension
+        input_file_name = os.path.splitext(os.path.basename(file))[0]
 
 
-#         # Create a DataFrame for daily_sum with 'Date' and 'Sum' columns
-#         daily_sum = daily_sum.reset_index()
-#         daily_sum.columns = ['Date', 'Sum']
+        # Combine the datetime columns into a single datetime object
+        timestamp = [pd.Timestamp(int(row['YY']), int(row['MM']), int(row['DD']), int(row['HH']), int(row['MN'])) for i, row in df.iterrows()]
 
-#         # Append the daily_sum to the daily_sum_df
-#         daily_sum_df = pd.concat([daily_sum_df, daily_sum], axis=0)
+        # Convert the timestamp list to a DatetimeIndex object and set it as the new index
+        df.index = pd.DatetimeIndex(timestamp)
 
-#         # Calculate the hourly sum for the period between April 20th and October 20th each year
-#         hourly_sum = df_filtered['Stat1'].resample('H').sum()
+        # Convert the DataFrame values to float
+        df['Stat1'] = pd.to_numeric(df['Stat1'], errors='coerce')
 
-#         # Create a DataFrame for hourly_sum with 'Date' and 'Sum' columns
-#         hourly_sum = hourly_sum.reset_index()
-#         hourly_sum.columns = ['Date', 'Sum']
+        # Calculate the daily sum/mean for the period between April 20th and October 20th each year (summer months)
+        df_filtered = df[(df.index.month >= 4) & (df.index.month <= 10) | ((df.index.month == 4) & (df.index.day >= 20)) | ((df.index.month == 10) & (df.index.day <= 20))]
+        daily_sum = df_filtered['Stat1'].resample('D').sum().round(2)
+        #daily_sum = df_filtered['Stat1'].resample('Y').sum()
+        hourly_sum = df_filtered['Stat1'].resample('H').sum()
 
-#         # Append the hourly_sum to the hourly_sum_df
-#         hourly_sum_df = pd.concat([hourly_sum_df, hourly_sum], axis=0)
+     # Create a DataFrame for annual with 'Date' and 'Sum' columns
+        annual_sum = daily_sum.reset_index()
+        annual_sum.columns = ['Date', 'Sum']
+
+        # Create a DataFrame for daily_sum with 'Date' and 'Sum' columns
+        daily_sum = daily_sum.reset_index()
+        daily_sum.columns = ['Date', 'Sum']
+
+         # Create a DataFrame for hourly_sum with 'Date' and 'Sum' columns
+        hourly_sum = hourly_sum.reset_index()
+        hourly_sum.columns = ['Date', 'Sum']
+
+        # Append the daily_sum to the daily_sum_df
+        annual_sum_df = pd.concat([annual_sum_df, annual_sum], axis=0)
+
+        # Append the daily_sum to the daily_sum_df
+        daily_sum_df = pd.concat([daily_sum_df, daily_sum], axis=0)
+
+        # Append the hourly_sum to the hourly_sum_df
+        hourly_sum_df = pd.concat([hourly_sum_df, hourly_sum], axis=0)
 
 
-# # Sort the daily_sum_df by the 'Sum' column in descending order
-# daily_sum_df_sorted = daily_sum_df.sort_values(by='Sum', ascending=False)
+# Sort the daily_sum_df by the 'Sum' column in descending order
+daily_sum_df_sorted = daily_sum_df.sort_values(by='Sum', ascending=False)
 
-# # Get the top 20 days with the highest sum values
-# top_20_days = daily_sum_df_sorted.head(100)
+# Get the top 20 days with the highest sum values
+top_20_days = daily_sum_df_sorted.head(100)
 
-# top_20_days['Sum'] = top_20_days['Sum'].round(2)
+top_20_days['Sum'] = top_20_days['Sum'].round(2)
 
-# # Print the top 20 days
-# print("Top 20 days with the highest sum values:")
-# print(top_20_days)
+# Print the top 20 days
+print("Top 20 days with the highest sum values:")
+print(top_20_days)
+
+
+# Save the dayly Sum to a new CSV file without index and in a cleaner format
+output_csv_path = os.path.join(args.dirout, f"DaylySum_sorted{input_file_name}.txt")
+daily_sum_df_sorted.to_csv(output_csv_path, index=False, header=['Date', 'Sum'])
+print(f"daily Precipitation saved to {output_csv_path}")
 
 # # Save the top 20 days to a new CSV file without index and in a cleaner format
 # output_csv_path = os.path.join(args.dirout, f"top_20_days_{input_file_name}.txt")
 # top_20_days.to_csv(output_csv_path, index=False, header=['Date', 'Sum'])
 # print(f"Top 20 days saved to {output_csv_path}")
+
+# # Save the annual sum data to a separate CSV file
+# annual_output_csv_path = os.path.join(args.dirout, f"annual_precipitation_{input_file_name}.csv")
+# annual_sum_df.to_csv(annual_output_csv_path, index=False)
+# print(f"Annual precipitation data saved to {annual_output_csv_path}")
+########################### Vergleich Top Discharge mit TOP RAIN
 
 
 # # Sort the hourly_sum_df by the 'Sum' column in descending order
@@ -148,34 +168,37 @@
 #     print("No matching days found between top 20 days and top 20 hours, so no file was saved.")
 
 
-import pandas as pd
-import matplotlib.pyplot as plt
 
-# Read the CSV file
-data = pd.read_csv('C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Meteo_Discharge/AnalyseTest_0610/Discharge/top_20_days_DischargeQStat.csv')
+########## PLOT THE TOP 100 dayly mean discharge  DAYS!!! ##########################
 
-# Convert the 'Date' column to datetime format
-data['Date'] = pd.to_datetime(data['Date'])
+# import pandas as pd
+# import matplotlib.pyplot as plt
 
-# Sort the DataFrame by the 'Date' column
-data.sort_values(by='Date', inplace=True)
+# # Read the CSV file
+# data = pd.read_csv('C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Meteo_Discharge/AnalyseTest_0610/Discharge/top_20_days_DischargeQStat.csv')
 
-# Select the top 100 daily mean discharge values
-top_100_data = data.head(100)
+# # Convert the 'Date' column to datetime format
+# data['Date'] = pd.to_datetime(data['Date'])
 
-# Create subplots with adjusted spacing
-fig, ax = plt.subplots(figsize=(10, 6))
-plt.plot(top_100_data['Date'], top_100_data['Sum'],  linestyle='-', color='b',  linewidth=0.8)
-plt.title('Top 100 Daily Mean Discharge Values')
-plt.xlabel('Date')
-plt.ylabel('Mean Discharge m3/s')
-plt.grid(True)
-plt.xticks(rotation=45)
-plt.tight_layout()
-plt.legend()
+# # Sort the DataFrame by the 'Date' column
+# data.sort_values(by='Date', inplace=True)
 
-# Add a grid to the subplot
-ax.grid(True)
+# # Select the top 100 daily mean discharge values
+# top_100_data = data.head(100)
 
-# Show the plot
-plt.show()
+# # Create subplots with adjusted spacing
+# fig, ax = plt.subplots(figsize=(10, 6))
+# plt.plot(top_100_data['Date'], top_100_data['Sum'],  linestyle='-', color='b',  linewidth=0.8)
+# plt.title('Top 100 Daily Mean Discharge Values')
+# plt.xlabel('Date')
+# plt.ylabel('Mean Discharge m3/s')
+# plt.grid(True)
+# plt.xticks(rotation=45)
+# plt.tight_layout()
+# plt.legend()
+
+# # Add a grid to the subplot
+# ax.grid(True)
+
+# # Show the plot
+# plt.show()
