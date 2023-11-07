@@ -7,7 +7,7 @@ import numpy as np
 import matplotlib.dates as mdates
 
 # Define the path to the folder containing the .csv files
-folder_path_Discharge = 'C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Meteo_Discharge/Filtered_OHNEGH'
+folder_path_Discharge = 'C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Meteo_Discharge/Filtered'
 
 # Get a list of all .csv files in the folder
 file_list_Discharge = [file for file in os.listdir(folder_path_Discharge) if file.endswith(".csv")]
@@ -34,15 +34,15 @@ for file_name in file_list_Discharge:
     timestamps.append(timestamp_Discharge)
 
 # Define the central date and the date range around it
-central_date = pd.Timestamp('2019-08-01')
-start_date = central_date - pd.Timedelta(days=80)
-end_date = central_date + pd.Timedelta(days=80)
+central_date = pd.Timestamp('2018-06-15')
+start_date = central_date - pd.Timedelta(days=10)
+end_date = central_date + pd.Timedelta(days=90) # bei Jahr 80
 
 # Calculate the number of datasets based on the length of column_names_Discharge
 num_datasets = len(column_names_Discharge)
 # Define a list of colors to cycle through
-#colors = cycle(['b', 'g', 'm', 'c', 'c', 'k', 'k'])
-colors = cycle(['b', 'g', 'm', 'c', 'k'])
+colors = cycle(['b', 'g', 'm', 'c', 'c', 'k', 'k'])
+#colors = cycle(['b', 'g', 'm', 'c', 'k'])
 
 
 # Define the labels for each dataset
@@ -90,6 +90,14 @@ for i, column in enumerate(column_names_Discharge):
 
     # Add labels to the subplots
     axs[i].set_ylabel(labels[i])
+
+# # Set the x-axis limits to the specified date range
+# for ax in axs:
+#     ax.set_xlim(start_date, end_date)
+
+#     # Add time labels every 3 hours
+#     ax.xaxis.set_major_locator(mdates.HourLocator(interval=4))
+#     ax.xaxis.set_major_formatter(mdates.DateFormatter('%d.%m %H'))
 
 # Save the figure as a .png file with the defined size
 plt.savefig('output_plot.png')    
