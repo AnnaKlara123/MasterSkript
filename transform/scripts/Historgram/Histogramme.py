@@ -10,7 +10,7 @@ from termcolor import colored
 # Create the parser
 parser = argparse.ArgumentParser()
 parser.add_argument('--dir', type=str, help='The directory where the file is located', default= 'C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Meteo_Discharge/AnalyseTest_0610/Discharge')
-parser.add_argument('--filename', type=str, help='The filename to read', default= 'DischargeQStat.csv')
+parser.add_argument('--filename', type=str, help='The filename to read', default= 'DischargeQStat_short.csv')
 parser.add_argument('--year', type=int, help='The year to plot')
 args = parser.parse_args()
 
@@ -139,39 +139,88 @@ most_common_values(df)
     
 #     plt.show()
 
+
+#################### Works PERFEKT! ################################
+# def histogram_plotter(df, plot_dir, file_name, year, highest_values_str, lowest_values_str, most_common_values_str):
+#     data = df['Stat1'].dropna().replace(-9999, np.nan).values
+#     finite_data = data[np.isfinite(data)]
+#     hist, bins = np.histogram(finite_data, bins=100)
+#     bin_centers = (bins[1:] + bins[:-1]) / 2
+#     bar_width = bins[1] - bins[0]
+#     plt.bar(bin_centers, hist, width=bar_width, align='center')
+#     num_nan_values = df['Stat1'].isna().sum()
+#     if num_nan_values > 0:
+#         nan_bin_center = bin_centers.max() + bar_width
+#         plt.bar(nan_bin_center, num_nan_values, width=bar_width, align='center', color='gray')
+#         plt.text(nan_bin_center, num_nan_values, f'{num_nan_values}', ha='center', va='bottom')
+#     plt.title(f'Histogram for {file_name[:-4]}')
+#     plt.xlabel('Stat1')
+#     plt.ylabel('Count')
+
+#     # Print to Plot 
+#     plt.text(0.02, 0.85, f'Highest values: {highest_values}', transform=plt.gca().transAxes, fontsize=8, verticalalignment='top')
+#     plt.text(0.02, 0.75, f'Lowest values: {lowest_values}', transform=plt.gca().transAxes, fontsize=8, verticalalignment='top')
+#     plt.text(0.02, 0.65, f'Most common values: {most_common_values_str}', transform=plt.gca().transAxes, fontsize=8, verticalalignment='top')
+
+#     file_folder = os.path.join(plot_dir, f'Histogramm_{file_name[:-4]}')
+#     if not os.path.exists(file_folder):
+#         os.makedirs(file_folder)
+
+#     plot_name = f'Histogram_{file_name[:-4]}{year}.png'
+#     plot_path = os.path.join(file_folder, plot_name)
+
+#     with tqdm(desc=f'Saving {plot_name}', total=1) as pbar:
+#         plt.savefig(plot_path)
+#         pbar.update()
+    
+#     plt.show()
+
 def histogram_plotter(df, plot_dir, file_name, year, highest_values_str, lowest_values_str, most_common_values_str):
-    data = df['Stat1'].replace(-9999, np.nan).values
-    finite_data = data[np.isfinite(data)]
-    hist, bins = np.histogram(finite_data, bins=100)
-    bin_centers = (bins[1:] + bins[:-1]) / 2
-    bar_width = bins[1] - bins[0]
-    plt.bar(bin_centers, hist, width=bar_width, align='center')
+    # Create a dictionary to map years to colors
+    year_colors = {year: color for year, color in zip(df['date'].dt.year.unique(), plt.cm.viridis(np.linspace(0, 1, len(df['date'].dt.year.unique())))}
+    
+    # Group the data by year
+    groups = df.groupby(df['date'].dt.year)
+    
+    bar_width = 0.8  # Adjust the width of each stacked bar
+    
+    years = list(groups.groups.keys())
+    hist_data = [group['Stat1'].dropna().values for year, group in groups]
+    
+    # Calculate histograms for each year
+    hist, bins, patches = plt.hist(hist_data, bins=100, stacked=True, color=[year_colors[year] for year in years])
+    
     num_nan_values = df['Stat1'].isna().sum()
+    
     if num_nan_values > 0:
-        nan_bin_center = bin_centers.max() + bar_width
-        plt.bar(nan_bin_center, num_nan_values, width=bar_width, align='center', color='gray')
-        plt.text(nan_bin_center, num_nan_values, f'{num_nan_values}', ha='center', va='bottom')
-    plt.title(f'Histogram for {year}')
+        nan_data = df[df['Stat1'].isna()]['Stat1'].values
+        nan_hist, nan_bins = np.histogram(nan_data, bins=100)
+        hist = hist + nan_hist  # Add the NaN values to the stacked histogram
+    
+    plt.title(f'Stacked Histogram for {file_name[:-4]}')
     plt.xlabel('Stat1')
     plt.ylabel('Count')
-
-    # Print to Plot 
+    
+    plt.legend(years, loc='upper right', title='Years')
+    
     plt.text(0.02, 0.85, f'Highest values: {highest_values}', transform=plt.gca().transAxes, fontsize=8, verticalalignment='top')
     plt.text(0.02, 0.75, f'Lowest values: {lowest_values}', transform=plt.gca().transAxes, fontsize=8, verticalalignment='top')
     plt.text(0.02, 0.65, f'Most common values: {most_common_values_str}', transform=plt.gca().transAxes, fontsize=8, verticalalignment='top')
-
+    
     file_folder = os.path.join(plot_dir, f'Histogramm_{file_name[:-4]}')
+    
     if not os.path.exists(file_folder):
         os.makedirs(file_folder)
-
-    plot_name = f'Histogram_{file_name[:-4]}{year}.png'
+    
+    plot_name = f'Stacked_Histogram_{file_name[:-4]}{year}.png'
     plot_path = os.path.join(file_folder, plot_name)
-
+    
     with tqdm(desc=f'Saving {plot_name}', total=1) as pbar:
         plt.savefig(plot_path)
         pbar.update()
     
     plt.show()
+
 
 
 # Call the histogram_plotter function
