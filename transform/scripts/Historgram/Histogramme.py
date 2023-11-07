@@ -9,8 +9,8 @@ from termcolor import colored
 
 # Create the parser
 parser = argparse.ArgumentParser()
-parser.add_argument('--dir', type=str, help='The directory where the file is located', default= 'C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/GitHubMasterSkripts/MasterSkript/transform/output')
-parser.add_argument('--filename', type=str, help='The filename to read', default= 'lwd_Tirol_1197091-LF-BasisganglinieNaN.csv')
+parser.add_argument('--dir', type=str, help='The directory where the file is located', default= 'C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Meteo_Discharge/AnalyseTest_0610/Discharge')
+parser.add_argument('--filename', type=str, help='The filename to read', default= 'DischargeQStat.csv')
 parser.add_argument('--year', type=int, help='The year to plot')
 args = parser.parse_args()
 
@@ -67,9 +67,9 @@ def high_low_values(df):
     highest_dates = [df.iloc[i]['date'] for i in highest_indices]
     lowest_dates = [df.iloc[i]['date'] for i in lowest_indices]
 
-    # Get the highest and lowest values
-    highest_values = sorted(df['Stat1'])[-5:]
-    lowest_values = sorted(df['Stat1'])[:5]
+    # Get the highest and lowest values, filtering out NaNs
+    highest_values = sorted(df['Stat1'].dropna())[-5:]
+    lowest_values = sorted(df['Stat1'].dropna())[:5]
 
     # Create a string with the highest and lowest values and their corresponding dates
     highest_values_str = ', '.join([f'{value:.2f} ({date})' for value, date in zip(sorted(df['Stat1'])[-5:], highest_dates)])
