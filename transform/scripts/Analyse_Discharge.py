@@ -165,50 +165,53 @@ count = 0
 
 
 
-######### PLOT THE TOP 100 dayly mean discharge  DAYS!!! ##########################
+######## PLOT THE TOP 100 dayly mean discharge  DAYS!!! ##########################
 
-# import pandas as pd
-# import matplotlib.pyplot as plt
+import pandas as pd
+import matplotlib.pyplot as plt
 
-# # Read the CSV file
-# data = pd.read_csv('C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Meteo_Discharge/AnalyseTest_0610/Discharge/20.10.23/top_20_daysmax_DischargeQStat.csv')
+# Read the CSV file
+data = pd.read_csv('C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Meteo_Discharge/AnalyseTest_0610/Discharge/20.10.23/top_20_daysmean_DischargeQStat.csv')
 
-# # Convert the 'Date' column to datetime format
-# data['Date'] = pd.to_datetime(data['Date'])
+# Convert the 'Date' column to datetime format
+data['Date'] = pd.to_datetime(data['Date'])
 
-# # Sort the DataFrame by the 'Date' column
-# data.sort_values(by='Date', inplace=True)
+# Sort the DataFrame by the 'Date' column
+data.sort_values(by='Date', inplace=True)
 
-# # Select the top 100 daily mean discharge values
-# top_100_data = data.head(100)
+# Select the top 100 daily mean discharge values
+top_100_data = data.head(100)
 
-# # Create subplots with adjusted spacing
-# plt.subplots_adjust(top=0.586,
-# bottom=0.307,
-# left=0.137,
-# right=0.96,
-# hspace=0.2,
-# wspace=0.2)
-# fig, ax = plt.subplots(figsize=(10, 6))
-# plt.plot(top_100_data['Date'], top_100_data['Mean'],  marker='o', color='b',  linewidth=0.8)
-# plt.title('Top 100 Daily Mean Discharge Values')
-# plt.xlabel('Date')
-# plt.ylabel('Mean Discharge m3/s')
-# plt.grid(True)
-# plt.tight_layout()
-# plt.legend()
+# Create subplots with adjusted spacing
+plt.subplots_adjust(top=0.586,
+bottom=0.307,
+left=0.137,
+right=0.96,
+hspace=0.2,
+wspace=0.2)
+fig, ax = plt.subplots(figsize=(10, 6))
+plt.plot(top_100_data['Date'], top_100_data['Mean'],  marker='o', color='b',  linewidth=0.8)
+plt.title('Top 100 Daily Mean Discharge Values')
+plt.xlabel('Date')
+plt.ylabel('Mean Discharge m3/s')
+plt.grid(True)
+plt.tight_layout()
+plt.legend()
 
-# # Add a grid to the subplot
-# ax.grid(True)
+# Add a grid to the subplot
+ax.grid(True)
 
-# # Show the plot
-# plt.show()
+# Show the plot
+plt.show()
 
 
 
 ##########################################   ##############################################
 # Create an empty DataFrame to store the daily mean values
 daily_values_df = pd.DataFrame(columns=['Date', 'Daily mean value', 'Daily max value'])
+
+# Create an empty DataFrame to store the annual sum values
+annual_sum_df = pd.DataFrame(columns=['Year', 'Annual Discharge'])
 
 # Loop through all the files in the folder
 for file in os.listdir(args.dirin):
@@ -258,6 +261,18 @@ output_top_100_path = os.path.join(args.dirout, "top_100_days_mean_max_discharge
 top_100_days.to_csv(output_top_100_path, index=False)
 print(f"Top 100 days with highest mean values saved to {output_top_100_path}")
 
+
+# Calculate annual discharge by summing daily discharges
+annual_discharge_df = daily_values_df.groupby(daily_values_df['Date'].dt.year)['Daily discharge'].sum().reset_index()
+annual_discharge_df.columns = ['Year', 'Annual Discharge']
+
+# Sort the annual_discharge_df by 'Year'
+annual_discharge_df_sorted = annual_discharge_df.sort_values(by='Year')
+
+# Save the annual discharge data to a new CSV file
+output_annual_discharge_path = os.path.join(args.dirout, "annual_discharge.csv")
+annual_discharge_df_sorted.to_csv(output_annual_discharge_path, index=False)
+print(f"Annual discharge data sorted by Year saved to {output_annual_discharge_path}")
 
 ### To sort after daily max use this:
 
