@@ -10,8 +10,9 @@ from termcolor import colored
 # Create the parser
 parser = argparse.ArgumentParser()
 parser.add_argument('--dir', type=str, help='The directory where the file is located', default= 'C:/Users/annak/OneDrive/Documents/Master/Masterarbeit/Meteo_Discharge/AnalyseTest_0610/Discharge')
-parser.add_argument('--filename', type=str, help='The filename to read', default= 'DischargeQStat_short.csv')
-parser.add_argument('--year', type=int, help='The year to plot')
+parser.add_argument('--filename', type=str, help='The filename to read', default= 'DischargeQStat.csv')
+parser.add_argument('--year', type=int, help='The year to plot', default= '2022')
+parser.add_argument('--percentage', type=float, help='Percentage for highest values',default="5.0")
 args = parser.parse_args()
 
 # Get the base filename
@@ -82,7 +83,7 @@ def most_common_values(df):
     value_counts = df['Stat1'].value_counts()
 
     # Get the 10 most common values
-    most_common_values = value_counts.iloc[:10]
+    most_common_values = value_counts.iloc[:5]
 
     # Convert the index (the 'Stat1' values) to strings for display purposes
     most_common_values.index = most_common_values.index.astype(str)
@@ -96,135 +97,49 @@ def most_common_values(df):
 # Call the histogram_plotter function
 most_common_values(df)
 
-#def histogram_plotter(df, plot_dir, file_name, year, most_common_values_str):
-# def histogram_plotter(df, plot_dir, file_name, year, highest_values_str, lowest_values_str, most_common_values_str):
-#     data = df['Stat1'].replace(-9999, np.nan).values
-#     finite_data = data[np.isfinite(data)]
-#     hist, bins = np.histogram(finite_data, bins=100)
-#     bin_centers = (bins[1:] + bins[:-1]) / 2
-#     bar_width = bins[1] - bins[0]
-#     plt.bar(bin_centers, hist, width=bar_width, align='center')
-#     num_nan_values = df['Stat1'].isna().sum()
-#     if num_nan_values > 0:
-#         nan_bin_center = bin_centers.max() + bar_width
-#         plt.bar(nan_bin_center, num_nan_values, width=bar_width, align='center', color='gray')
-#         plt.text(nan_bin_center, num_nan_values, f'{num_nan_values}', ha='center', va='bottom')
-#     plt.title(f'Histogram for {year}')
-#     plt.xlabel('Stat1')
-#     plt.ylabel('Count')
-
-#     ### This could be smarter somewhere else! #####
-#     highest_values_str, lowest_values_str, highest_values, lowest_values = high_low_values(df)
-#     print(colored(f'Highest values of Stat1 are {highest_values_str}', 'red'))
-#     print(colored(f'Lowest values of Stat1 are {lowest_values_str}', 'blue'))
-#     ## Print most common values:
-#     most_common_values_str = most_common_values(df)
-#     print(colored(f'Most common values of Stat1 are {most_common_values_str}', 'green'))
-    
-#     plt.text(0.02, 0.85, f'Highest values: {highest_values}', transform=plt.gca().transAxes, fontsize=10, verticalalignment='top')
-#     plt.text(0.02, 0.75, f'Lowest values: {lowest_values}', transform=plt.gca().transAxes, fontsize=10, verticalalignment='top')
-#     plt.text(0.02, 0.65, f'Most common values: {most_common_values_str}', transform=plt.gca().transAxes, fontsize=10, verticalalignment='top')
-
-
-#     file_folder = os.path.join(plot_dir, f'Histogramm_{file_name[:-4]}')
-#     if not os.path.exists(file_folder):
-#         os.makedirs(file_folder)
-
-#     plot_name = f'Histogram_{file_name[:-4]}{year}.png'
-#     plot_path = os.path.join(file_folder, plot_name)
-
-#     with tqdm(desc=f'Saving {plot_name}', total=1) as pbar:
-#         plt.savefig(plot_path)
-#         pbar.update()
-    
-#     plt.show()
-
-
-#################### Works PERFEKT! ################################
-# def histogram_plotter(df, plot_dir, file_name, year, highest_values_str, lowest_values_str, most_common_values_str):
-#     data = df['Stat1'].dropna().replace(-9999, np.nan).values
-#     finite_data = data[np.isfinite(data)]
-#     hist, bins = np.histogram(finite_data, bins=100)
-#     bin_centers = (bins[1:] + bins[:-1]) / 2
-#     bar_width = bins[1] - bins[0]
-#     plt.bar(bin_centers, hist, width=bar_width, align='center')
-#     num_nan_values = df['Stat1'].isna().sum()
-#     if num_nan_values > 0:
-#         nan_bin_center = bin_centers.max() + bar_width
-#         plt.bar(nan_bin_center, num_nan_values, width=bar_width, align='center', color='gray')
-#         plt.text(nan_bin_center, num_nan_values, f'{num_nan_values}', ha='center', va='bottom')
-#     plt.title(f'Histogram for {file_name[:-4]}')
-#     plt.xlabel('Stat1')
-#     plt.ylabel('Count')
-
-#     # Print to Plot 
-#     plt.text(0.02, 0.85, f'Highest values: {highest_values}', transform=plt.gca().transAxes, fontsize=8, verticalalignment='top')
-#     plt.text(0.02, 0.75, f'Lowest values: {lowest_values}', transform=plt.gca().transAxes, fontsize=8, verticalalignment='top')
-#     plt.text(0.02, 0.65, f'Most common values: {most_common_values_str}', transform=plt.gca().transAxes, fontsize=8, verticalalignment='top')
-
-#     file_folder = os.path.join(plot_dir, f'Histogramm_{file_name[:-4]}')
-#     if not os.path.exists(file_folder):
-#         os.makedirs(file_folder)
-
-#     plot_name = f'Histogram_{file_name[:-4]}{year}.png'
-#     plot_path = os.path.join(file_folder, plot_name)
-
-#     with tqdm(desc=f'Saving {plot_name}', total=1) as pbar:
-#         plt.savefig(plot_path)
-#         pbar.update()
-    
-#     plt.show()
-
 def histogram_plotter(df, plot_dir, file_name, year, highest_values_str, lowest_values_str, most_common_values_str):
-    # Create a dictionary to map years to colors
-    year_colors = {year: color for year, color in zip(df['date'].dt.year.unique(), plt.cm.viridis(np.linspace(0, 1, len(df['date'].dt.year.unique())))}
-    
-    # Group the data by year
-    groups = df.groupby(df['date'].dt.year)
-    
-    bar_width = 0.8  # Adjust the width of each stacked bar
-    
-    years = list(groups.groups.keys())
-    hist_data = [group['Stat1'].dropna().values for year, group in groups]
-    
-    # Calculate histograms for each year
-    hist, bins, patches = plt.hist(hist_data, bins=100, stacked=True, color=[year_colors[year] for year in years])
-    
+    data = df['Stat1'].dropna().replace(-9999, np.nan).values
+    finite_data = data[np.isfinite(data)]
+    hist, bins = np.histogram(finite_data, bins=15)
+    bin_centers = (bins[1:] + bins[:-1]) / 2
+    bar_width = bins[1] - bins[0]
+    plt.bar(bin_centers, hist, width=bar_width, align='center')
     num_nan_values = df['Stat1'].isna().sum()
-    
-    if num_nan_values > 0:
-        nan_data = df[df['Stat1'].isna()]['Stat1'].values
-        nan_hist, nan_bins = np.histogram(nan_data, bins=100)
-        hist = hist + nan_hist  # Add the NaN values to the stacked histogram
-    
-    plt.title(f'Stacked Histogram for {file_name[:-4]}')
-    plt.xlabel('Stat1')
+    #if num_nan_values > 0:
+    #    nan_bin_center = bin_centers.max() + bar_width
+    #    plt.bar(nan_bin_center, num_nan_values, width=bar_width, align='center', color='gray')
+    #    plt.text(nan_bin_center, num_nan_values, f'{num_nan_values}', ha='center', va='bottom')
+    #plt.title(f'Histogram for {file_name[:-4]}')#
+    #plt.title(f'Histogram for {year}')
+    plt.title(f'Histogram')
+    plt.xlabel('Discharge m3/s')
+   # plt.xlabel('Temperature in °C')
     plt.ylabel('Count')
+
+    # Set y-axis to be logarithmic
+    #plt.yscale('log')
     
-    plt.legend(years, loc='upper right', title='Years')
-    
+    # Set the y-axis and x-axis limits
+    plt.ylim(0, 8000)
+    plt.xlim(0, 16)
+
+    # Print to Plot 
     plt.text(0.02, 0.85, f'Highest values: {highest_values}', transform=plt.gca().transAxes, fontsize=8, verticalalignment='top')
     plt.text(0.02, 0.75, f'Lowest values: {lowest_values}', transform=plt.gca().transAxes, fontsize=8, verticalalignment='top')
-    plt.text(0.02, 0.65, f'Most common values: {most_common_values_str}', transform=plt.gca().transAxes, fontsize=8, verticalalignment='top')
-    
+   # plt.text(0.02, 0.65, f'Most common values: {most_common_values_str}', transform=plt.gca().transAxes, fontsize=8, verticalalignment='top')
+
     file_folder = os.path.join(plot_dir, f'Histogramm_{file_name[:-4]}')
-    
     if not os.path.exists(file_folder):
         os.makedirs(file_folder)
-    
-    plot_name = f'Stacked_Histogram_{file_name[:-4]}{year}.png'
+
+    plot_name = f'Histogram_{file_name[:-4]}{year}.png'
     plot_path = os.path.join(file_folder, plot_name)
-    
+
     with tqdm(desc=f'Saving {plot_name}', total=1) as pbar:
         plt.savefig(plot_path)
         pbar.update()
     
     plt.show()
-
-
-
-# Call the histogram_plotter function
-#histogram_plotter(df, plot_dir, file_name, args.year, most_common_values)
 
 highest_values_str, lowest_values_str, highest_values, lowest_values = high_low_values(df)
 most_common_values_str = most_common_values(df)
@@ -236,3 +151,36 @@ print(colored(f'Highest values of Stat1 are {highest_values_str}', 'red'))
 print(colored(f'Lowest values of Stat1 are {lowest_values_str}', 'blue'))
 most_common_values_str = most_common_values(df)
 print(colored(f'Most common values of Stat1 are {most_common_values_str}', 'green'))
+
+
+
+
+# ############# Berechnung % Anteile ###########################
+# def find_highest_values_and_boundary(df, percentage):
+#     if percentage is None or percentage <= 0 or percentage >= 100:
+#         return  # Exit the function if percentage is not provided or is invalid
+#     # Group data by day and calculate daily sum
+#     daily_sums = df['Stat1'].resample('D').max()
+    
+#     # Extract the values from the daily sums
+#     data = daily_sums.dropna().values
+#     finite_data = data[np.isfinite(data)]
+#     sorted_data = np.sort(finite_data)
+    
+#     # Calculate the boundary (5th percentile)
+#     boundary = np.percentile(sorted_data, 100 - percentage)
+    
+#     # Filter values greater than the boundaryndicator 
+#     highest_values = sorted_data[sorted_data >= boundary]
+    
+#     # Count the number of values in the list
+#     num_values = len(highest_values)
+#     print(f"Number of values: {num_values}")
+    
+#     return highest_values, boundary
+
+# # Call this function to find the 5% highest values and their boundary
+# highest_values, boundary = find_highest_values_and_boundary(df, args.percentage)
+
+# print(f"Boundary for {args.percentage}% highest values: {boundary}")
+# print(f"{args.percentage}% Highest Values: {highest_values}")
