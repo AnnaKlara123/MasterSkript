@@ -24,99 +24,112 @@ colors = {
     6: 'grey',  # Magenta = All together 
 }
 
-# # Create a bar chart with color-coded bars
-# plt.figure(figsize=(12, 6))
+# Create a bar chart with color-coded bars
+plt.figure(figsize=(12, 6))
 
-# # Get the colors for each bar based on the numeric "Category" column
-# bar_colors = [colors[cat] for cat in df_sorted['Category']]
+# Get the colors for each bar based on the numeric "Category" column
+bar_colors = [colors[cat] for cat in df_sorted['Category']]
 
-# bars = plt.bar(np.arange(len(df_sorted)), df_sorted['Daily max discharge per day'], color=bar_colors)
+bars = plt.bar(np.arange(len(df_sorted)), df_sorted['Daily max discharge per day'], color=bar_colors)
 
 
-# # Label the x-axis with numbers from 1 to 100
-# plt.xlabel('Top 100 Event Days')
-# plt.xticks(np.arange(len(df_sorted)), np.arange(1, 101), rotation=45, ha='right', fontsize=8)
+# Label the x-axis with numbers from 1 to 100
+plt.xlabel('Top 100 Event Days')
+plt.xticks(np.arange(len(df_sorted)), np.arange(1, 101), rotation=45, ha='right', fontsize=8)
 
-# # Label the y-axis
-# plt.ylabel('Max discharge value per Day m3/s')
+# Label the y-axis
+plt.ylabel('Max discharge value per Day m3/s')
 
-# # Set the title
-# plt.title('Top 100 High Discharge Days and Contributing Factors')
+# Set the title
+plt.title('Top 100 High Discharge Days and Contributing Factors')
 
-# # Create a legend
-# legend_labels = {
-#     1: 'Snowmelt',
-#     2: 'Snowmelt and Precipitation',
-#     3: 'Icemelt',
-#     4: 'Icemelt and Precipitation',
-#     5: 'Snow and Icemelt',
-#     6: 'All together',
-# }
-# legend_handles = [plt.Rectangle((0, 0), 1, 1, color=colors[cat]) for cat in legend_labels.keys()]
-# plt.legend(legend_handles, legend_labels.values(), title='Factor')
+# Create a legend
+legend_labels = {
+    1: 'Snowmelt',
+    2: 'Snowmelt and Precipitation',
+    3: 'Icemelt',
+    4: 'Icemelt and Precipitation',
+    5: 'Snow and Icemelt',
+    6: 'All together',
+}
+legend_handles = [plt.Rectangle((0, 0), 1, 1, color=colors[cat]) for cat in legend_labels.keys()]
+plt.legend(legend_handles, legend_labels.values(), title='Factor')
 
-# # Remove extra empty space before the first bar and after the last bar
-# plt.xlim(-0.5, len(df_sorted) - 0.5)
+# Remove extra empty space before the first bar and after the last bar
+plt.xlim(-0.5, len(df_sorted) - 0.5)
 
-# # Show the plot
-# plt.tight_layout()
-# plt.show()
+# Show the plot
+plt.tight_layout()
+plt.show()
 
-############ PIE Diagramm ##################
+########### PIE Diagramm ##################
 # Group the data by "Category" and calculate the percentage of each category
 
-# category_counts = df['Category'].value_counts()
-# total_count = len(df)
-# category_percentages = (category_counts / total_count) * 100
+category_counts = df['Category'].value_counts()
+total_count = len(df)
+category_percentages = (category_counts / total_count) * 100
 
-# # Define colors for the pie chart
-# colors = ['lightblue', 'darkblue', 'red', 'darkred', 'orange', 'grey']
+# Define colors for the pie chart
+colors = ['lightblue', 'darkblue', 'red', 'darkred', 'orange', 'grey']
 
-# # Create a pie chart
-# plt.figure(figsize=(8, 8))
-# plt.pie(category_percentages, labels=None, autopct='%1.1f%%', colors=colors, startangle=140)
-# plt.title('Factors Contributing to High Flood Events')
+# Create a pie chart
+plt.figure(figsize=(8, 8))
+plt.pie(category_percentages, labels=None, autopct='%1.1f%%', colors=colors, startangle=140)
+plt.title('Factors Contributing to High Flood Events')
 
-# # Create a legend
-# legend_labels = {
-#     1: 'Snowmelt',
-#     2: 'Snowmelt and Precipitation',
-#     3: 'Icemelt',
-#     4: 'Icemelt and Precipitation',
-#     5: 'Snow and Icemelt',
-#     6: 'All together',
-# }
+# Create a legend
+legend_labels = {
+    1: 'Snowmelt',
+    2: 'Snowmelt and Precipitation',
+    3: 'Icemelt',
+    4: 'Icemelt and Precipitation',
+    5: 'Snow and Icemelt',
+    6: 'All together',
+}
 
-# legend_handles = [plt.Rectangle((0, 0), 1, 1, color=colors[cat - 1]) for cat in legend_labels.keys()]
-# plt.legend(legend_handles, legend_labels.values(), title='Factor', loc='center left', bbox_to_anchor=(1, 0.5))
-# # Show the plot
-# plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
-# plt.tight_layout()
-# plt.show()
+legend_handles = [plt.Rectangle((0, 0), 1, 1, color=colors[cat - 1]) for cat in legend_labels.keys()]
+plt.legend(legend_handles, legend_labels.values(), title='Factor', loc='center left', bbox_to_anchor=(1, 0.5))
+# Show the plot
+plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+plt.tight_layout()
+plt.show()
 
 ################## Balkendiagramm 3 ##############
 
-# Create a bar chart with color-coded bars for "Q mm Area"
-plt.figure(figsize=(12, 6))
+# Create a bar chart to show the relationship between "Q mm Area" and "mm Precipitation"
+fig, ax1 = plt.subplots(figsize=(12, 6))
 
-# Label the x-axis with smaller and slanted numbers counting down from 100 to 1
-plt.xlabel('Top 100 Event Days', fontsize=12)
-plt.xticks(np.arange(len(df_sorted)), np.arange(100, 0, -1), rotation=45, ha='right', fontsize=8)
+## Label the x-axis with smaller and slanted numbers counting down from 100 to 1
+ax1.set_xlabel('Top 100 Event Days', fontsize=10)
+ax1.set_xticks(np.arange(len(df_sorted)))
+ax1.set_xticklabels(np.arange(1, 101), rotation=45, ha='right', fontsize=8)
 
-# Label the y-axes for "Q mm Area" and "mm Precipitation"
-plt.ylabel('Q mm Area', fontsize=12)
-plt.twinx()
-plt.ylabel('mm Precipitation', fontsize=12)
+# Set the y-axis limits for both variables
+ax1.set_ylim(0, 80)
+
+# Label the y-axis for "Q mm Area"
+ax1.set_ylabel('Q-Area (mm)', color='darkgray', fontsize=12)
+ax1.bar(np.arange(len(df_sorted)), df_sorted['Q mm Area'], color='darkgray', label='Discharge in mm, calculated for the Area')
+ax1.tick_params(axis='y', labelcolor='black')
+
+# Create a second y-axis for "mm Precipitation"
+ax2 = ax1.twinx()
+ax2.set_ylabel('P (mm)', color='darkblue', fontsize=12)
+ax2.bar(np.arange(len(df_sorted)), df_sorted['mm Precipitation'], color='darkblue', alpha=0.5, label='Precipitation in mm')
+ax2.tick_params(axis='y', labelcolor='black')
 
 # Set the title
-plt.title('Relationship between Q mm Area and mm Precipitation for Top 100 High Discharge Days')
-
-# Create bar plots for "Q mm Area" and "mm Precipitation" on the same chart
-plt.bar(np.arange(len(df_sorted)), df_sorted['Q mm Area'], color='lightblue', label='Q mm Area')
-plt.bar(np.arange(len(df_sorted)), df_sorted['mm Precipitation'], color='darkblue', alpha=0.5, label='mm Precipitation')
+plt.title('Area Discharge and Precipitation in High Discharge Events')
 
 # Create a legend
-plt.legend(loc='upper right')
+lines1, labels1 = ax1.get_legend_handles_labels()
+lines2, labels2 = ax2.get_legend_handles_labels()
+lines = lines1 + lines2
+labels = labels1 + labels2
+plt.legend(lines, labels, loc='upper right')
+
+# # Remove extra empty space before the first bar and after the last bar
+plt.xlim(-0.5, len(df_sorted) - 0.5)
 
 # Show the plot
 plt.tight_layout()
