@@ -20,6 +20,9 @@ data = pd.read_csv(data_path, delimiter=';', na_values='---', skiprows=15, decim
 
 
 
+
+#### ORIGINAL ########################
+
 # # index to date time:
 # data.index = pd.to_datetime(data.date, format='%d.%m.%Y %H:%M:%S')
 # data.drop(columns='date', inplace=True)
@@ -101,38 +104,8 @@ ax.set_title('Time Series Plot')
 ax.annotate('Data Source: ' + data_path, xy=(0.5, -0.2), xycoords='axes fraction', fontsize=8, color='gray')
 fig.savefig('timeseries.png', bbox_inches='tight')
 
-# # Plot each year
-# fig2, ax2 = plt.subplots(1, 1, figsize=(10, 6))
-# # for W in data_daily['WY'].unique():
-# #     tmp = data_daily.loc[data_daily.WY==W]
-# #     ax2.plot(tmp.index, tmp.SH.values, label='hydr. year '+str(W))
 
-# # Define a list of colors to use for each year7
-# colors = ['blue', 'orange', 'green', 'red'] #--> WEnn man Farben ändern will! :)
-
-# for i, W in enumerate(data_daily['WY'].unique()):
-#     tmp = data_daily.loc[data_daily.WY==W]
-#     #ax2.plot(tmp.index, tmp.SH.values, label='hydr. year '+str(W), color=colors[i]) # ändern zu color= color!
-#     ax2.plot(tmp.index, tmp.SH.values, label='hydr. year '+str(W), color= "darkgray") # ändern zu color= color!
-# ax2.axvline(dt.datetime(2019, 6, 25), color='blue', linestyle='--', label='June 25, 2019', linewidth=1)
-# ax2.axvline(dt.datetime(2019, 10, 24), color='blue', linestyle='--', label='October 24, 2019', linewidth=1)  # October 24, 2019
-# ax2.axvline(dt.datetime(2020, 4, 19), color='orange', linestyle='--', label='April 19, 2020', linewidth=1)
-# ax2.axvline(dt.datetime(2020, 10, 20), color='orange', linestyle='--', label='October 20, 2020', linewidth=1)  # October 20, 2020
-# ax2.axvline(dt.datetime(2021, 5, 19), color='green', linestyle='--', label='May 19, 2021', linewidth=1)
-# ax2.axvline(dt.datetime(2021, 10, 19), color='green', linestyle='--', label='October 19, 2021', linewidth=1)  # October 19, 2021
-# ax2.axvline(dt.datetime(2022, 5, 13), color='red', linestyle='--', label='May 13, 2022', linewidth=1)
-# ax2.axvline(dt.datetime(2022, 8, 18), color='red', linestyle='--', label='August 18, 2022', linewidth=1)  # August 18, 2022
-# ax2.grid('both')
-# ax2.set_ylabel('Snow depth (daily average) in cm')
-# fig2.autofmt_xdate()  # Automatically format the x-axis as timestamps
-# #ax2.set_xlabel('Date')
-# ax2.set_title('Snowhight and Discharge measrument timeframe')
-# # Create a custom legend with just one entry labeled as "Snowhight"
-# ax2.legend(['Snowhight'], loc='upper right', fontsize=8)
-# #ax2.annotate('Data Source: ' + data_path, xy=(0.5, -0.2), xycoords='axes fraction', fontsize=8, color='gray')
-# fig2.savefig('wateryears.png', bbox_inches='tight')
-
-# plt.show()
+################################## NEW SNOWDEPH GRAPH with Dates #####################################################
 
 # Plot each year
 fig2, ax2 = plt.subplots(1, 1, figsize=(10, 6))
